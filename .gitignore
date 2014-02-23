@@ -1,0 +1,9 @@
+# Executable
+*.exe
+
+# Disk images
+*.dsk
+*.DSK
+*.image
+*.img
+*.qed

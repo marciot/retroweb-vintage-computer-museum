@@ -1,0 +1,14 @@
+{
+	"startup-config" : {
+		"version"     : 1.0,
+		"platform"    : "pce-macplus",
+		"ask-for-rom" : true,
+		"mkdir"       : [ "/roms" ],
+		"mount-files" : [
+			["_disabled", "/roms",    "mac-plus-3.rom",   "roms/mac-plus-3.rom" ],
+			[             "/roms",    "macplus-pcex.rom", "roms/macplus-pcex.rom" ],
+			[             "/roms",    "pce-config.cfg",   "roms/pce-config.cfg" ],
+			["_disabled", "/",        "hd1.img",          "hd1.qed" ]
+		]
+	}
+}

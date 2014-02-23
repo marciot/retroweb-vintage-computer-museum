@@ -1,0 +1,14 @@
+{
+	"retroweb" : {
+		"version" : 1.0,
+		"platform" : "pce-macplus",
+		"index" : [
+			["document",  "About actions",          "../docs/actions.html"],
+			["document",  "About disk images",      "../docs/disk-images.html"],
+			["action",    "Restart",                "restart-emulator"],
+			["action", 	  "Load ROM...", 	        "load-rom"],
+			["action", 	  "Local floppy...", 	    "local-floppy"],
+			["action",    "Enter RetroWeb URL...",  "enter-url"]
+		]
+	}
+}

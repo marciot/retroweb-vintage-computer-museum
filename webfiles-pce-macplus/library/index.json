@@ -1,0 +1,13 @@
+{
+	"retroweb" : {
+		"version" : 1.0,
+		"platform" : "pce-macplus",
+		"index" : [
+			["document",  "About...",               "../docs/about.html"],
+			["document",  "LICENSE",                "../LICENSE.txt"],
+			["hyperlink", "Surf the RetroWeb",      "retroweb.json"],
+			["hyperlink", "Advanced Actions",       "actions.json"],
+			["action",    "Restart",                "restart-emulator"]
+		]
+	}
+}

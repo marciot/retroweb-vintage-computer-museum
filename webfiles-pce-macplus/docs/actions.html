@@ -1,0 +1,94 @@
+<!--
+RetroWeb Browser (pce/mac-plus)
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+<html>
+	<body>
+		<link rel="stylesheet" type="text/css" href="docs.css">
+		<div class="information">
+			<h2>Advanced Actions</h2>
+			<p>
+				The advanced actions allow you to interact with the
+				emulator directly. These actions are intended for more
+				technically savvy users.
+			</p>
+			<h3>Restart</h3>
+			<p>
+				This action restarts the emulated computer. It is
+				useful if the computer has crashed. Refreshing the
+				webpage also restarts the computer, but you will
+				have to wait for the disk images to download from
+				the server again and changes to the local disks
+				will be lost. The Restart action is much faster
+				and will preserve your changes.
+			</p>
+			<h3>Load ROM</h3>
+			<p>
+				This action allows you to load in a ROM image for
+				use by the emulator. This is required to start
+				the emulated computer. This emulator supports the
+				ROM images that are distributed in the PCE download
+				page.
+			</p>
+			<h3>Load floppy</h3>
+			<p>
+				This action can be used to load floppy images that
+				are stored on local computer into the emulator.
+			</p>
+			<p>
+				Not all disk images will be compatible with this
+				emulator and vintage software is often distributed
+				in files that must be unpacked and copied into disk
+				images using other tools.
+			</p>
+			<p>
+				If you wish to obtaining software on your own, the
+				following websites will get you started:
+			</p>
+			<ul>
+				<li><a href="http://macintoshgarden.org" target="_new">The Macintosh Garden</a></li>
+				<li><a href="http://www.emaculation.com/doku.php/system_6_hell" target="_new">System 6 Hell</a></li>
+			</ul>
+			<p>
+				At the present, quite a few of these disk images will fail
+				to load silently (i.e. nothing will happen after you select
+				them with the "Local floppy..." action).
+			</p>
+			<h3>Enter RetroWeb URL</h3>
+			</p>
+				This action allows you to enter an URL for a RetroWeb JSON
+				file. This is an index formatted specifically for this
+				webapp that allows you to reach more content.
+			</p>
+			<p>
+				This webapp makes use of <a href="http://www.json.org/">JSON</a> and
+				<a href="http://enable-cors.org/">CORS</a> technologies to allow for the
+				dynamic hyper-linking of resources, thus providing the "web" part of
+				RetroWeb.
+			</p>
+			<p>
+				If you own a website, you can use this functionality to host
+				your own resources for this emulator. By publishing an index file
+				and implementing CORS, others will be allowed to link to your
+				content from their own instances of this webapp.
+			</p>
+			<h3>Go back</h3>
+			<p>
+				This action takes you back to the starting menu.
+			</p>
+	</body>
+</html>

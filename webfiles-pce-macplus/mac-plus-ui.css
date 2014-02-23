@@ -1,0 +1,218 @@
+/*
+RetroWeb Browser (pce/mac-plus)
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+#mac {
+	background:url(background.jpg);
+	background-repeat:no-repeat;
+	background-size:100%;
+	width:1590px;
+	height:1208px;
+	margin: 0px auto;
+	position: relative;
+}
+
+.small-icon {
+	width: 64px;
+	height: 64px;
+}
+
+.popup {
+	border-radius: 30px;
+	background: black;
+	text-align: center;
+	padding: 20px;
+	color: white;
+	opacity: 0.85;
+}
+
+#popups H1 {
+	font-size: large;
+}
+
+#popups P {
+	text-align: left;
+}
+
+canvas#mac-screen {
+	position: absolute;
+	left: 815px;
+	top: 170px;
+	width: 512px;
+	height: 342px;
+	cursor: none;
+}
+
+#popup-status {
+	position: absolute;
+	top: 250px;
+	left: 976px;
+	width: 150px;
+	height: 100px;
+}
+
+#popup-rom-missing {
+	position: absolute;
+	top: 250px;
+	left: 876px;
+	width: 350px;
+	height: 150px;
+	display: none;
+}
+
+#popup-ready-to-use {
+	position: absolute;
+	top: 250px;
+	left: 876px;
+	width: 350px;
+	height: 125px;
+	display: none;
+}
+
+#popup-uploader {
+	position: absolute;
+	top: 250px;
+	left: 876px;
+	width: 350px;
+	height: 150px;
+	display: none;
+}
+
+#sidepanel {
+	position: relative;
+	left: 90px;
+	top: 75px;
+	width: 600px;
+	height: 780px;
+}
+
+/* RetroWeb Navigator sidebar */
+
+#navigator .icon {
+	float: left;
+	margin: 10px; /* Spacing between icons */
+	text-align: center;
+	font-size: 15px;
+	font-family: Tahoma, Geneva, sans-serif;
+}
+
+#navigator .icon IMG {
+	margin-left:auto;
+	margin-right:auto;
+	width:  60px;
+	height: 60px;
+	display: block;
+}
+
+#navigator {
+	overflow: auto;
+	width: 100%;
+	height: 100%;
+	resize: vertical;
+}
+
+/* HTML viewer sidebar */
+
+div#html-text-viewer {
+	position: absolute;
+	white-space: pre-wrap;
+	width: 100%;
+	height: 100%;
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+	font-size: small;
+	overflow: auto;
+}
+
+div#html-viewer {
+	width: 100%;
+	height: 100%;
+	background: white;
+	opacity: 0.8;
+	display: none;
+	position: relative;
+	padding-bottom: 15px;
+}
+
+iframe#html-iframe {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+div#html-viewer-button {
+	width: 100%;
+	border-bottom-style: solid;
+	border-width: 1px;
+	//background: linear-gradient(to right,gray,white);
+	display: none;
+	text-align: left;
+}
+
+/* Fancy fade effect for HTML viewer iframe */
+
+.fade-effect-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 15px;
+    height: 50px;
+	background: linear-gradient(#fff, rgba(255,255,255,0));
+}
+
+.fade-effect-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 15px;
+    height: 100px;
+	background: linear-gradient(rgba(255,255,255,0),#fff);
+}
+
+/* Emscripten spinner animation */
+
+.spinner {
+	height: 50px;
+	width: 50px;
+	margin: 0px auto;
+	-webkit-animation: rotation .8s linear infinite;
+	-moz-animation: rotation .8s linear infinite;
+	-o-animation: rotation .8s linear infinite;
+	animation: rotation 0.8s linear infinite;
+	border-left: 10px solid rgb(0,0,0);
+	border-right: 10px solid rgb(0,0,0);
+	border-bottom: 10px solid rgb(0,0,0);
+	border-top: 10px solid rgb(255,255,255);
+	border-radius: 100%;
+	background-color: rgb(0,0,0);
+}
+@-webkit-keyframes rotation {
+	from {-webkit-transform: rotate(0deg);}
+	to {-webkit-transform: rotate(360deg);}
+}
+@-moz-keyframes rotation {
+	from {-moz-transform: rotate(0deg);}
+	to {-moz-transform: rotate(360deg);}
+}
+@-o-keyframes rotation {
+	from {-o-transform: rotate(0deg);}
+	to {-o-transform: rotate(360deg);}
+}
+@keyframes rotation {
+	from {transform: rotate(0deg);}
+	to {transform: rotate(360deg);}
+}
