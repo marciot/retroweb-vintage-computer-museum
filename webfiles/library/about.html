@@ -1,15 +1,21 @@
 <html>
 	<body>
-		<link rel="stylesheet" type="text/css" href="docs.css">
-		<div class="information">
-			<h2>About this Software</h2>
-			<p>
-				This folder contains additional software by various
-				authors. All software contained here is freeware,
-				shareware, or demo versions of commercial software.
-			</p>
-			
-			<p class="hint">
+		<link rel="stylesheet" type="text/css" href="../docs.css">
+		<script type="text/javascript" src="../utils.js"></script>
+		
+		<div id="pce-macplus" class="hidden">
+		
+			<div class="information">
+				<h2>About this Software</h2>
+				<p>
+					This folder contains additional software by various
+					authors. All software contained here is freeware,
+					shareware, or demo versions of commercial software.
+				</p>
+			</div>
+		
+
+			<p class="hint" class="pce-macplus-hint-1">
 				<strong>Hint:</strong> Double-click a floppy disk
 				above and it will show up inside the emulated Mac for
 				you to use. If you want to try out another disk,
@@ -24,6 +30,19 @@
 				feature is for advanced users.
 			</p>
 		</div>
+		
+		<div id="pce-ibmpc" class="hidden">
+			<h2>Nothing here yet!</h2>
+			<p>
+				Sorry, I don't have anything for this platform yet! Check back later!
+			</p>
+		</div>
+		
+		<script type="text/javascript">
+			var platform = getQueryVariable("platform");
+			var hm = new HintManager(platform + "-hint-");
+			toggleElementDisplay(platform, true);
+		</script>
 		
 	</body>
 </html>
