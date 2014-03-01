@@ -44,7 +44,7 @@ function getQueryVariable(variable) {
  *    http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
  */
 function loadResource(filename, async){
-	if (endsWith(filename, ".js")){
+	if (endsWith(filename, ".js") || endsWith(filename, ".js.gz")){
 		//if filename is a external JavaScript file
 		var fileref = document.createElement('script')
 		fileref.setAttribute("type","text/javascript")
@@ -52,7 +52,7 @@ function loadResource(filename, async){
 		if(async) {
 			fileref.setAttribute("async", "async")
 		}
-	} else if (endsWith(filename, ".css")) {
+	} else if (endsWith(filename, ".css") || endsWith(filename, ".css.gz")) {
 		//if filename is an external CSS file
 		var fileref = document.createElement("link")
 		fileref.setAttribute("rel", "stylesheet")
@@ -94,6 +94,9 @@ function HintManager(prefix) {
 	}
 	this.curHint = 1;
 	this.firstHint = document.getElementById(this.prefix + "1");
+	if (this.firstHint == undefined) {
+		return;
+	}
 	this.firstHint.style.display = 'block';
 			
 	this.nextHint = function() {
