@@ -79,19 +79,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					
 					function choosePlatform() {
 						var platformMenu = document.getElementById('platform-select');
-						var newFlavor = "flavor=" + platformMenu.options[platformMenu.selectedIndex].value;
+						var newPlatform = "platform=" + platformMenu.options[platformMenu.selectedIndex].value;
 						var newPage = new String(window.location);
 						if(newPage.indexOf("?") != -1) {
-							newPage = newPage.replace(/flavor=[a-zA-Z-]+/i, newFlavor);
+							newPage = newPage.replace(/platform=[a-zA-Z-]+/i, newPlatform);
 						} else {
-							newPage = newPage + "?" + newFlavor;
+							newPage = newPage + "?" + newPlatform;
 						}
 						window.location = newPage;
 					}
 				</script>
 				
 				<div id="sidepanel">
-						<div id="flavor">
+						<div id="platform">
 							<table style="width:90%;">
 								<tr>
 									<td>
@@ -190,20 +190,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		<!-- Load the appropriate css and javascript depending on the platform -->
 		
 		<script type="text/javascript">
-			var emulationFlavor = getQueryVariable("flavor");
-			if (!emulationFlavor) {
-				emulationFlavor = "pce-ibmpc";
+			var emuPlatform = getQueryVariable("platform");
+			if (!emuPlatform) {
+				emuPlatform = "pce-ibmpc";
 			}
 			
-			setPlatform(emulationFlavor);
+			setPlatform(emuPlatform);
 			
-			<!-- Load the style-sheet corresponding to the chosen flavor -->
-			loadResource(emulationFlavor + "/ui.css");
+			<!-- Load the style-sheet corresponding to the chosen platform -->
+			loadResource(emuPlatform + "/ui.css");
 			
 			<!-- Try to load either a gzipped version of the emulator code, or a regular version -->
-			loadResource(emulationFlavor + "/glue.js");
-			loadResource(emulationFlavor + "/" + emulationFlavor + ".js", true);
-			loadResource(emulationFlavor + "/" + emulationFlavor + ".js.gz", true);
+			loadResource(emuPlatform + "/glue.js");
+			loadResource(emuPlatform + "/" + emuPlatform + ".js", true);
+			<!-- loadResource(emuPlatform + "/" + emuPlatform + ".js.gz", true); -->
 		</script>
 		
 		<!-- Google Analytics (change this to your own site! )-->
