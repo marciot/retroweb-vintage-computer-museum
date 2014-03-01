@@ -1,6 +1,6 @@
 <html>
 	<body>
-		<link rel="stylesheet" type="text/css" href="docs.css">
+		<link rel="stylesheet" type="text/css" href="../../docs.css">
 		<div class="information">
 			<h2>About disk images</h2>
 			<p>
@@ -10,14 +10,19 @@
 				for others).
 			</p>
 			<p>
-				The web interface will only allow you to mount floppy
-				disk images. If you wish to mount hard drive images, you
-				will need to download the re-distributable source
-				package from the git repository and modify the
-				"startup.json" config file to mount those disks before
-				the emulator starts up. QED images are sparse and are
-				useful for making hard disks with free space for
-				distribution over the web.
+				The web interface will allow you to mount floppy disk
+				images at any time. Hard drive images can only be
+				mounted before the emulator starts up. QED images are
+				sparse and are useful for making hard disks with free
+				space for distribution over the web.
+			</p>
+			<h2>Special handling for vMac 400k and 800k disk images</h2>
+			<p>
+				The vMac emulator uses DiskCopy 4.2 images that have been
+				stripped of their headers. PCE does not currently read
+				such format natively. As an interim fix, my code will
+				detect and patch these disk images before presenting
+				them to PCE. 
 			</p>
 			<h2>Creating disk images</h2>
 			<p>

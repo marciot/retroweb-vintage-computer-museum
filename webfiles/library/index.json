@@ -1,0 +1,12 @@
+{
+	"retroweb" : {
+		"version" : 1.0,
+		"index" : {
+			"pce-macplus" : [
+				["document",  "About this software",        "about.html"],
+				["floppy",    "Games Collection",           "games1.image.gz"],
+				["floppy",    "Lemmings Demo",              "lemmings-demo.image.gz"],
+			]
+		}
+	}
+}

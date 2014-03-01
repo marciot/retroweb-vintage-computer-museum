@@ -7,3 +7,10 @@
 *.image
 *.img
 *.qed
+*.gz
+
+# ROM images
+*.rom
+
+# Private stuff
+private

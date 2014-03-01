@@ -1,5 +1,5 @@
 /*
-RetroWeb Browser (pce/mac-plus)
+RetroWeb Browser
 Copyright (C) 2014 Marcio Teixeira
 
 This program is free software; you can redistribute it and/or
@@ -17,27 +17,55 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+var emuPlatform
+var needRun;
+
+function setPlatform(platform) {
+	emuPlatform = platform;
+}
+
+function getPlatform() {
+	return emuPlatform;
+}
+
+function preInit() {
+	addRunDependency();
+	fetchDataFromUrl("startup.json",
+		function(content) {
+			loadConfig(JSON.parse(content))
+		}
+	);
+	addRunDependency("boot-disk");
+	needRun = true;
+}
+
+function preRun() {
+	needRun = false;
+}
+
 function loadConfig(json) {
 	var startupConfig = json["startup-config"];
 	if (
 		typeof startupConfig == 'undefined' ||
-		typeof startupConfig.version == 'undefined' ||
-		typeof startupConfig.platform == 'undefined'
+		typeof startupConfig.version == 'undefined'
 	) {
 		throw new LoadException ("Index fails startup-config JSON format validation");
 	}
-	if (startupConfig.platform != "pce-macplus") {
-		throw new LoadException ("The platform of this index does not match this emulator");
+	
+	platformConfig = startupConfig[getPlatform()];
+	
+	if (platformConfig == undefined) {
+		throw new LoadException ("The startup.json file does not contain a stanza corresponding to this platform");
 	}
 	
-	var dirsToMake = startupConfig["mkdir"];
+	var dirsToMake = platformConfig["mkdir"];
 	for (var i = 0; i < dirsToMake.length; ++i) {
 		var path = dirsToMake[i];
 		FS.mkdir (path);
 		console.log("Creating directory " + path);
 	}
 		
-	var filesToMount = startupConfig["mount-files"];
+	var filesToMount = platformConfig["mount-files"];
 	for (var i = 0; i < filesToMount.length; ++i) {
 		var parent = filesToMount[i][0];
 		if (parent == "_disabled") continue;
@@ -46,7 +74,7 @@ function loadConfig(json) {
 		FS.createPreloadedFile (parent, name, url, 1, 1, null, function() {alert("Failed to load " + url);});
 		console.log("Preloading " + url + " on " + parent + name);
 	}
-	waitingForRoms = startupConfig["ask-for-rom"];
+	waitingForRoms = platformConfig["ask-for-rom"];
 	if (waitingForRoms) {
 		 popups.open("popup-rom-missing");
 		 addRunDependency();
@@ -56,59 +84,32 @@ function loadConfig(json) {
 	removeRunDependency();
 }
 
-function macPreInit() {
-	addRunDependency();
-	fetchDataFromUrl("startup.json",
-		function(content) {
-			loadConfig(JSON.parse(content))
-		}
-	);
-}
-
-function macPreRun() {
-}
-
-function macSetMessage(msg,val) {
-	var sim = _mac_get_sim();
-	var _macSetMessage = Module.cwrap('mac_set_msg', 'int', ['int','string', 'string']);
-	_macSetMessage(sim, msg, val);
-}
-
-// Loads a disk that has been copied to the emscripten local store
-function macMountDisk(disk) {
-	macSetMessage ("emu.disk.insert", "2:" + disk);
-	macSetMessage ("mac.insert", "2");
-}
-
-function macMountUrl(url) {
-	console.log("Mounting " + url + " on fd2.disk");
-	showMacStatus("Downloading...");
+function mountUrl(url, where, isBootable) {
+	console.log("Mounting " + url + " on " + where);
+	showStatus("Downloading...");
 	var onLoad = function () {
-		macMountDisk("fd2.disk");
-		showMacStatus(false);
+		if (needRun) {
+			if (isBootable) {
+				removeRunDependency("boot-disk");
+				popups.close("popup-ready-to-use");
+			}
+		} else {
+			emulatorMountDisk(where);
+		}
+		showStatus(false);
 	};
 	var onErr = function () {
-		showMacStatus(false);
+		showStatus(false);
 		alert("Failed to load disk. Bummer!");
 	};
 	try {
-		FS.unlink("/fd2.disk");
+		FS.unlink(where);
 	} catch (err) {
 	}
-	FS.createPreloadedFile('/', "fd2.disk", url, 1, 1, onLoad, onErr);
+	FS.createPreloadedFile('/', where, url, 1, 1, onLoad, onErr);
 }
 
-function macReset() {
-	if(waitingForRoms) return;
-	if(shouldRunNow == false) {
-		shouldRunNow = true;
-		run();
-	} else {
-		macSetMessage ("emu.reset", "");
-	}
-}
-
-function showMacStatus(text) {
+function showStatus(text) {
 	var statusElement = document.getElementById('status');
 	if (!text) {
 		popups.close("popup-status");
@@ -136,7 +137,7 @@ function doLocalUpload (file, path, callback) {
     reader.onload = function(evt) {
         if(evt.target.readyState != 2) return;
         if(evt.target.error) {
-			showMacStatus(false);
+			showStatus(false);
             alert('Error while reading file');
             return;
         }
@@ -144,22 +145,24 @@ function doLocalUpload (file, path, callback) {
         var filecontent =  new Uint8Array(evt.target.result);
 		FS.writeFile(path, filecontent, { encoding: 'binary' });
 		callback();
-		showMacStatus(false);
+		showStatus(false);
     };
-	showMacStatus("Loading...");
+	showStatus("Loading...");
     reader.readAsArrayBuffer(file);
 }
 
 function doFloppyUpload (file) {
 	if(!file) return;
 	popups.close("popup-uploader");
-	doLocalUpload(file, "/fd1.data", function() {macMountDisk("fd1.data");});
+	doLocalUpload(file, "/fd1.data", function() {
+		emulatorMountDisk("fd1.data");
+	});
 }
 
 function doRomUpload (file) {
 	if(!file) return;
 	popups.close("popup-uploader");
-	doLocalUpload(file, "/roms/mac-plus-3.rom", function() {
+	doLocalUpload(file, waitingForRoms, function() {
 		if (waitingForRoms) {
 			waitingForRoms = false;
 			removeRunDependency();
@@ -218,28 +221,8 @@ function StateSnapshot(id) {
 	return this;
 }
 
-/* Shows/hide an element. When hidden it does not take any
- * space in the layout.
- */
-function toggleElementDisplay (id, showIt) {
-	var element = document.getElementById(id);
-	if(!element) {
-		alert("toggleElementDisplay: No element " + id);
-		return;
-	}
-	if(showIt) {
-		document.getElementById(id).style.display = 'block';
-	} else {
-		document.getElementById(id).style.display = 'none';
-	}
-}
-
 function htmlViewerCloseAction() {
 	showHtmlViewer(false);
-}
-
-function endsWith(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
 function showHtmlViewer(url) {
@@ -256,7 +239,7 @@ function showHtmlViewer(url) {
 			toggleElementDisplay("html-text-viewer", true);
 			fetchDataFromUrl(url, function(content) {div.innerHTML += content + '\n\n\n\n';});
 		} else {
-			document.getElementById("html-iframe").src = url;
+			document.getElementById("html-iframe").src = url + "?platform=" + getPlatform();
 			toggleElementDisplay("html-iframe", true);
 			toggleElementDisplay("html-text-viewer", false);
 		}

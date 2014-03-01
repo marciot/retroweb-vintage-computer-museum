@@ -1,5 +1,5 @@
 /*
-RetroWeb Browser (pce/mac-plus)
+RetroWeb Browser
 Copyright (C) 2014 Marcio Teixeira
 
 This program is free software; you can redistribute it and/or
@@ -17,14 +17,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#mac {
-	background:url(background.jpg);
-	background-repeat:no-repeat;
-	background-size:100%;
-	width:1590px;
-	height:1208px;
-	margin: 0px auto;
+#main {
 	position: relative;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+canvas#screen {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	cursor: none;
 }
 
 .small-icon {
@@ -32,73 +39,103 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	height: 64px;
 }
 
-.popup {
+/* Popup boxes are the dark, translucent, rounded-cornered
+ * dialog boxes that show up centered on the simulated
+ * computer's display
+ */
+ 
+DIV.popup {
+	display: none;
 	border-radius: 30px;
 	background: black;
-	text-align: center;
-	padding: 20px;
-	color: white;
 	opacity: 0.85;
+	text-align: center;
+	color: white;
+	
+	/* Allow centering of popups (see margin formula below) */
+	position: absolute;
+	top: 50%;
+	left: 50%;
 }
 
-#popups H1 {
+DIV.popup H1 {
 	font-size: large;
 }
 
-#popups P {
+DIV.popup P {
 	text-align: left;
 }
 
-canvas#mac-screen {
-	position: absolute;
-	left: 815px;
-	top: 170px;
-	width: 512px;
-	height: 342px;
-	cursor: none;
-}
-
 #popup-status {
-	position: absolute;
-	top: 250px;
-	left: 976px;
-	width: 150px;
-	height: 100px;
+	padding:      20px;
+	width:       150px;
+	height:      100px;
+	margin-left: -95px; /* -0.5 * width - padding */
+	margin-top:  -70px; /* -0.5 * height - padding */
 }
 
 #popup-rom-missing {
-	position: absolute;
-	top: 250px;
-	left: 876px;
-	width: 350px;
-	height: 150px;
-	display: none;
+	padding:       20px;
+	width:        350px;
+	height:       150px;
+	margin-left: -195px;
+	margin-top:   -95px;
 }
 
 #popup-ready-to-use {
-	position: absolute;
-	top: 250px;
-	left: 876px;
-	width: 350px;
-	height: 125px;
-	display: none;
+	padding:       20px;
+	width:        350px;
+	height:       125px;
+	margin-left: -195px;
+	margin-top:   -82px;
 }
 
 #popup-uploader {
-	position: absolute;
-	top: 250px;
-	left: 876px;
-	width: 350px;
-	height: 150px;
-	display: none;
+	padding:       20px;
+	width:        350px;
+	height:       150px;
+	margin-left: -195px;
+	margin-top:   -95px;
 }
+
+/* Sidebar and sidebar widgets */
 
 #sidepanel {
 	position: relative;
-	left: 90px;
+	left: 40px;
 	top: 75px;
-	width: 600px;
+	width: 575px;
 	height: 780px;
+}
+
+/* Emulator selector and navigation buttons */
+
+#platform-select {
+	margin-right: 75px;
+}
+
+#flavor TD {
+	vertical-align: center;
+	font-size: small;
+	font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+}
+
+.nav-btn {
+	width: 50px;
+	text-align: center;
+}
+
+.btn-icon {
+	width: 32px;
+	height: 32px;
+}
+
+.btn-label {
+	visibility : hidden;
+}
+
+.btn-icon:hover~.btn-label {
+	visibility : visible;
 }
 
 /* RetroWeb Navigator sidebar */
@@ -158,7 +195,6 @@ div#html-viewer-button {
 	width: 100%;
 	border-bottom-style: solid;
 	border-width: 1px;
-	//background: linear-gradient(to right,gray,white);
 	display: none;
 	text-align: left;
 }

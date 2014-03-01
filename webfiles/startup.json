@@ -1,0 +1,24 @@
+{
+	"startup-config" : {
+		"version"     : 1.0,
+		"pce-ibmpc" : {
+			"mkdir"       : [ "/roms" ],
+			"mount-files" : [
+				[             "/roms",    "pce-config.cfg",         "pce-ibmpc/pce-config.cfg" ],
+				[             "/",        "ibm-xt-1986-05-09.rom",  "roms/ibm-xt-1986-05-09.rom" ],
+				[             "/",        "ibm-mfm-1985-10-28.rom", "roms/ibm-mfm-1985-10-28.rom" ],
+				[             "/",        "ibm-ega-1984-09-13.rom", "roms/ibm-ega-1984-09-13.rom" ],
+				[             "/",        "ibm-vga-1986-10-27.rom", "roms/ibm-vga-1986-10-27.rom" ],
+				[             "/",        "ibmpc-pcex.rom",         "roms/ibmpc-pcex.rom" ]
+			]
+		},
+		"pce-macplus" : {
+			"mkdir"       : [ "/roms" ],
+			"mount-files" : [
+				[             "/roms",    "pce-config.cfg",   "pce-macplus/pce-config.cfg" ],
+				[             "/roms",    "mac-plus-3.rom",   "roms/mac-plus-3.rom" ],
+				[             "/roms",    "macplus-pcex.rom", "roms/macplus-pcex.rom" ]
+			]
+		}
+	}
+}

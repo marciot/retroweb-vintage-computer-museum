@@ -1,5 +1,5 @@
 /*
-RetroWeb Browser (pce/mac-plus)
+RetroWeb Browser
 Copyright (C) 2014 Marcio Teixeira
 
 This program is free software; you can redistribute it and/or
@@ -17,44 +17,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-BODY {
-	margin-top: 50px;
-	margin-bottom: 100px;
+#background {
+	position: absolute;
+	left:      425px;
+	width:    1243px;
+	height:   1245px;
+	background:url(background.jpg);
+	background-repeat:no-repeat;
+	background-size:100%;
 }
 
-TABLE, TD, TH {
-	border-collapse:collapse;
-	margin: 10px auto;
-	border: 3px solid white;
-	padding: 5px;
-}
-
-TH {
-	background: Gray;
-}
-
-TD {
-	background: LightGray;
-}
-
-
-PRE {
-	font-family: monospace;
-    white-space: pre-line;
-	color: DarkGreen;
-}
-
-.header {
-	text-align: center;
-}
-
-#happy-mac {
-	width:64px;
-	height:64px;
-	margin: 10px auto;
-	display: block;
-}
-
-.license {
-	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+#screen-area {
+	position: absolute;
+	left:      765px;
+	top:       170px;
+	width:     480px;
+	height:    300px;
 }

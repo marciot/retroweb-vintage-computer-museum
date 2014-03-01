@@ -1,5 +1,5 @@
 /*
-RetroWeb Browser (pce/mac-plus)
+RetroWeb Browser
 Copyright (C) 2014 Marcio Teixeira
 
 This program is free software; you can redistribute it and/or
@@ -32,7 +32,14 @@ function addNavigatorIcon (type, title, value) {
 			img.src = "icons/floppy.png";
 			img.id = value;
 			var url = rewriteRelativeUrl(value);
-			img.ondblclick = function () {macMountUrl(url);}
+			img.ondblclick = function () {mountUrl(url, "fd1.img");}
+			icon.id = value;
+			break;
+		case "boot-hd":
+			img.src = "icons/boot-hd.png";
+			img.id = value;
+			var url = rewriteRelativeUrl(value);
+			img.ondblclick = function () {mountUrl(url,"hd1.img", true);}
 			icon.id = value;
 			break;
 		case "hyperlink":
@@ -53,16 +60,8 @@ function addNavigatorIcon (type, title, value) {
 				case "load-rom":
 					img.src = "icons/rom.png";
 					img.ondblclick = function () {
-						openFileUploader ("Select a Macintosh ROM image", doRomUpload);
+						openFileUploader ("Select a ROM image", doRomUpload);
 					};
-					break;
-				case "go-back":
-					img.src = "icons/back.png";
-					img.ondblclick = navGoBack;
-					break;
-				case "go-home":
-					img.src = "icons/home.png";
-					img.ondblclick = navGoHome;
 					break;
 				case "local-floppy":
 					img.src = "icons/upload.png";
@@ -73,10 +72,6 @@ function addNavigatorIcon (type, title, value) {
 				case "enter-url":
 					img.src = "icons/world.png";
 					img.ondblclick = promptNavigatorUrl;
-					break;
-				case "restart-emulator":
-					img.src = "icons/power.png";
-					img.ondblclick = macReset;
 					break;
 				default:
 					console.log("Undefined action: value = " + value);
@@ -128,20 +123,25 @@ function loadJSONIndex(json, callback) {
 	if (
 		typeof json.retroweb == 'undefined' ||
 		typeof json.retroweb.version == 'undefined' ||
-		typeof json.retroweb.platform == 'undefined' ||
-		typeof json.retroweb.index == 'undefined' ||
-		typeof json.retroweb.index.length == 'undefined'
+		typeof json.retroweb.index == 'undefined'
 	) {
 		throw new LoadException ("Index fails RetroWeb JSON format validation");
 	}
-	if (json.retroweb.platform != "pce-macplus") {
-		throw new LoadException ("The platform of this index does not match this emulator");
-	}
 	
 	try {
-		var index = json.retroweb.index;
-		for (var i = 0; i < index.length; ++i) {
-			callback (index[i]);
+		// Load platform specific index
+		var index = json.retroweb.index[getPlatform()];
+		if( index != undefined ) {
+			for (var i = 0; i < index.length; ++i) {
+				callback (index[i]);
+			}
+		}
+		// Load platform generic index
+		var index = json.retroweb.index["*"];
+		if( index != undefined ) {
+			for (var i = 0; i < index.length; ++i) {
+				callback (index[i]);
+			}
 		}
 	} catch (err) {
 		alert (err.message);
@@ -152,7 +152,7 @@ function loadJSONIndex(json, callback) {
 
 var navHistory;
 var emptyNav;
-var baseURL = "library/";
+var baseURL = "docs/";
 var currentURL;
 
 function urlIsAbsolute(url) {
@@ -163,13 +163,21 @@ function baseUrl(url) {
 	return url.replace(/\/[^/]+$/, "/");
 }
 
+function urlFile(url) {
+	return url.substr(url.lastIndexOf("/")+1);
+}
+
 function rewriteRelativeUrl(url) {
+	var rewritten = url;
 	if (urlIsAbsolute(url)) {
-		return url;
-	} else if (baseURL != null) {
-		return baseURL + url;
+		rewritten = url;
+	} else if (baseURL != undefined) {
+		rewritten = baseURL + url;
 	}
-	return url;
+	while(rewritten.indexOf("..") != -1) {
+		rewritten = rewritten.replace(/[^/]+\/\.\.\//,'');
+	}
+	return rewritten;
 }
 
 function navGoBack() {
@@ -219,25 +227,22 @@ function fetchNavigatorUrl(url) {
 	if(currentURL) {
 		navHistoryPush(currentURL);
 	}
-	currentURL = url;
 	
 	// Rewrite a relative URL with a base prefix, if needed.
 	// But if we have an absolute URL for our index, that
 	// becomes the new base prefix.
 	
-	if (urlIsAbsolute(url)) {
-		baseURL = baseUrl(url);
-	}
-	url = rewriteRelativeUrl(url);
+	url        = rewriteRelativeUrl(url);
+	baseURL    = baseUrl(url);
+	currentURL = urlFile(url);
+	
+	console.log( "BaseURL: " + baseURL + "  url: " + url );
 	
 	try {
 		fetchDataFromUrl(url, function(content) {
 				loadJSONIndex(JSON.parse(content), function(record) {
 					addNavigatorIcon (record[0], record[1], record[2]);
 				} );
-				if(navHistory && navHistory.length > 0) {
-					addNavigatorIcon ('action', 'Go back', 'go-back');
-				}
 			}
 		);
 	} catch (err) {

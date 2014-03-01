@@ -1,5 +1,5 @@
 <!--
-RetroWeb Browser (pce/mac-plus)
+RetroWeb Browser
 Copyright (C) 2014 Marcio Teixeira
 
 This program is free software; you can redistribute it and/or
@@ -18,29 +18,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="mac-plus-ui.css">
+	    <link rel="stylesheet" type="text/css" href="ui.css">
+		<script type="text/javascript" src="ui.js"></script>
+		<script type="text/javascript" src="utils.js"></script>
 		<script type="text/javascript" src="navigator.js"></script>
-		<title>RetroWeb Browser (pce/macplus)</title>
+		<title>RetroWeb Browser</title>
 	</head>
 	<body>
-		<script type="text/javascript" src="utils.js"></script>
-		
-		<div id="mac">
-
-				<canvas class="emscripten" id="mac-screen" oncontextmenu="event.preventDefault()">
-				</canvas>
+		<div id="main">
+				<div id="background">
+				</div>
 				
-				<div id="popups">
-					<div id="popup-rom-missing" class="popup">
-						<img src="icons/rom.png" class="small-icon">
-						<p>This computer cannot start without a valid ROM file.</p>
-						<input type="button" value="Select ROM file..."
-							onclick="openFileUploader ('Select ROM image', doRomUpload);">
-					</div>
-					<div id="popup-ready-to-use" class="popup" onclick="popups.close('popup-ready-to-use');">
-						<img src="icons/sunny.png" class="small-icon">
-						<h1>This computer is ready to use!<br>Double-click here to begin.</h1>
-					</div>
+				<div id="screen-area">
+
+					<!-- Main rendering canvas for emulator: -->
+					
+					<canvas class="emscripten" id="screen" oncontextmenu="event.preventDefault()">
+					</canvas>
+					
+					<!-- Pop-up windows that overlay the screen area: -->
+					
 					<div id="popup-status" class="popup">
 						<div class="spinner"></div>
 						<div class="emscripten" id="status">Downloading...</div>
@@ -48,6 +45,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 							<progress value="0" max="100" id="progress" hidden=0></progress>  
 						</div>
 					</div>
+					
+					<div id="popup-ready-to-use" class="popup">
+						<img src="icons/sunny.png" class="small-icon">
+						<h1>This computer needs a boot disk! Go find an icon with a green dot!</h1>
+					</div>
+					
+					<div id="popup-rom-missing" class="popup">
+						<img src="icons/rom.png" class="small-icon">
+						<p>This computer cannot start without a valid ROM file.</p>
+						<input type="button" value="Select ROM file..."
+							onclick="openFileUploader ('Select ROM image', doRomUpload);">
+					</div>
+					
 					<div id="popup-uploader" class="popup">
 						<h1 id="uploader-text">Select a file:</h1>
 						<form name="file-upload" onsubmit="return false">
@@ -58,17 +68,54 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 							<input type="button" value="Cancel" onclick="popups.close('popup-uploader');">
 						</form>
 					</div>
-					<script type="text/javascript">
-						var popups = new PopupManager();
-						popups.add("popup-rom-missing");
-						popups.add("popup-ready-to-use");
-						popups.add("popup-status");
-						popups.add("popup-uploader");
-					</script>
 				</div>
+								
+				<script type="text/javascript">						
+					var popups = new PopupManager();
+					popups.add("popup-rom-missing");
+					popups.add("popup-ready-to-use");
+					popups.add("popup-status");
+					popups.add("popup-uploader");
+					
+					function choosePlatform() {
+						var platformMenu = document.getElementById('platform-select');
+						var newFlavor = "flavor=" + platformMenu.options[platformMenu.selectedIndex].value;
+						var newPage = new String(window.location);
+						if(newPage.indexOf("?") != -1) {
+							newPage = newPage.replace(/flavor=[a-zA-Z-]+/i, newFlavor);
+						} else {
+							newPage = newPage + "?" + newFlavor;
+						}
+						window.location = newPage;
+					}
+				</script>
 				
 				<div id="sidepanel">
-						<h2>Double-click an icon to open it:</h2>
+						<div id="flavor">
+							<table style="width:90%;">
+								<tr>
+									<td>
+										<select id="platform-select" onchange="choosePlatform()">
+											<option>Change computer type...</option>
+											<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
+											<option value="pce-ibmpc">IBM Personal Computer (pce/ibmpc)</option>
+										</select>
+									</td>
+									<td class="nav-btn">
+										<img class="btn-icon" src="icons/back.png" onclick="navGoBack()"><br>
+										<span class="btn-label">Go Back</span>
+									</td>
+									<td class="nav-btn">
+										<img class="btn-icon" src="icons/home.png" onclick="navGoHome()"><br>
+										<span class="btn-label">Go Home</span>
+									</td>
+									<td class="nav-btn">
+										<img class="btn-icon" src="icons/power.png" onclick="emulatorReset()"><br>
+										<span class="btn-label">Restart Computer</span>
+									</td>
+								</tr>
+							</table>
+						</div>
 						<p>
 						<div id="navigator">
 						</div>
@@ -98,9 +145,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			var macStatus = document.getElementById('popup-status');
 
 			var Module = {
-				preRun: [macPreRun],
+				preRun: [preRun],
 				postRun: [],
-				preInit: [macPreInit],
+				preInit: [preInit],
 				noInitialRun: false,
 				print: function(text) {
 					text = Array.prototype.slice.call(arguments).join(' ');
@@ -110,7 +157,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					text = Array.prototype.slice.call(arguments).join(' ');
 					console.log(text);
 				},
-				canvas: document.getElementById('mac-screen'),
+				canvas: document.getElementById('screen'),
 				setStatus: function(text) {
 					  if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
 					  if (text === Module.setStatus.text) return;
@@ -139,12 +186,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			};
 			Module.setStatus('Downloading...');
 		</script>
+
+		<!-- Load the appropriate css and javascript depending on the platform -->
 		
-		<script async type="text/javascript" src="macplus.js"></script>
+		<script type="text/javascript">
+			var emulationFlavor = getQueryVariable("flavor");
+			if (!emulationFlavor) {
+				emulationFlavor = "pce-ibmpc";
+			}
+			
+			setPlatform(emulationFlavor);
+			
+			<!-- Load the style-sheet corresponding to the chosen flavor -->
+			loadResource(emulationFlavor + "/ui.css");
+			
+			<!-- Try to load either a gzipped version of the emulator code, or a regular version -->
+			loadResource(emulationFlavor + "/glue.js");
+			loadResource(emulationFlavor + "/" + emulationFlavor + ".js", true);
+			loadResource(emulationFlavor + "/" + emulationFlavor + ".js.gz", true);
+		</script>
 		
-		<!-- Google Analytics -->
+		<!-- Google Analytics (change this to your own site! )-->
 		
-		<!--<script>
+		<script>
 		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -152,7 +216,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 		  ga('create', 'UA-47856782-1', 'freeshell.org');
 		  ga('send', 'pageview');
-		</script>-->
+		</script>
+		
+		<!-- End of Google Analytics -->
 		
 	</body>
 </html>

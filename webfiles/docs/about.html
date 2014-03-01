@@ -1,0 +1,60 @@
+<!--
+RetroWeb Browser
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="../docs.css">
+		<script type="text/javascript" src="../utils.js"></script>
+	</head>
+	<body>
+		<div class="information">
+			<div id="pce-macplus" class="hidden">
+				<h2>Apple Macintosh</h2>
+				This is a simulation of an early Apple Macintosh.
+				<a href="http://oldcomputers.net/macintosh.html" target="_new">More Info</a>
+				
+				<ul>
+					<li><strong>Released:</strong> January 24, 1984
+					<li><strong>Introductory Price:</strong> US $2,495
+					<li><strong>Microprocessor:</strong> Motorola 68000
+				</ul>
+			</div>
+			<div id="pce-ibmpc" class="hidden">
+				<h2>IBM Personal Computer</h2>
+				This is a simulation of an early model IBM PC.
+				<a href="http://oldcomputers.net/ibm5150.html" target="_new">More Info</a>
+				
+				<ul>
+					<li><strong>Released:</strong>  March 8, 1983
+					<li><strong>Introductory Price:</strong> US $1,565 ~ $3,000
+					<li><strong>Microprocessor:</strong> Intel 8088
+				</ul>
+			</div>
+			<h2>About the Emulator:</h2>
+			<p>
+				The emulator is a modified version of PCE, written in C by Hampa
+				Hug and ported to Javascript by James Friend.
+				<a href="more/users-guide.html#credits">More Info</a>
+			</p>
+		</div>
+		
+		<script type="text/javascript">
+			toggleElementDisplay(getQueryVariable("platform"), true);
+		</script>
+	</body>
+</html>
