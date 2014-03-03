@@ -23,7 +23,8 @@ function emulatorPreRun() {
 
 // Loads a disk that has been copied to the emscripten local store
 function emulatorMountDisk(disk) {
-	alert("TODO: Implement this");
+	console.log("Mounting " + disk);
+	pcSetMessage ("emu.disk.insert", "0:" + disk);
 }
 
 function emulatorReset() {
@@ -31,5 +32,13 @@ function emulatorReset() {
 	if(shouldRunNow == false) {
 		shouldRunNow = true;
 		run();
+	} else {
+		pcSetMessage ("emu.reset", "");
 	}
+}
+
+function pcSetMessage(msg,val) {
+	var sim = _pc_get_sim();
+	var _pcSetMessage = Module.cwrap('pc_set_msg', 'int', ['int','string', 'string']);
+	_pcSetMessage(sim, msg, val);
 }

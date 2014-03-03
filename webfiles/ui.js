@@ -155,8 +155,8 @@ function doLocalUpload (file, path, callback) {
 function doFloppyUpload (file) {
 	if(!file) return;
 	popups.close("popup-uploader");
-	doLocalUpload(file, "/fd1.data", function() {
-		emulatorMountDisk("fd1.data");
+	doLocalUpload(file, "/fd1.disk", function() {
+		emulatorMountDisk("fd1.disk");
 	});
 }
 

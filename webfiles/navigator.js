@@ -32,7 +32,7 @@ function addNavigatorIcon (type, title, value) {
 			img.src = "icons/floppy.png";
 			img.id = value;
 			var url = rewriteRelativeUrl(value);
-			img.ondblclick = function () {mountUrl(url, "fd1.img");}
+			img.ondblclick = function () {mountUrl(url, "fd1.disk");}
 			icon.id = value;
 			break;
 		case "boot-hd":
