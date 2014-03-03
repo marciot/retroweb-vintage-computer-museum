@@ -40,6 +40,7 @@ function preInit() {
 }
 
 function preRun() {
+	emulatorPreRun();
 	needRun = false;
 }
 

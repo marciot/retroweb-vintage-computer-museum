@@ -17,6 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+function emulatorPreRun() {
+	Module.arguments = ["-c", "roms/pce-config.cfg", "-g", "cga", "-r"];
+}
+
 // Loads a disk that has been copied to the emscripten local store
 function emulatorMountDisk(disk) {
 	alert("TODO: Implement this");
