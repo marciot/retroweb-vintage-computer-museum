@@ -148,6 +148,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				preRun: [preRun],
 				postRun: [],
 				preInit: [preInit],
+				arguments: ["-c", "roms/pce-config.cfg", "-g", "cga", "-r"],
 				noInitialRun: false,
 				print: function(text) {
 					text = Array.prototype.slice.call(arguments).join(' ');
