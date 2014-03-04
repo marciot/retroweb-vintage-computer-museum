@@ -205,19 +205,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<!-- loadResource(emuPlatform + "/" + emuPlatform + ".js.gz", true); -->
 		</script>
 		
-		<!-- Google Analytics (change this to your own site! )-->
-		
-		<script>
-		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-		  ga('create', 'UA-47856782-1', 'freeshell.org');
-		  ga('send', 'pageview');
-		</script>
-		
+		<!-- The following will enable Google Analytics if the .include file exists -->
+		<!--#include virtual="private/googleAnalytics.include"-->
 		<!-- End of Google Analytics -->
+		
+		<script type="text/javascript">
+			if (typeof ga == 'function') {
+				gaTrackEvent = function (category, action, label, value) {
+					console.log("Logging event: " + category);
+					ga('send', 'event', category, action, label, value);
+				};
+			} else {
+				gaTrackEvent = function (category, action, label, value) {};
+			}
+		</script>
 		
 	</body>
 </html>

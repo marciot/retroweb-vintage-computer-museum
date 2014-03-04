@@ -32,19 +32,20 @@ function addNavigatorIcon (type, title, value) {
 			img.src = "icons/floppy.png";
 			img.id = value;
 			var url = rewriteRelativeUrl(value);
-			img.ondblclick = function () {mountUrl(url, "fd1.disk");}
+			img.ondblclick = function () {gaTrackEvent("disk-mounted", title); mountUrl(url, "fd1.disk");}
 			icon.id = value;
 			break;
 		case "boot-hd":
 			img.src = "icons/boot-hd.png";
 			img.id = value;
 			var url = rewriteRelativeUrl(value);
-			img.ondblclick = function () {mountUrl(url,"hd1.img", true);}
+			img.ondblclick = function () {gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1.img", true);}
 			icon.id = value;
 			break;
 		case "boot-rom":
 			img.src = "icons/boot-rom.png";
 			img.ondblclick = function () {
+				gaTrackEvent("disk-mounted", title);
 				if (typeof emulatorBootFromRom == 'function') {
 					emulatorBootFromRom();
 				} else {
@@ -63,7 +64,7 @@ function addNavigatorIcon (type, title, value) {
 		case "document":
 			img.src = "icons/document.png";
 			var url = rewriteRelativeUrl(value);
-			img.ondblclick = function () {showHtmlViewer(url);}
+			img.ondblclick = function () {gaTrackEvent("document-read", title); showHtmlViewer(url);}
 			break;
 		case "action":
 			switch (value) {
@@ -76,6 +77,7 @@ function addNavigatorIcon (type, title, value) {
 				case "local-floppy":
 					img.src = "icons/upload.png";
 					img.ondblclick = function () {
+						gaTrackEvent("disk-mounted", "local-floppy");
 						openFileUploader ("Select floppy disk image", doFloppyUpload);
 					};
 					break;

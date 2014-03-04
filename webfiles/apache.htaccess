@@ -39,3 +39,8 @@ SetOutputFilter DEFLATE
 ###############################################################
 
 AddEncoding gzip gz
+
+###############################################################
+# Enable server side includes (used for Google Analytics)
+###############################################################
+AddHandler server-parsed .html
