@@ -42,6 +42,16 @@ function addNavigatorIcon (type, title, value) {
 			img.ondblclick = function () {mountUrl(url,"hd1.img", true);}
 			icon.id = value;
 			break;
+		case "boot-rom":
+			img.src = "icons/boot-rom.png";
+			img.ondblclick = function () {
+				if (typeof emulatorBootFromRom == 'function') {
+					emulatorBootFromRom();
+				} else {
+					alert("This machine does not support booting from ROM");
+				}
+			}
+			break;
 		case "hyperlink":
 			if (value.indexOf("http://") === 0) {
 				img.src = "icons/world.png";

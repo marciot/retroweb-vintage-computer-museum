@@ -17,8 +17,46 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-var emuPlatform
-var needRun;
+function EmulatorState() {
+	this.running = false;
+	this.gotRom = false;
+	this.gotBootMedia = false;
+	
+	addRunDependency("emu-roms");
+	addRunDependency("boot-disk");
+	popups.open("popup-rom-missing");
+	
+	this.runCalled = function() {
+		this.running = true;
+	}
+	this.romsLoaded = function() {
+		this.gotRoms = true;
+		removeRunDependency("emu-roms");
+		popups.close("popup-rom-missing");
+		popups.open("popup-ready-to-use");
+	}
+	this.bootMediaLoaded = function() {
+		removeRunDependency("boot-disk");
+		popups.close("popup-ready-to-use");
+	}
+	this.requestRestart = function() {
+		if (!this.romsLoaded || this.gotBootMedia) {
+			return;
+		}
+		if(!this.running) {
+			run();
+		} else {
+			emulatorReset();
+		}
+	}
+	this.isRunning = function() {
+		return this.running;
+	}
+}
+
+var emulatorState;
+var romFileName;
+var emuPlatform;
 
 function setPlatform(platform) {
 	emuPlatform = platform;
@@ -35,13 +73,12 @@ function preInit() {
 			loadConfig(JSON.parse(content))
 		}
 	);
-	addRunDependency("boot-disk");
-	needRun = true;
+	emuState = new EmulatorState();
 }
 
 function preRun() {
 	emulatorPreRun();
-	needRun = false;
+	emuState.runCalled();
 }
 
 function loadConfig(json) {
@@ -75,12 +112,10 @@ function loadConfig(json) {
 		FS.createPreloadedFile (parent, name, url, 1, 1, null, function() {alert("Failed to load " + url);});
 		console.log("Preloading " + url + " on " + parent + name);
 	}
-	waitingForRoms = platformConfig["ask-for-rom"];
-	if (waitingForRoms) {
-		 popups.open("popup-rom-missing");
-		 addRunDependency();
+	if (!platformConfig["ask-for-rom"]) {
+		emuState.romsLoaded();
 	} else {
-		popups.open("popup-ready-to-use");
+		romFileName = platformConfig["ask-for-rom"];
 	}
 	removeRunDependency();
 }
@@ -89,10 +124,9 @@ function mountUrl(url, where, isBootable) {
 	console.log("Mounting " + url + " on " + where);
 	showStatus("Downloading...");
 	var onLoad = function () {
-		if (needRun) {
+		if (!emuState.isRunning()) {
 			if (isBootable) {
-				removeRunDependency("boot-disk");
-				popups.close("popup-ready-to-use");
+				emuState.bootMediaLoaded();
 			}
 		} else {
 			emulatorMountDisk(where);
@@ -163,14 +197,13 @@ function doFloppyUpload (file) {
 function doRomUpload (file) {
 	if(!file) return;
 	popups.close("popup-uploader");
-	doLocalUpload(file, waitingForRoms, function() {
-		if (waitingForRoms) {
-			waitingForRoms = false;
-			removeRunDependency();
-		}
-		popups.close("popup-rom-missing");
-		popups.open("popup-ready-to-use");
+	doLocalUpload(file, romFileName, function() {
+		emuState.romsLoaded();
 	});
+}
+
+function restartComputer() {
+	emuState.requestRestart();
 }
 
 /* This object manages popup dialog boxes. Since our pop-up boxes are translucent,

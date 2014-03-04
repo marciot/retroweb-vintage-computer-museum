@@ -30,13 +30,7 @@ function emulatorMountDisk(disk) {
 }
 
 function emulatorReset() {
-	if(waitingForRoms) return;
-	if(shouldRunNow == false) {
-		shouldRunNow = true;
-		run();
-	} else {
-		macSetMessage ("emu.reset", "");
-	}
+	macSetMessage ("emu.reset", "");
 }
 
 function macSetMessage(msg,val) {

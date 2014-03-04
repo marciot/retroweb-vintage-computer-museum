@@ -27,13 +27,18 @@ function emulatorMountDisk(disk) {
 	pcSetMessage ("emu.disk.insert", "0:" + disk);
 }
 
+// Note: this function should not be called directly. Call
+// restartComputer() instead since it properly deals the
+// with the case where the computer has not begun running.
 function emulatorReset() {
-	if(waitingForRoms) return;
-	if(shouldRunNow == false) {
-		shouldRunNow = true;
-		run();
+	pcSetMessage ("emu.reset", "");
+}
+
+function emulatorBootFromRom() {
+	if(emuState.isRunning()) {
+		alert("Cannot change the boot media once the computer has already restarted. Please reload the page to reset");
 	} else {
-		pcSetMessage ("emu.reset", "");
+		emuState.bootMediaLoaded();
 	}
 }
 
