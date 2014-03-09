@@ -54,12 +54,17 @@ function addNavigatorIcon (type, title, value) {
 			}
 			break;
 		case "hyperlink":
-			if (value.indexOf("http://") === 0) {
-				img.src = "icons/world.png";
+			if (endsWith(value, ".json")) {
+				if (value.indexOf("http://") === 0) {
+					img.src = "icons/world.png";
+				} else {
+					img.src = "icons/folder.png";
+				}
+				img.ondblclick = function () {fetchNavigatorUrl(value);}
 			} else {
-				img.src = "icons/folder.png";
+				img.src = "icons/html-doc.png";
+				img.ondblclick = function () {window.open(value);}
 			}
-			img.ondblclick = function () {fetchNavigatorUrl(value);}
 			break;
 		case "document":
 			img.src = "icons/document.png";
