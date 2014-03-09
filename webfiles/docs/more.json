@@ -5,10 +5,11 @@
 		"index" : {
 			"*" : [
 				["document",  "User's Guide",           "users-guide.html"],
-				["document",  "Technical Info",         "tech-info.html"],
+				["document",  "PCE Technical Info",     "tech-info.html"],
+				["document",  "LICENSE",                "../../LICENSE.txt"],
 				["action", 	  "Load ROM...", 	        "load-rom"],
 				["action", 	  "Local floppy...", 	    "local-floppy"],
-				["document",  "LICENSE",                "../../LICENSE.txt"]
+				["action",    "Enter RetroWeb URL...",  "enter-url"]
 			]
 		}
 	}

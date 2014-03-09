@@ -3,11 +3,10 @@
 		"version" : 1.0,
 		"index" : {
 			"*" : [
-			    ["document", "About the computer",          "about.html"],
 				["document",  "Copyrights & Fair Use",      "copyrights.html"],
-				["hyperlink", "Boot Disks",                 "../private/boot-disks.json"],
-				["hyperlink", "More Software!",             "retroweb.json"],
-				["hyperlink", "Documentation & Extras",     "more/index.json"]
+				["hyperlink", "Thanks to...",               "thanks.json"],
+				["hyperlink", "Boot Disks & Software",      "../private/boot-disks.json"],
+				["hyperlink", "Docs & Extras",              "more.json"]
 			]
 		}
 	}

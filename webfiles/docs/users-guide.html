@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <html>
 	<body>
-		<link rel="stylesheet" type="text/css" href="../../docs.css">
+		<link rel="stylesheet" type="text/css" href="../docs.css">
 		
 		<div class="toc">
 			<h2>Table of Contents</h2>
@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				<li><a href="#source">Source Code and Redistribution</a></li>
 				<li><a href="#basic">Basic Actions</a></li>
 				<li><a href="#advanced">Advanced Actions</a></li>
+				<li><a href="#retroweb">What is the RetroWeb?</a></li>
+				<li><a href="#retroweb-hosting">Hosting RetroWeb content</a></li>
 				<li><a href="#credits">Full Credits</a></li>
 			</ul>
 		</div>
@@ -46,16 +48,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				and the simulated computer.
 			</p>
 			
-			<h3>Restart Computer</h3>
-			<p>
-				This action restarts the emulated computer. It is
-				useful if the computer has crashed. Refreshing the
-				webpage also restarts the computer, but you will
-				have to wait for the disk images to download from
-				the server again and changes to the local disks
-				will be lost. The Restart action is much faster
-				and will preserve your changes.
-			</p>
 			<h3>Go Back</h3>
 			<p>
 				This action takes you back to your previous location
@@ -65,6 +57,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<p>
 				This action takes you back to the starting location
 				in the navigator.
+			</p>
+			<h3>Restart Computer</h3>
+			<p>
+				This action restarts the emulated computer. It is
+				useful if the computer has crashed. Refreshing the
+				webpage also restarts the computer, but you will
+				have to wait for the disk images to download from
+				the server again and changes to the local disks
+				will be lost. The Restart action is much faster
+				and will preserve your changes.
 			</p>
 			
 			<a id="source"><h2>Advanced Actions</h2></a>
@@ -93,15 +95,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				in files that must be unpacked and copied into disk
 				images using other tools.
 			</p>
-			<p>
-				If you wish to obtaining software on your own, the
-				following websites will get you started:
-			</p>
-			<ul>
-				<li><a href="http://macintoshgarden.org" target="_new">The Macintosh Garden</a></li>
-				<li><a href="http://www.emaculation.com/doku.php/system_6_hell" target="_new">System 6 Hell</a></li>
-			</ul>
 			
+			<h3>Enter RetroWeb URL</h3>
+			</p>
+				The "Enter RetroWeb URL" icon allows you to enter an URL for a RetroWeb
+				JSON index file. These are similar to web URLs, but must point to a
+				specially formatteed JSON file. This feature will not be very useful
+				until others begin to host content for this webapp.
+			</p>
+
+			<a id="retroweb"><h2>What is the RetroWeb?</h2></a>
+			<p>
+				The RetroWeb is the name I coined for a hyper-linked collection
+				of content for use with an emulated computer. A RetroWeb browser,
+				by extension, is an emulator running alongside an interface
+				that allows you to navigate that content. This webapp, which
+				curiously runs inside your web browser, is thus a RetroWeb browser.
+				It allows you to surf a specially curated portion of the web
+				related to this emulated computer.
+			</p>
+			<p>
+				Although computer emulators already exist in various forms and there are
+				many web sites devoted to the preservation of historical software, I
+				believe this webapp represents the first time that the means to find
+				software and documentation has been put right next to the means to interact
+				with it.
+			</p>
+			
+			<a id="retroweb-hosting"><h2>Hosting RetroWeb Content</h2></a>
+			<p>
+				This webapp makes use of <a href="http://www.json.org/">JSON</a> and
+				<a href="http://enable-cors.org/">CORS</a> technologies to allow for the
+				dynamic hyper-linking of resources, thus providing the "web" part of
+				RetroWeb.
+			</p>
+			<p>
+				If you own a website, you can use this functionality to host
+				your own resources for this emulator. By publishing an index file
+				and implementing CORS, others will be allowed to link from their
+				content to yours.
+			</p>
+
 			<a id="credits"><h2>Full Credits</h2></a>
 			<p>
 				<strong>PCE (PC Emulator):</strong> <a target="_new" href="http://www.hampa.ch/pce/">Hampa Hug</a><br>
@@ -109,6 +143,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				<strong>Emscripten and LLVM:</strong> The <a target="_new"  href="https://github.com/kripken/emscripten">Emscripten</a> and <a href="http://llvm.org/">LLVM</a> teams for the cross-compilers.<br>
 				<strong>Mac Photo:</strong> <a target="_new"  href="http://www.macmothership.com/gallery/gallerytextindex.html">The Mothership</a><br>
 				<strong>IBM PC Photo:</strong> <a target="_new"  href="http://www-03.ibm.com/press/de/de/photos.wss?topic=7">http://www-03.ibm.com/press/de/de/photos.wss?topic=7</a><br>				
+				<strong>Atari ST Photo:</strong> <a target="_new"  href="http://en.wikipedia.org/wiki/File:Atari_1040STf.jpg">http://en.wikipedia.org/wiki/File:Atari_1040STf.jpg</a><br>								
 				<strong>Icons:</strong> Everaldo Coelho, for the <a target="_new"  href="http://commons.wikimedia.org/wiki/Crystal_Clear">Crystal Clear</a> icon set used in the navigator.<br>
 				<strong>Apple Computers:</strong> For the machine I grew up with and which continues to be my hobby.
 			</p>
