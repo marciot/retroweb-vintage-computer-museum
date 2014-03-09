@@ -15,10 +15,18 @@
 		"pce-macplus" : {
 			"mkdir"       : [ "/roms" ],
 			"mount-files" : [
-				[             "/roms",    "pce-config.cfg",   "pce-macplus/pce-config.cfg" ],
-				[             "/roms",    "mac-plus-3.rom",   "roms/mac-plus-3.rom" ],
-				[             "/roms",    "macplus-pcex.rom", "roms/macplus-pcex.rom" ]
+				[             "/roms",    "pce-config.cfg",         "pce-macplus/pce-config.cfg" ],
+				[             "/roms",    "mac-plus-3.rom",         "roms/mac-plus-3.rom" ],
+				[             "/roms",    "macplus-pcex.rom",       "roms/macplus-pcex.rom" ]
+			]
+		},
+		"pce-atarist" : {
+			"mkdir"       : [ "/roms" ],
+			"mount-files" : [
+				[             "/roms",    "pce-config.cfg",         "pce-atarist/pce-config.cfg" ],
+				[             "/roms",    "tos-1.04-us.rom",        "roms/tos-1.04-us.rom" ]
 			]
 		}
+
 	}
 }
