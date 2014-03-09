@@ -68,10 +68,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 							<input type="button" value="Cancel" onclick="popups.close('popup-uploader');">
 						</form>
 					</div>
+					
+					<div id="popup-mouse-center" class="popup">
+						<h1>Wait for the desktop to appear then double-click the icon.</h1>
+						<img src="icons/sunny.png" id="popup-mouse-center-target" onclick="popups.close('popup-mouse-center');">
+					</div>
 				</div>
 								
 				<script type="text/javascript">						
 					var popups = new PopupManager();
+					popups.add("popup-mouse-center");
 					popups.add("popup-rom-missing");
 					popups.add("popup-ready-to-use");
 					popups.add("popup-status");
@@ -98,7 +104,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 										<select id="platform-select" onchange="choosePlatform()">
 											<option>Change computer type...</option>
 											<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
-											<option value="pce-ibmpc">IBM Personal Computer (pce/ibmpc)</option>
+											<option value="pce-atarist">Atari 1040ST (pce/atarist)</option>
+											<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
 										</select>
 									</td>
 									<td class="nav-btn">

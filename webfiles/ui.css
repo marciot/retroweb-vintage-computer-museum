@@ -98,6 +98,24 @@ DIV.popup P {
 	margin-top:   -95px;
 }
 
+#popup-mouse-center {
+	padding:      20px;
+	width:       400px;
+	height:      200px;
+	margin-left: -220px; /* -0.5 * width - padding */
+	margin-top:  -120px; /* -0.5 * height - padding */
+}
+
+#popup-mouse-center-target {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width:       64px;
+	height:      64px;
+	margin-left: -32px; /* -0.5 * width - padding */
+	margin-top:  -32px; /* -0.5 * height - padding */
+}
+
 /* Sidebar and sidebar widgets */
 
 #sidepanel {
