@@ -191,8 +191,9 @@ function rewriteRelativeUrl(url) {
 	} else if (baseURL != undefined) {
 		rewritten = baseURL + url;
 	}
-	while(rewritten.indexOf("..") != -1) {
-		rewritten = rewritten.replace(/[^/]+\/\.\.\//,'');
+	var dotdot = /[^/]+\/\.\.\//;
+	while(rewritten.match(dotdot)) {
+		rewritten = rewritten.replace(dotdot,'');
 	}
 	return rewritten;
 }
