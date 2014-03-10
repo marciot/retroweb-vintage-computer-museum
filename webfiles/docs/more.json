@@ -1,12 +1,11 @@
 {
 	"retroweb" : {
 		"version" : 1.0,
-		"platform" : "pce-macplus",
 		"index" : {
 			"*" : [
 				["document",  "User's Guide",           "users-guide.html"],
 				["document",  "PCE Technical Info",     "tech-info.html"],
-				["document",  "LICENSE",                "../../LICENSE.txt"],
+				["document",  "LICENSE",                "../LICENSE.txt"],
 				["action", 	  "Load ROM...", 	        "load-rom"],
 				["action", 	  "Local floppy...", 	    "local-floppy"],
 				["action",    "Enter RetroWeb URL...",  "enter-url"]
