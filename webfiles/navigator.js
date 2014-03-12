@@ -42,6 +42,13 @@ function addNavigatorIcon (type, title, value) {
 			img.ondblclick = function () {gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1.img", true);}
 			icon.id = value;
 			break;
+		case "boot-floppy":
+			img.src = "icons/boot-fd.png";
+			img.id = value;
+			var url = rewriteRelativeUrl(value);
+			img.ondblclick = function () {gaTrackEvent("disk-mounted", title); mountUrl(url,"fd1.disk", true);}
+			icon.id = value;
+			break;
 		case "boot-rom":
 			img.src = "icons/boot-rom.png";
 			img.ondblclick = function () {
