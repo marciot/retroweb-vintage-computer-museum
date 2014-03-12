@@ -26,7 +26,13 @@
 				[             "/roms",    "pce-config.cfg",         "pce-atarist/pce-config.cfg" ],
 				[             "/roms",    "tos-1.04-us.rom",        "roms/tos-1.04-us.rom" ]
 			]
+		},
+		"pce-rc759" : {
+			"mkdir"       : [ "/roms" ],
+			"mount-files" : [
+				[             "/roms",    "pce-config.cfg",         "pce-rc759/pce-config.cfg" ],
+				[             "/roms",    "rc759-1-2.1.rom",        "roms/rc759-1-2.1.rom" ]
+			]
 		}
-
 	}
 }

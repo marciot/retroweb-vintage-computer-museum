@@ -88,7 +88,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 						var newPlatform = "platform=" + platformMenu.options[platformMenu.selectedIndex].value;
 						var newPage = new String(window.location);
 						if(newPage.indexOf("?") != -1) {
-							newPage = newPage.replace(/platform=[a-zA-Z-]+/i, newPlatform);
+							newPage = newPage.replace(/platform=[a-zA-Z0-9-]+/i, newPlatform);
 						} else {
 							newPage = newPage + "?" + newPlatform;
 						}
@@ -106,6 +106,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 											<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
 											<option value="pce-atarist">Atari 1040ST (pce/atarist)</option>
 											<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
+											<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
 										</select>
 									</td>
 									<td class="nav-btn">
