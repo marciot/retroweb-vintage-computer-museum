@@ -3,8 +3,9 @@
 		"version" : 1.0,
 		"index" : {
 			"*" : [
-				["hyperlink", "Hampa Hug's PCE",            "http://www.hampa.ch/pce/"],
-				["hyperlink", "James Friend's PCE.js",      "http://jamesfriend.com.au/pcejs-classic-mac-os-browser"]
+				["document",  "Thanks to...",                 "credits.html"],
+				["hyperlink", "Hampa Hug for PCE",            "http://www.hampa.ch/pce/"],
+				["hyperlink", "James Friend for PCE.js",      "http://jamesfriend.com.au/pcejs-classic-mac-os-browser"]
 			]
 		}
 	}
