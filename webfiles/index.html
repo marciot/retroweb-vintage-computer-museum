@@ -96,40 +96,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			</script>
 				
 			<div class="sidepanel" id="sidepanel">
-				<div id="platform" class="sidepanel-widget">
-					<table>
-						<tr class="spacer"> </tr>
-						<tr>
-							<td>
-								<select id="platform-select" onchange="choosePlatform()">
-									<option>Change computer type...</option>
-									<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
-									<option value="pce-atarist">Atari 1040ST (pce/atarist)</option>
-									<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
-									<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
-								</select>
-							</td>
-							<td class="nav-btn">
-								<img class="btn-icon" src="icons/back.png" onclick="navGoBack()"><br>
-								<span class="btn-label">Go Back</span>
-							</td>
-							<td class="nav-btn">
-								<img class="btn-icon" src="icons/home.png" onclick="navGoHome()"><br>
-								<span class="btn-label">Go Home</span>
-							</td>
-							<td class="nav-btn">
-								<img class="btn-icon" src="icons/power.png" onclick="restartComputer()"><br>
-								<span class="btn-label">Restart Computer</span>
-							</td>
-						</tr>
-					</table>
-				</div>
-					
-				<div id="navigator-panel">				
-					<h2 class="sidepanel-widget">Double-click an icon to open:</h2>
+				<br>
+				<select id="platform-select" onchange="choosePlatform()" style="float: right;">
+					<option>Change computer type...</option>
+					<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
+					<option value="pce-atarist">Atari 1040ST (pce/atarist)</option>
+					<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
+					<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
+				</select>
+				
+				<table class="nav-buttons">
+					<tr>
+						<td class="nav-btn">
+							<img class="btn-icon" src="icons/back.png" onclick="navGoBack()"><br>
+							<span class="btn-label">Go Back</span>
+						</td>
+						<td class="nav-btn">
+							<img class="btn-icon" src="icons/home.png" onclick="navGoHome()"><br>
+							<span class="btn-label">Go Home</span>
+						</td>
+						<td class="nav-btn">
+							<img class="btn-icon" src="icons/power.png" onclick="restartComputer()"><br>
+							<span class="btn-label">Restart Computer</span>
+						</td>
+					</tr>
+				</table>
+
+				<div id="navigator-panel">
+					<hr>
 					<div class="navigator" id="navigator">
 					</div>
+					<span class="navigator-help">Double-click an icon to open</span>				
 				</div>
+				
 				<div class="sidepanel-widget" id="html-viewer-button">
 					<input type="button" value="Close" onClick="htmlViewerCloseAction();">
 				</div>
@@ -140,7 +139,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					<!--<div class="fade-effect-top"></div>-->
 					<div class="fade-effect-bottom"></div>
 				</div>
+				
+				<span style="visibility: hidden;">
+				This bletcherous hack causes the sidepanel to
+				always expand as far horizontally as it can go.
+				xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+				xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+				</span>
 			</div>
+		
 		</div>
 		
 		<textarea class="emscripten" id="output" rows="8" hidden=1></textarea>

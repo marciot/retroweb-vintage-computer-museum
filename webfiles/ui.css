@@ -26,7 +26,7 @@ DIV.main {
 	user-select: none;
 }
 
-.screen {
+#screen {
 	cursor: none;
 }
 
@@ -109,15 +109,15 @@ DIV.popup P {
 
 /* Emulator selector and navigation buttons */
 
-TR.spacer {
-	height: 50px;
+#platform {
+	vertical-align: top;
 }
 
 #platform-select {
 	margin-right: 10px;
 }
 
-#platform TD {
+.nav-buttons TD {
 	vertical-align: top;
 	font-size: small;
 	font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
@@ -142,6 +142,24 @@ TR.spacer {
 }
 
 /* RetroWeb Navigator sidebar */
+
+SPAN.padding {
+	visibility: hidden;
+}
+
+.navigator-help {
+	visibility: hidden;
+	font-size: small;
+	font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+}
+
+.navigator:hover ~.navigator-help{
+    visibility: visible;
+}
+
+#navigator-panel {
+	text-align: center;
+}
 
 #navigator .icon {
 	float: left;
