@@ -21,81 +21,67 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 function addNavigatorIcon (type, title, value) {
 	console.log("Adding navigator icon: type = " + type + " title = " + title);
 	
-	var img = document.createElement("img");
 	var label = document.createTextNode(title);
-	var icon = document.createElement("div");
+	var icon = document.createElement("li");	
 	
-	icon.className = "icon";	
-	
+	icon.className = type;
 	switch(type) {
 		case "floppy":
-			img.src = "icons/floppy.png";
-			img.id = value;
 			var url = rewriteRelativeUrl(value);
-			img.ondblclick = function () {gaTrackEvent("disk-mounted", title); mountUrl(url, "fd1.disk");}
-			icon.id = value;
+			icon.ondblclick = function ()
+				{gaTrackEvent("disk-mounted", title); mountUrl(url, "fd1.disk");}
 			break;
 		case "boot-hd":
-			img.src = "icons/boot-hd.png";
-			img.id = value;
 			var url = rewriteRelativeUrl(value);
-			img.ondblclick = function () {gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1.img", true);}
-			icon.id = value;
+			icon.ondblclick = function ()
+				{gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1.img", true);}
 			break;
 		case "boot-floppy":
-			img.src = "icons/boot-fd.png";
-			img.id = value;
 			var url = rewriteRelativeUrl(value);
-			img.ondblclick = function () {gaTrackEvent("disk-mounted", title); mountUrl(url,"fd1.disk", true);}
-			icon.id = value;
+			icon.ondblclick = function ()
+				{gaTrackEvent("disk-mounted", title); mountUrl(url,"fd1.disk", true);}
 			break;
 		case "boot-rom":
-			img.src = "icons/boot-rom.png";
-			img.ondblclick = function () {
-				gaTrackEvent("disk-mounted", title);
-				if (typeof emulatorBootFromRom == 'function') {
-					emulatorBootFromRom();
-				} else {
-					alert("This machine does not support booting from ROM");
-				}
-			}
+			icon.ondblclick = function ()
+				{gaTrackEvent("disk-mounted", title); emulatorBootFromRom();}
 			break;
 		case "hyperlink":
 			if (endsWith(value, ".json")) {
 				if (value.indexOf("http://") === 0) {
-					img.src = "icons/world.png";
+					icon.className = "world";
 				} else {
-					img.src = "icons/folder.png";
+					icon.className = "folder";
 				}
-				img.ondblclick = function () {fetchNavigatorUrl(value);}
+				icon.ondblclick = function () {fetchNavigatorUrl(value);}
 			} else {
-				img.src = "icons/html-doc.png";
-				img.ondblclick = function () {window.open(value);}
+				icon.className = "html-doc";
+				icon.ondblclick = function () {window.open(value);}
 			}
 			break;
 		case "document":
-			img.src = "icons/document.png";
 			var url = rewriteRelativeUrl(value);
-			img.ondblclick = function () {gaTrackEvent("document-read", title); showHtmlViewer(url);}
+			icon.ondblclick = function ()
+				{gaTrackEvent("document-read", title); showHtmlViewer(url);}
 			break;
 		case "action":
+			icon.className = value;
 			switch (value) {
 				case "load-rom":
-					img.src = "icons/rom.png";
-					img.ondblclick = function () {
+					icon.className = "rom";
+					icon.ondblclick = function () {
 						openFileUploader ("Select a ROM image", doRomUpload);
 					};
 					break;
 				case "local-floppy":
-					img.src = "icons/upload.png";
-					img.ondblclick = function () {
+					icon.className = "upload";
+					icon.ondblclick = function () {
 						gaTrackEvent("disk-mounted", "local-floppy");
 						openFileUploader ("Select floppy disk image", doFloppyUpload);
 					};
 					break;
 				case "enter-url":
-					img.src = "icons/world.png";
-					img.ondblclick = promptNavigatorUrl;
+					icon.className = "world";
+					icon.ondblclick = promptNavigatorUrl;
 					break;
 				default:
 					console.log("Undefined action: value = " + value);
@@ -107,7 +93,6 @@ function addNavigatorIcon (type, title, value) {
 			return;
 	}
 
-	icon.appendChild(img);
 	icon.appendChild(label);
 		
 	document.getElementById("navigator").appendChild(icon);

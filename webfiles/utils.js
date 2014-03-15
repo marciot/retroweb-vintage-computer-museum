@@ -70,13 +70,13 @@ function loadResource(filename, async){
 function toggleElementDisplay (id, showIt) {
 	var element = document.getElementById(id);
 	if(!element) {
-		alert("toggleElementDisplay: No element " + id);
+		throw new Exception("toggleElementDisplay: No element " + id);
 		return;
 	}
 	if(showIt) {
-		document.getElementById(id).style.display = 'block';
+		element.style.display = 'block';
 	} else {
-		document.getElementById(id).style.display = 'none';
+		element.style.display = 'none';
 	}
 }
 
@@ -109,4 +109,87 @@ function HintManager(prefix) {
 		thisHint.style.display = 'none';
 		nextHint.style.display = 'block';
 	}
+}
+
+var keyQueue = [];
+var strKey = "~!@#$%^&*()_+{}|:<>?\"";
+var strVal = "`1234567890-=[]\;,./\'";
+
+function sendKeyEvent() {
+	var next = keyQueue.shift();
+	simulateKeyAction(next[0],next[1],next[2],next[3]);
+	if(keyQueue.length) {
+		setTimeout(sendKeyEvent, 10);
+	}
+}
+
+function isUpperCase(c) {
+	return c === c.toUpperCase() && c !== c.toLowerCase();
+}
+
+/* This function allows you to send keycodes to the emulator
+ */
+function typeString(str) {
+	var shiftDown = false;
+	for(i = 0; i<str.length; i++) {
+		var c = str.charAt(i);
+		
+		if(c == '\n') {
+			cK = '\x0d';
+			c = '\n';
+			shifted = false;
+		} else {
+			var mapped = strKey.indexOf(c);
+			var shifted = false;
+			if (mapped != -1) {
+				cK = strVal.charAt(mapped);
+				shifted = true;
+			} else {
+				var cK = c.toUpperCase()
+				shifted = isUpperCase(c);
+			}
+		}
+		if(shifted && !shiftDown) {
+			keyQueue.push(['keydown','\x10',0,false]);
+			shiftDown = true;
+		} else if(!shifted && shiftDown) {
+			keyQueue.push(['keyup','\x10',0,false]);
+			shiftDown = false;
+		}
+		keyQueue.push(['keydown',cK,c,shiftDown]);
+		keyQueue.push(['keypress',cK,c,shiftDown]);
+		keyQueue.push(['keyup',cK,c,shiftDown]);
+	}
+	if(shiftDown) {
+		keyQueue.push(['keyup','\x10',0,false]);
+		shiftDown = false;
+	}
+	if(keyQueue.length) {
+		setTimeout(sendKeyEvent, 10);
+	}
+}
+
+function simulateKeyAction(type, keyCode, charCode, shifted) {
+    /*var evt       = document.createEvent('KeyboardEvent');
+	
+    // Chromium Hack
+    Object.defineProperty(evt, 'keyCode', {get : function() {return keyCode;}});
+    Object.defineProperty(evt, 'which',   {get : function() {return keyCode;}});
+
+    if (evt.initKeyboardEvent) {
+        evt.initKeyboardEvent(type, true, true, document.defaultView, false, false, false, false, keyCode, charCode);
+    } else {
+        evt.initKeyEvent(type, true, true, document.defaultView, false, false, false, false, keyCode, 0);
+    }
+
+    if (evt.keyCode !== keyCode) {
+        alert("keyCode mismatch " + evt.keyCode + "(" + evt.which + ")");
+    }
+	
+    if (evt.charCode !== charCode) {
+        alert("charCode mismatch " + evt.charCode + "(" + evt.which + ")");
+    }*/
+	
+	var evt = window.crossBrowser_initKeyboardEvent(type, {"key": keyCode, "char": charCode, "shiftKey" : shifted});
+    document.dispatchEvent(evt);
 }

@@ -161,20 +161,78 @@ SPAN.padding {
 	text-align: center;
 }
 
-#navigator .icon {
+#navigator LI {
 	float: left;
 	margin: 10px; /* Spacing between icons */
 	text-align: center;
 	font-size: 15px;
 	font-family: Tahoma, Geneva, sans-serif;
+	list-style-type: none;
+	
+	/* Add ellipses to oversized icon labels */
+	max-width: 200px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-#navigator .icon IMG {
+#navigator LI:before {
+	content: '';
 	margin-left:auto;
 	margin-right:auto;
 	width:  60px;
 	height: 60px;
 	display: block;
+}
+
+#navigator LI.boot-fd:before {
+	background: url('icons/boot-fd.png');
+	background-size: 60px 60px;
+}
+
+#navigator LI.boot-hd:before {
+	background: url('icons/boot-hd.png');
+	background-size: 60px 60px;
+}
+
+#navigator LI.boot-rom:before {
+	background: url('icons/boot-rom.png');
+	background-size: 60px 60px;
+}
+
+#navigator LI.document:before {
+	background: url('icons/document.png');
+	background-size: 60px 60px;
+}
+
+#navigator LI.floppy:before {
+	background: url('icons/floppy.png');
+	background-size: 60px 60px;
+}
+
+#navigator LI.folder:before {
+	background: url('icons/folder.png');
+	background-size: 60px 60px;
+}
+
+#navigator LI.html-doc:before {
+	background: url('icons/html-doc.png');
+	background-size: 60px 60px;
+}
+
+#navigator LI.rom:before {
+	background: url('icons/rom.png');
+	background-size: 60px 60px;
+}
+
+#navigator LI.upload:before {
+	background: url('icons/upload.png');
+	background-size: 60px 60px;
+}
+
+#navigator LI.world:before {
+	background: url('icons/world.png');
+	background-size: 60px 60px;
 }
 
 /* HTML viewer sidebar */
