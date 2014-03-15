@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <html>
 	<head>
+		<link rel="stylesheet" type="text/css" href="resizing-layout.css">
 	    <link rel="stylesheet" type="text/css" href="ui.css">
 		<script type="text/javascript" src="ui.js"></script>
 		<script type="text/javascript" src="utils.js"></script>
@@ -25,15 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		<title>RetroWeb Browser</title>
 	</head>
 	<body>
-		<div id="main">
-				<div id="background">
-				</div>
+		<div class="main">
+			<div class="background" id="background">
+				<!-- Main rendering canvas for emulator: -->
 				
-				<div id="screen-area">
-
-					<!-- Main rendering canvas for emulator: -->
-					
-					<canvas class="emscripten" id="screen" oncontextmenu="event.preventDefault()">
+				<div class="screen">
+					<canvas id="screen" oncontextmenu="event.preventDefault()">
 					</canvas>
 					
 					<!-- Pop-up windows that overlay the screen area: -->
@@ -74,72 +72,76 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 						<img src="icons/sunny.png" id="popup-mouse-center-target" onclick="popups.close('popup-mouse-center');">
 					</div>
 				</div>
+			</div>
 								
-				<script type="text/javascript">						
-					var popups = new PopupManager();
-					popups.add("popup-mouse-center");
-					popups.add("popup-rom-missing");
-					popups.add("popup-ready-to-use");
-					popups.add("popup-status");
-					popups.add("popup-uploader");
-					
-					function choosePlatform() {
-						var platformMenu = document.getElementById('platform-select');
-						var newPlatform = "platform=" + platformMenu.options[platformMenu.selectedIndex].value;
-						var newPage = new String(window.location);
-						if(newPage.indexOf("?") != -1) {
-							newPage = newPage.replace(/platform=[a-zA-Z0-9-]+/i, newPlatform);
-						} else {
-							newPage = newPage + "?" + newPlatform;
-						}
-						window.location = newPage;
-					}
-				</script>
+			<script type="text/javascript">						
+				var popups = new PopupManager();
+				popups.add("popup-mouse-center");
+				popups.add("popup-rom-missing");
+				popups.add("popup-ready-to-use");
+				popups.add("popup-status");
+				popups.add("popup-uploader");
 				
-				<div id="sidepanel">
-						<div id="platform">
-							<table style="width:90%;">
-								<tr>
-									<td>
-										<select id="platform-select" onchange="choosePlatform()">
-											<option>Change computer type...</option>
-											<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
-											<option value="pce-atarist">Atari 1040ST (pce/atarist)</option>
-											<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
-											<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
-										</select>
-									</td>
-									<td class="nav-btn">
-										<img class="btn-icon" src="icons/back.png" onclick="navGoBack()"><br>
-										<span class="btn-label">Go Back</span>
-									</td>
-									<td class="nav-btn">
-										<img class="btn-icon" src="icons/home.png" onclick="navGoHome()"><br>
-										<span class="btn-label">Go Home</span>
-									</td>
-									<td class="nav-btn">
-										<img class="btn-icon" src="icons/power.png" onclick="restartComputer()"><br>
-										<span class="btn-label">Restart Computer</span>
-									</td>
-								</tr>
-							</table>
-						</div>
-						<h2>Double-click an icon to open:</h2>
-						<div id="navigator">
-						</div>
-						<div id="html-viewer-button">
-							<input type="button" value="Close" onClick="htmlViewerCloseAction();">
-						</div>
-						<div id="html-viewer">
-							<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto" src="docs/about.html">
-							</iframe>
-							<div id="html-text-viewer"></div>
-							<!--<div class="fade-effect-top"></div>-->
-							<div class="fade-effect-bottom"></div>
-						</div>
+				function choosePlatform() {
+					var platformMenu = document.getElementById('platform-select');
+					var newPlatform = "platform=" + platformMenu.options[platformMenu.selectedIndex].value;
+					var newPage = new String(window.location);
+					if(newPage.indexOf("?") != -1) {
+						newPage = newPage.replace(/platform=[a-zA-Z0-9-]+/i, newPlatform);
+					} else {
+						newPage = newPage + "?" + newPlatform;
+					}
+					window.location = newPage;
+				}
+			</script>
+				
+			<div class="sidepanel" id="sidepanel">
+				<div id="platform" class="sidepanel-widget">
+					<table>
+						<tr class="spacer"> </tr>
+						<tr>
+							<td>
+								<select id="platform-select" onchange="choosePlatform()">
+									<option>Change computer type...</option>
+									<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
+									<option value="pce-atarist">Atari 1040ST (pce/atarist)</option>
+									<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
+									<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
+								</select>
+							</td>
+							<td class="nav-btn">
+								<img class="btn-icon" src="icons/back.png" onclick="navGoBack()"><br>
+								<span class="btn-label">Go Back</span>
+							</td>
+							<td class="nav-btn">
+								<img class="btn-icon" src="icons/home.png" onclick="navGoHome()"><br>
+								<span class="btn-label">Go Home</span>
+							</td>
+							<td class="nav-btn">
+								<img class="btn-icon" src="icons/power.png" onclick="restartComputer()"><br>
+								<span class="btn-label">Restart Computer</span>
+							</td>
+						</tr>
+					</table>
 				</div>
+					
+				<div id="navigator-panel">				
+					<h2 class="sidepanel-widget">Double-click an icon to open:</h2>
+					<div class="navigator" id="navigator">
+					</div>
+				</div>
+				<div class="sidepanel-widget" id="html-viewer-button">
+					<input type="button" value="Close" onClick="htmlViewerCloseAction();">
+				</div>
+				<div class="html-viewer" id="html-viewer">
+					<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto" src="docs/about.html">
+					</iframe>
+					<div id="html-text-viewer"></div>
+					<!--<div class="fade-effect-top"></div>-->
+					<div class="fade-effect-bottom"></div>
+				</div>
+			</div>
 		</div>
-		
 		
 		<textarea class="emscripten" id="output" rows="8" hidden=1></textarea>
 		

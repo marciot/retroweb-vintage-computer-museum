@@ -261,11 +261,6 @@ function htmlViewerCloseAction() {
 
 function showHtmlViewer(url) {
 	if(url) {
-		document.getElementById("navigator").style.height = "15%";
-		document.getElementById("html-viewer").style.height = "70%";
-		toggleElementDisplay("html-viewer", true);
-		toggleElementDisplay("html-viewer-button", true);
-		
 		if(endsWith(url, '.txt')) {
 			div = document.getElementById("html-text-viewer"); 
 			div.innerHTML = '\n\n\n\n';
@@ -279,9 +274,8 @@ function showHtmlViewer(url) {
 		}
 	} else {
 		document.getElementById("html-iframe").src = "about:blank";
-		document.getElementById("navigator").style.height = "100%";
-		document.getElementById("html-viewer").style.height = "100%";
-		toggleElementDisplay("html-viewer", false);
-		toggleElementDisplay("html-viewer-button", false);
 	}
+	toggleElementDisplay("navigator-panel", !url);
+	toggleElementDisplay("html-viewer", url);
+	toggleElementDisplay("html-viewer-button", url);
 }

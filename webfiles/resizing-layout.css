@@ -16,23 +16,63 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
+.main {
+	position:     relative;
+	width:        100%;
+	height:       100%;
+	
+	max-width:    1450px;
+	margin-left:  auto;
+	margin-right: auto;
+}
+
 .background {
-	width:    1543px;
-	height:   1049px;
-	background:url(background.jpg);
-	background-repeat:no-repeat;
-	background-size:100%;
-	margin-right: -500px;
+	/* Anchor to the top-right of the document */
+	position: absolute;
+	top:      0px;
+	right:    0px;
+	
+	/* Show background below other elements */
+	background-repeat: no-repeat;
+	z-index:  -1
 }
 
 .screen {
-	left:      445px;
-	top:       170px;
-	width:     440px;
-	height:    320px;
+	position: absolute;
+}
+
+.popup {
+	/* Allow centering of popups (see margin formula below) */
+	position: absolute;
+	top:      50%;
+	left:     50%;
 }
 
 .sidepanel {
-	margin:       0;
-	margin-right: 730px;
+	margin-top:   100px;
+	height:        100%;
+}
+
+.navigator {
+	overflow: auto;
+	resize:   vertical;
+}
+
+#html-viewer-button {
+	text-align: left;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
+
+#platform {
+	height:   15%;
+}
+
+.html-viewer {
+	height:   85%;
+}
+
+.html-viewer {
+	height:   70%;
 }

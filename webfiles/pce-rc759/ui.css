@@ -17,21 +17,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#background {
-	position: absolute;
-	top:       -20px;
-	left:        60px;
+.background {
 	width:    1800px;
 	height:    930px;
 	background:url(background.jpg);
 	background-repeat:no-repeat;
 	background-size:100%;
+	margin-right: -275px;
 }
 
-#screen-area {
-	position: absolute;
-	left:      775px;
-	top:       160px;
+.screen {
+	left:      710px;
+	top:       180px;
 	width:     560px;
 	height:    412px;
+}
+
+.sidepanel {
+	margin:       0;
+	margin-right: 925px;
 }
