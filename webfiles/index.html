@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		<title>RetroWeb Browser</title>
 	</head>
 	<body>
-		<div class="main">
+		<div class="main no-select">
 			<div class="background" id="background">
 				<!-- Main rendering canvas for emulator: -->
 				
@@ -79,7 +79,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<table id="ui-buttons" class="ui-buttons">
 				<tr>
 					<td class="ui-btn">
-						<img class="btn-icon" src="icons/file-manager.png" onclick="panels.open('navigator-panel');"><br>
+						<img class="btn-icon" src="icons/file-manager.png" onclick="panels.close('html-viewer'); panels.open('navigator-panel');"><br>
 						<span class="btn-label">Show Navigator</span>
 					</td>
 					<td class="ui-btn">
@@ -136,6 +136,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			panels.add("html-viewer");
 			
 			panels.open("navigator-panel");
+			panels.open("html-viewer");
 			
 			function choosePlatform() {
 				var platformMenu = document.getElementById('platform-select');
@@ -206,7 +207,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		<script type="text/javascript">
 			var emuPlatform = getQueryVariable("platform");
 			if (!emuPlatform) {
-				emuPlatform = "pce-ibmpc";
+				emuPlatform = "pce-macplus";
 			}
 			setPlatform(emuPlatform);
 			

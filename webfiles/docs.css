@@ -17,8 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+.no-select {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 BODY {
-	margin-top: 50px;
+	margin-top: 20px;
 	margin-bottom: 100px;
 }
 
@@ -40,16 +49,45 @@ P.hint {
 	display: none;
 }
 
+DIV.references label {
+	margin-top: 40px;
+	font-weight: bold;
+	color: blue;
+	display: block;
+}
+
+DIV.references input {
+   display: none;
+}
+
+DIV.references input#references + UL {
+	visibility: hidden;
+}
+
+DIV.references input#references:checked + UL {
+	visibility: visible;
+}
+
 SPAN.highlight {
 	text-decoration:underline;
 }
 
 TH {
-	background: Gray;
+	background: #FFCC66;
 }
 
 TD {
-	background: LightGray;
+	background: #FFFF99;
+}
+
+TD.centered {
+  text-align: center;
+}
+
+IMG.inline-icon {
+	height: 1em;
+	width: 1em;
+	vertical-align: text-bottom;
 }
 
 PRE {
@@ -75,4 +113,12 @@ PRE {
 
 .license {
 	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+}
+
+.typedCommand {
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+	white-space: pre-wrap;
 }
