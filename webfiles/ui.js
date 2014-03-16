@@ -257,7 +257,9 @@ function StateSnapshot(id) {
 
 function showHtmlViewer(url) {
 	if(url) {
-		panels.open("html-viewer");
 		document.getElementById("html-iframe").src = url + "?platform=" + getPlatform();
+		panels.open("html-viewer");
+	} else {
+		document.getElementById("html-iframe").src = "about:blank";
 	}
 }
