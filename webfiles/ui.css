@@ -109,21 +109,19 @@ DIV.popup P {
 
 /* Emulator selector and navigation buttons */
 
-#platform {
-	vertical-align: top;
-}
-
 #platform-select {
-	margin-right: 10px;
+	float: right;
+	background: transparent;
+	padding: 5px;
 }
 
-.nav-buttons TD {
+.ui-buttons TD {
 	vertical-align: top;
 	font-size: small;
 	font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
 }
 
-.nav-btn {
+.ui-btn {
 	width: 50px;
 	text-align: center;
 }
@@ -143,22 +141,40 @@ DIV.popup P {
 
 /* RetroWeb Navigator sidebar */
 
-SPAN.padding {
-	visibility: hidden;
-}
-
 .navigator-help {
 	visibility: hidden;
 	font-size: small;
 	font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+	text-align: center;
 }
 
 .navigator:hover ~.navigator-help{
     visibility: visible;
 }
 
-#navigator-panel {
-	text-align: center;
+.title-bar {
+	padding: 5px;
+}
+
+.title-bar IMG {
+	vertical-align: middle;
+	width:  40px;
+	height: 40px;
+}
+
+.sidepanel-window {
+	border-radius: 10px;
+	opacity: 0.85;
+	border-width: 1px;
+	border-style: solid;
+	display: none;
+	padding: 2px;
+	background: white;
+}
+
+#navigator {
+	padding: 0px;
+	overflow: auto;
 }
 
 #navigator LI {
@@ -237,38 +253,28 @@ SPAN.padding {
 
 /* HTML viewer sidebar */
 
-div#html-text-viewer {
-	position: absolute;
-	white-space: pre-wrap;
-	width: 100%;
-	height: 100%;
-	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
-	font-size: small;
-	overflow: auto;
-}
-
 .html-viewer {
-	background: white;
-	opacity: 0.8;
-	display: none;
-	position: relative;
-	padding-bottom: 15px;
+	height: 80%;
 }
 
-iframe#html-iframe {
-	position: absolute;
+#html-iframe {
 	width: 100%;
 	height: 100%;
 }
 
 /* Fancy fade effect for HTML viewer iframe */
 
+.fade-effect {
+	position: relative;
+	height: 90%;
+}
+
 .fade-effect-top {
     position: absolute;
     top: 0;
     left: 0;
     right: 15px;
-    height: 50px;
+    height: 25px;
 	background: linear-gradient(#fff, rgba(255,255,255,0));
 }
 
@@ -277,7 +283,7 @@ iframe#html-iframe {
     bottom: 0;
     left: 0;
     right: 15px;
-    height: 100px;
+    height: 50px;
 	background: linear-gradient(rgba(255,255,255,0),#fff);
 }
 

@@ -255,27 +255,9 @@ function StateSnapshot(id) {
 	return this;
 }
 
-function htmlViewerCloseAction() {
-	showHtmlViewer(false);
-}
-
 function showHtmlViewer(url) {
 	if(url) {
-		if(endsWith(url, '.txt')) {
-			div = document.getElementById("html-text-viewer"); 
-			div.innerHTML = '\n\n\n\n';
-			toggleElementDisplay("html-iframe", false);
-			toggleElementDisplay("html-text-viewer", true);
-			fetchDataFromUrl(url, function(content) {div.innerHTML += content + '\n\n\n\n';});
-		} else {
-			document.getElementById("html-iframe").src = url + "?platform=" + getPlatform();
-			toggleElementDisplay("html-iframe", true);
-			toggleElementDisplay("html-text-viewer", false);
-		}
-	} else {
-		document.getElementById("html-iframe").src = "about:blank";
+		panels.open("html-viewer");
+		document.getElementById("html-iframe").src = url + "?platform=" + getPlatform();
 	}
-	toggleElementDisplay("navigator-panel", !url);
-	toggleElementDisplay("html-viewer", url);
-	toggleElementDisplay("html-viewer-button", url);
 }

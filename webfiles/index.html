@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
+<!DOCTYPE html>
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="resizing-layout.css">
@@ -73,82 +74,81 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					</div>
 				</div>
 			</div>
-								
-			<script type="text/javascript">						
-				var popups = new PopupManager();
-				popups.add("popup-mouse-center");
-				popups.add("popup-rom-missing");
-				popups.add("popup-ready-to-use");
-				popups.add("popup-status");
-				popups.add("popup-uploader");
 				
-				function choosePlatform() {
-					var platformMenu = document.getElementById('platform-select');
-					var newPlatform = "platform=" + platformMenu.options[platformMenu.selectedIndex].value;
-					var newPage = new String(window.location);
-					if(newPage.indexOf("?") != -1) {
-						newPage = newPage.replace(/platform=[a-zA-Z0-9-]+/i, newPlatform);
-					} else {
-						newPage = newPage + "?" + newPlatform;
-					}
-					window.location = newPage;
-				}
-			</script>
+			<br>
+			<table id="ui-buttons" class="ui-buttons">
+				<tr>
+					<td class="ui-btn">
+						<img class="btn-icon" src="icons/file-manager.png" onclick="panels.open('navigator-panel');"><br>
+						<span class="btn-label">Show Navigator</span>
+					</td>
+					<td class="ui-btn">
+						<img class="btn-icon" src="icons/power.png" onclick="restartComputer()"><br>
+						<span class="btn-label">Restart Computer</span>
+					</td>
+				</tr>
+			</table>
 				
 			<div class="sidepanel" id="sidepanel">
-				<br>
-				<select id="platform-select" onchange="choosePlatform()" style="float: right;">
-					<option>Change computer type...</option>
-					<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
-					<option value="pce-atarist">Atari 1040ST (pce/atarist)</option>
-					<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
-					<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
-				</select>
-				
-				<table class="nav-buttons">
-					<tr>
-						<td class="nav-btn">
-							<img class="btn-icon" src="icons/back.png" onclick="navGoBack()"><br>
-							<span class="btn-label">Go Back</span>
-						</td>
-						<td class="nav-btn">
-							<img class="btn-icon" src="icons/home.png" onclick="navGoHome()"><br>
-							<span class="btn-label">Go Home</span>
-						</td>
-						<td class="nav-btn">
-							<img class="btn-icon" src="icons/power.png" onclick="restartComputer()"><br>
-							<span class="btn-label">Restart Computer</span>
-						</td>
-					</tr>
-				</table>
-
-				<div id="navigator-panel">
-					<hr>
+				<div id="navigator-panel" class="sidepanel-window">
+					<div class="title-bar">
+						<select id="platform-select" onchange="choosePlatform()">
+							<option>Change computer type...</option>
+							<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
+							<option value="pce-atarist">Atari 1040ST (pce/atarist)</option>
+							<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
+							<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
+						</select>
+						<img class="btn-icon" src="icons/appbar.close.svg" onclick="panels.close('navigator-panel');">
+						<img class="btn-icon" src="icons/appbar.arrow.left.svg" onclick="navGoBack()">
+						<img class="btn-icon" src="icons/appbar.home.svg" onclick="navGoHome()">
+					</div>
 					<ul class="navigator" id="navigator">
 					</ul>
-					<span class="navigator-help">Double-click an icon to open</span>				
+					<p class="navigator-help">Double-click an icon to open</p>
 				</div>
 				
-				<div class="sidepanel-widget" id="html-viewer-button">
-					<input type="button" value="Close" onClick="htmlViewerCloseAction();">
+				<div id="html-viewer" class="html-viewer sidepanel-window">
+					<div class="title-bar">
+						<img class="btn-icon" src="icons/appbar.close.svg" onclick="panels.close('html-viewer');">
+					</div>
+					<div class="fade-effect">
+						<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto" src="docs/about.html">
+						</iframe>
+						<div class="fade-effect-top"></div>
+						<div class="fade-effect-bottom"></div>
+					</div>
 				</div>
-				<div class="html-viewer" id="html-viewer">
-					<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto" src="docs/about.html">
-					</iframe>
-					<div id="html-text-viewer"></div>
-					<!--<div class="fade-effect-top"></div>-->
-					<div class="fade-effect-bottom"></div>
-				</div>
-				
-				<span style="visibility: hidden;">
-				This bletcherous hack causes the sidepanel to
-				always expand as far horizontally as it can go.
-				xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-				xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-				</span>
 			</div>
 		
 		</div>
+		
+		<script type="text/javascript">						
+			var popups = new PopupManager();
+			popups.add("popup-mouse-center");
+			popups.add("popup-rom-missing");
+			popups.add("popup-ready-to-use");
+			popups.add("popup-status");
+			popups.add("popup-uploader");
+			
+			var panels = new PopupManager();
+			panels.add("navigator-panel");
+			panels.add("html-viewer");
+			
+			panels.open("navigator-panel");
+			
+			function choosePlatform() {
+				var platformMenu = document.getElementById('platform-select');
+				var newPlatform = "platform=" + platformMenu.options[platformMenu.selectedIndex].value;
+				var newPage = new String(window.location);
+				if(newPage.indexOf("?") != -1) {
+					newPage = newPage.replace(/platform=[a-zA-Z0-9-]+/i, newPlatform);
+				} else {
+					newPage = newPage + "?" + newPlatform;
+				}
+				window.location = newPage;
+			}
+		</script>
 		
 		<textarea class="emscripten" id="output" rows="8" hidden=1></textarea>
 		

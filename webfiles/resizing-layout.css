@@ -17,6 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+BODY {
+	height: 100%;
+}
+
+HTML {
+	height: 100%;
+}
+
 .main {
 	position:     relative;
 	width:        100%;
@@ -53,27 +61,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	left:     50%;
 }
 
+.ui-buttons {
+	position: relative;
+	z-index:  10;
+}
+
 .sidepanel {
-	position:     absolute;
-	margin-top:   100px;
 	height:       100%;
-}
-
-.navigator {
-	overflow: auto;
-}
-
-#html-viewer-button {
-	text-align: left;
-	border-bottom-style: solid;
-	border-bottom-width: 1px;
-}
-
-#platform {
-	height:   15%;
-}
-
-.html-viewer {
-	height:   70%;
-	width:    100%;
 }

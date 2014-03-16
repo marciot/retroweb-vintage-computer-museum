@@ -37,6 +37,7 @@ function addNavigatorIcon (type, title, value) {
 				{gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1.img", true);}
 			break;
 		case "boot-floppy":
+			icon.className = "boot-fd";
 			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
 				{gaTrackEvent("disk-mounted", title); mountUrl(url,"fd1.disk", true);}
@@ -223,8 +224,6 @@ function fetchNavigatorUrl(url) {
 	if (url == undefined) {
 		url = homeUrl;
 	}
-	 
-	showHtmlViewer(false);
 	
 	// If first time, store the DOM of an empty navigator so we can
 	// clear it again later
