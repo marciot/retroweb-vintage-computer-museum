@@ -107,6 +107,22 @@ DIV.popup P {
 	margin-top:  -32px; /* -0.5 * height - padding */
 }
 
+#popup-mac-eject-disk {
+	padding:       20px;
+	width:        350px;
+	height:       150px;
+	margin-left: -195px;
+	margin-top:   -95px;
+}
+
+#popup-mac-eject-disk IMG {
+	float: right;
+}
+
+#popup-mac-eject-disk DIV {
+	margin-right: 60px;
+}
+
 /* Emulator selector and navigation buttons */
 
 #platform-select {

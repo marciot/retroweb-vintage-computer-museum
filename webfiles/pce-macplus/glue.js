@@ -17,14 +17,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+var showEjectWarning = true;
+
 function emulatorPreRun() {
 	Module.arguments = ["-c", "roms/pce-config.cfg", "-r"];
+	
+	emuState.addFloppyDrive("fd1.disk");
+	emuState.addFloppyDrive("fd2.disk");
+	emuState.addFloppyDrive("fd3.disk");
 }
 
 // Loads a disk that has been copied to the emscripten local store
 function emulatorMountDisk(disk) {
 	console.log("Mounting " + disk);
 	fixVMacDisks(disk);
+	if(emuState.isFloppyMounted(disk) && showEjectWarning) {
+		showEjectWarning = false;
+		popups.open("popup-mac-eject-disk");		
+	}
+	emuState.floppyMounted(disk);
 	macSetMessage ("emu.disk.insert", "2:" + disk);
 	macSetMessage ("mac.insert", "2");
 }

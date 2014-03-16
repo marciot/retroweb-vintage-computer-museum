@@ -72,6 +72,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 						<h1>Wait for the desktop to appear then double-click the icon.</h1>
 						<img src="icons/sunny.png" id="popup-mouse-center-target" onclick="popups.close('popup-mouse-center');">
 					</div>
+					
+					<div id="popup-mac-eject-disk" class="popup">
+						<img src="icons/drag-to-trash.png">
+						<div>
+							<h1>Ejecting disks on the Macintosh</h1>
+							<p>
+								Before inserting a new disk on the Macintosh, you need to
+								drag the old one to the trash can.
+							</p>
+							<input type="button" value="Gotcha!" onclick="popups.close('popup-mac-eject-disk');">
+						</div>
+					</div>
 				</div>
 			</div>
 				
@@ -134,6 +146,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			popups.add("popup-ready-to-use");
 			popups.add("popup-status");
 			popups.add("popup-uploader");
+			popups.add("popup-mac-eject-disk");
 			
 			var panels = new PopupManager();
 			panels.add("navigator-panel");

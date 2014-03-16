@@ -21,6 +21,7 @@ function EmulatorState() {
 	this.running = false;
 	this.gotRom = false;
 	this.gotBootMedia = false;
+	this.floppyDrives = new Array();
 	
 	addRunDependency("emu-roms");
 	addRunDependency("boot-disk");
@@ -52,9 +53,26 @@ function EmulatorState() {
 	this.isRunning = function() {
 		return this.running;
 	}
+	this.addFloppyDrive = function(fname) {
+		this.floppyDrives.push({"fname" : fname, "mounted" : false});	
+	}
+	this.getFloppyObj = function(fname) {
+		for (var i = 0; i < this.floppyDrives.length; ++i) {
+			if(this.floppyDrives[i].fname == fname) {
+				return this.floppyDrives[i]; 
+			};
+		}
+		return undefined;
+	}
+	this.floppyMounted = function(fname) {
+		this.getFloppyObj(fname).mounted = true;
+	}
+	this.isFloppyMounted = function(fname) {
+		return this.getFloppyObj(fname).mounted;
+	}
 }
 
-var emulatorState;
+var emuState;
 var romFileName;
 var emuPlatform;
 
