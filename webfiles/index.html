@@ -83,6 +83,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 						<span class="btn-label">Show Navigator</span>
 					</td>
 					<td class="ui-btn">
+						<img class="btn-icon" src="icons/document.png" onclick="panels.close('navigator-panel'); panels.open('html-viewer');"><br>
+						<span class="btn-label">Show Documentation</span>
+					</td>
+					<td class="ui-btn">
 						<img class="btn-icon" src="icons/power.png" onclick="restartComputer()"><br>
 						<span class="btn-label">Restart Computer</span>
 					</td>
@@ -110,7 +114,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				
 				<div id="html-viewer" class="html-viewer sidepanel-window">
 					<div class="title-bar">
-						<img class="btn-icon" src="icons/appbar.close.svg" onclick="panels.close('html-viewer');showHtmlViewer(false);">
+						<img class="btn-icon" src="icons/appbar.close.svg" onclick="panels.close('html-viewer');">
 					</div>
 					<div class="fade-effect">
 						<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto" src="docs/about.html">

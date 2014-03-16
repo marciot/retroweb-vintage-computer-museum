@@ -68,4 +68,5 @@ HTML {
 
 .sidepanel {
 	height:       100%;
+	min-width:    500px;
 }
