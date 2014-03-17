@@ -8,6 +8,7 @@
 *.img
 *.qed
 *.gz
+*.raw
 
 # ROM images
 *.rom

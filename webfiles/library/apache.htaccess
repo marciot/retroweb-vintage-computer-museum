@@ -46,7 +46,17 @@ SetOutputFilter DEFLATE
 #  Cons:
 #    - Only works if browser natively supports compression
 #      (no fallback)
-#    - Need to modify URLs in web app to use ".gz"
 ###############################################################
 
-AddEncoding gzip gz
+AddEncoding x-gzip .gz
+
+# Rewrite all queries to disk images to use the compressed
+# versions of the files
+
+RewriteEngine  on
+RewriteRule    ^(.*).image$  $1.image.gz
+RewriteRule    ^(.*).pimg$   $1.pimg.gz
+RewriteRule    ^(.*).qed$    $1.qed.gz
+RewriteRule    ^(.*).pfdc$   $1.pfdc.gz
+RewriteRule    ^(.*).st$     $1.st.gz
+RewriteRule    ^(.*).raw$    $1.raw.gz
