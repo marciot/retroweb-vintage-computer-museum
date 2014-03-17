@@ -218,52 +218,52 @@ DIV.popup P {
 }
 
 #navigator LI.boot-fd:before {
-	background: url('icons/boot-fd.png');
+	background: url('artwork/boot-fd.png');
 	background-size: 60px 60px;
 }
 
 #navigator LI.boot-hd:before {
-	background: url('icons/boot-hd.png');
+	background: url('artwork/boot-hd.png');
 	background-size: 60px 60px;
 }
 
 #navigator LI.boot-rom:before {
-	background: url('icons/boot-rom.png');
+	background: url('artwork/boot-rom.png');
 	background-size: 60px 60px;
 }
 
 #navigator LI.document:before {
-	background: url('icons/document.png');
+	background: url('artwork/document.png');
 	background-size: 60px 60px;
 }
 
 #navigator LI.floppy:before {
-	background: url('icons/floppy.png');
+	background: url('artwork/floppy.png');
 	background-size: 60px 60px;
 }
 
 #navigator LI.folder:before {
-	background: url('icons/folder.png');
+	background: url('artwork/folder.png');
 	background-size: 60px 60px;
 }
 
 #navigator LI.html-doc:before {
-	background: url('icons/html-doc.png');
+	background: url('artwork/html-doc.png');
 	background-size: 60px 60px;
 }
 
 #navigator LI.rom:before {
-	background: url('icons/rom.png');
+	background: url('artwork/rom.png');
 	background-size: 60px 60px;
 }
 
 #navigator LI.upload:before {
-	background: url('icons/upload.png');
+	background: url('artwork/upload.png');
 	background-size: 60px 60px;
 }
 
 #navigator LI.world:before {
-	background: url('icons/world.png');
+	background: url('artwork/world.png');
 	background-size: 60px 60px;
 }
 

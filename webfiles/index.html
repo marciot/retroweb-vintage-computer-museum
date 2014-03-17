@@ -46,12 +46,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					</div>
 					
 					<div id="popup-ready-to-use" class="popup">
-						<img src="icons/sunny.png" class="small-icon">
+						<img src="artwork/sunny.png" class="small-icon">
 						<h1>This computer needs a boot disk! Go find an icon with a green dot!</h1>
 					</div>
 					
 					<div id="popup-rom-missing" class="popup">
-						<img src="icons/rom.png" class="small-icon">
+						<img src="artwork/rom.png" class="small-icon">
 						<p>This computer cannot start without a valid ROM file.</p>
 						<input type="button" value="Select ROM file..."
 							onclick="openFileUploader ('Select ROM image', doRomUpload);">
@@ -70,11 +70,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					
 					<div id="popup-mouse-center" class="popup">
 						<h1>Wait for the desktop to appear then double-click the icon.</h1>
-						<img src="icons/sunny.png" id="popup-mouse-center-target" onclick="popups.close('popup-mouse-center');">
+						<img src="artwork/sunny.png" id="popup-mouse-center-target" onclick="popups.close('popup-mouse-center');">
 					</div>
 					
 					<div id="popup-mac-eject-disk" class="popup">
-						<img src="icons/drag-to-trash.png">
+						<img src="artwork/drag-to-trash.png">
 						<div>
 							<h1>Ejecting disks on the Macintosh</h1>
 							<p>
@@ -91,15 +91,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<table id="ui-buttons" class="ui-buttons">
 				<tr>
 					<td class="ui-btn">
-						<img class="btn-icon" src="icons/file-manager.png" onclick="panels.close('html-viewer'); panels.open('navigator-panel');"><br>
+						<img class="btn-icon" src="artwork/file-manager.png" onclick="panels.close('html-viewer'); panels.open('navigator-panel');"><br>
 						<span class="btn-label">Show Navigator</span>
 					</td>
 					<td class="ui-btn">
-						<img class="btn-icon" src="icons/document.png" onclick="panels.close('navigator-panel'); panels.open('html-viewer');"><br>
+						<img class="btn-icon" src="artwork/document.png" onclick="panels.close('navigator-panel'); panels.open('html-viewer');"><br>
 						<span class="btn-label">Show Documentation</span>
 					</td>
 					<td class="ui-btn">
-						<img class="btn-icon" src="icons/power.png" onclick="restartComputer()"><br>
+						<img class="btn-icon" src="artwork/power.png" onclick="restartComputer()"><br>
 						<span class="btn-label">Restart Computer</span>
 					</td>
 				</tr>
@@ -115,9 +115,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 							<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
 							<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
 						</select>
-						<img class="btn-icon" src="icons/appbar.close.svg" onclick="panels.close('navigator-panel');">
-						<img class="btn-icon" src="icons/appbar.arrow.left.svg" onclick="navGoBack()">
-						<img class="btn-icon" src="icons/appbar.home.svg" onclick="navGoHome()">
+						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('navigator-panel');">
+						<img class="btn-icon" src="artwork/appbar.arrow.left.svg" onclick="navGoBack()">
+						<img class="btn-icon" src="artwork/appbar.home.svg" onclick="navGoHome()">
 					</div>
 					<ul class="navigator" id="navigator">
 					</ul>
@@ -126,7 +126,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				
 				<div id="html-viewer" class="html-viewer sidepanel-window">
 					<div class="title-bar">
-						<img class="btn-icon" src="icons/appbar.close.svg" onclick="panels.close('html-viewer');">
+						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('html-viewer');">
 					</div>
 					<div class="fade-effect">
 						<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto" src="docs/about.html">
