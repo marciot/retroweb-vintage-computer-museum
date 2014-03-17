@@ -17,34 +17,51 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+function getNavOptionsFunc(opts) {
+	if(opts && opts.document) {
+		var url = rewriteRelativeUrl(opts.document);
+		return function() {gaTrackEvent("document-shown", opts.document); showHtmlViewer(url);}
+	}
+	return function() {};
+}
+
 /* Adds an icon to the icon navigator */
-function addNavigatorIcon (type, title, value) {
+function addNavigatorIcon (type, title, value, opts) {
 	console.log("Adding navigator icon: type = " + type + " title = " + title);
 	
 	var label = document.createTextNode(title);
 	var icon = document.createElement("li");	
 	
+	var post = getNavOptionsFunc(opts);
+	
 	icon.className = type;
 	switch(type) {
 		case "floppy":
 			var url = rewriteRelativeUrl(value);
-			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); mountUrl(url, "fd1.disk");}
+			icon.ondblclick = function () {
+				if(emuState.isRunning()) {
+					gaTrackEvent("disk-mounted", title);
+					mountUrl(url, "fd1.disk");
+					post();
+				} else {
+					alert("Please boot the computer using a boot disk first");
+				}
+			}
 			break;
 		case "boot-hd":
 			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1.img", true);}
+				{gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1.img", true); post();}
 			break;
 		case "boot-floppy":
 			icon.className = "boot-fd";
 			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); mountUrl(url,"fd1.disk", true);}
+				{gaTrackEvent("disk-mounted", title); mountUrl(url,"fd1.disk", true); post();}
 			break;
 		case "boot-rom":
 			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); emulatorBootFromRom();}
+				{gaTrackEvent("disk-mounted", title); emulatorBootFromRom(); post();}
 			break;
 		case "hyperlink":
 			if (endsWith(value, ".json")) {
@@ -53,7 +70,7 @@ function addNavigatorIcon (type, title, value) {
 				} else {
 					icon.className = "folder";
 				}
-				icon.ondblclick = function () {fetchNavigatorUrl(value);}
+				icon.ondblclick = function () {fetchNavigatorUrl(value); post();}
 			} else {
 				icon.className = "html-doc";
 				icon.ondblclick = function () {window.open(value);}
@@ -250,7 +267,7 @@ function fetchNavigatorUrl(url) {
 	try {
 		fetchDataFromUrl(url, function(content) {
 				loadJSONIndex(JSON.parse(content), function(record) {
-					addNavigatorIcon (record[0], record[1], record[2]);
+					addNavigatorIcon (record[0], record[1], record[2],record[3]);
 				} );
 			}
 		);

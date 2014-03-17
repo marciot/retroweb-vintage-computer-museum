@@ -8,8 +8,7 @@
 				["document",  "About this software",        "about.html"]
 			],
 			"pce-ibmpc" : [
-				["document",  "VisiCalc Tutorial",          "about.html"],
-				["floppy",    "VisiCalc Program Disk",      "visicalc.raw"],
+				["floppy",    "VisiCalc Program Disk",      "visicalc.raw", {"document" : "about.html"}],
 				["hyperlink", "VisiCalc Home Page",         "http://www.bricklin.com/history/vcexecutable.htm"]
 			]
 		}
