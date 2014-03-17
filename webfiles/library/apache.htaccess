@@ -54,9 +54,9 @@ AddEncoding x-gzip .gz
 # versions of the files
 
 RewriteEngine  on
-RewriteRule    ^(.*).image$  $1.image.gz
-RewriteRule    ^(.*).pimg$   $1.pimg.gz
-RewriteRule    ^(.*).qed$    $1.qed.gz
-RewriteRule    ^(.*).pfdc$   $1.pfdc.gz
-RewriteRule    ^(.*).st$     $1.st.gz
-RewriteRule    ^(.*).raw$    $1.raw.gz
+RewriteRule    ^(.*)\.image$  $1.image.gz
+RewriteRule    ^(.*)\.img$    $1.img.gz
+RewriteRule    ^(.*)\.pimg$   $1.pimg.gz
+RewriteRule    ^(.*)\.qed$    $1.qed.gz
+RewriteRule    ^(.*)\.pfdc$   $1.pfdc.gz
+RewriteRule    ^(.*)\.st$     $1.st.gz
