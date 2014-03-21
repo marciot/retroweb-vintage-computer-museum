@@ -60,3 +60,4 @@ RewriteRule    ^(.*)\.pimg$   $1.pimg.gz
 RewriteRule    ^(.*)\.qed$    $1.qed.gz
 RewriteRule    ^(.*)\.pfdc$   $1.pfdc.gz
 RewriteRule    ^(.*)\.st$     $1.st.gz
+RewriteRule    ^(.*)\.raw$    $1.raw.gz

@@ -17,18 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-.no-select {
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
 BODY {
 	margin-top: 20px;
 	margin-bottom: 100px;
+	font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
 }
 
 TABLE, TD, TH {
@@ -38,46 +30,171 @@ TABLE, TD, TH {
 	padding: 5px;
 }
 
+TH {
+	background: #ccc;
+	color: #555;
+}
+
+TD {
+	background: #eee;
+}
+
+TD.centered {
+  text-align: center;
+}
+
+H1, H2, H3, H4, H5, H6 {
+	border-bottom-style: solid;
+	border-width: 1px;
+	border-color: #777;
+	color: #777;
+}
+
+OL LI {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	border-bottom-style: solid;
+	border-width: 1px;
+	border-color: #ccc;
+}
+
+OL LI:last-child {
+  border: none;
+}
+
+UL:not([class]) {
+    list-style: none;
+    padding-left:1em;
+    margin:0;
+}
+
+UL:not([class]) LI {
+    padding-left: 1em; 
+    text-indent: -.7em;
+}
+
+UL:not([class]) LI:before {
+    content: "\25A0 ";
+	//content: "\25CF";
+    color: #777;
+	padding-right:7px;
+	font-size: larger;
+}
+
+DT {
+	float:       left;
+	clear:       left;
+	font-weight: bold;
+	width:       100px;
+	text-align:  right;
+	color:       #777;
+}
+
+DT:after {
+    content: ":";
+}
+
+DD {
+	margin-left: 110px;
+	padding-bottom: 0.5em;
+}
+
+/* Special styles */
+
+.no-select {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+A.show-target {
+	margin-top: 40px;
+	font-weight: bold;
+	text-decoration: underline;
+	color: black;
+	cursor: pointer;
+}
+
+/* Text bubbles */
+
+.bubble SPAN.bubble-body {
+	position: absolute;
+	display: none;
+    bottom:  30px;
+    left:   -20px;
+    padding:  7px 14px 7px 14px;
+	text-wrap: none;
+	white-space: nowrap;
+	
+    background: #444;	
+	color: #ddd;
+	font-style: normal;
+    border-radius: 10px;
+}
+
+SPAN.bubble-tail
+{
+	position: absolute;
+	width:    0;
+	height:   0;
+	left:     0px;
+	bottom:   10px;
+	border:   10px solid;
+	border-color: #444 transparent transparent transparent;
+	display: none;
+}
+
+.bubble {
+	position: relative;
+	font-style: italic;
+}
+
+.bubble:hover SPAN {
+    display: inline;
+}
+
+.footnote {
+	vertical-align: super;
+	font-size: smaller;
+	font-style: normal;
+}
+
 P.tagline {
 	font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
 }
 
-P.hint {
+.trivia UL,.hints UL {
+	padding: 0px;
+	margin: 0px;
+	list-style-type: none;
+}
+
+.trivia LI,.hints LI {
 	font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
 	font-style: italic;
 	color: green;
 	display: none;
+	padding: 10px;
+	list-style-type: none;
+
+	border-left: 3px solid green;
+	border-right: 3px solid green;
+	border-radius: 10px;
+	margin-right: 50px;
 }
 
-DIV.references label {
-	margin-top: 40px;
-	font-weight: bold;
-	color: blue;
-	display: block;
-}
-
-DIV.references input {
-   display: none;
-}
-
-DIV.references input#references + UL {
-	visibility: hidden;
-}
-
-DIV.references input#references:checked + UL {
-	visibility: visible;
+.trivia INPUT, .hints INPUT {
+	float: right;
+	margin-left: 20px;
+	margin-right: 70px;
+	margin-top: 1em;
 }
 
 SPAN.highlight {
 	text-decoration:underline;
-}
-
-TH {
-	background: #FFCC66;
-}
-
-TD {
-	background: #FFFF99;
 }
 
 TD.centered {
@@ -104,13 +221,6 @@ PRE {
 	text-align: center;
 }
 
-#happy-mac {
-	width:64px;
-	height:64px;
-	margin: 10px auto;
-	display: block;
-}
-
 .license {
 	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 }
@@ -121,4 +231,11 @@ PRE {
 	border-color: black;
 	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 	white-space: pre-wrap;
+}
+
+#happy-mac {
+	width:64px;
+	height:64px;
+	margin: 10px auto;
+	display: block;
 }

@@ -84,33 +84,6 @@ function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
-/* This object manages hints on a webpage
- */
-function HintManager(prefix) {
-	if(prefix) {
-		this.prefix = prefix;
-	} else {
-		this.prefix = "hint-";
-	}
-	this.curHint = 1;
-	this.firstHint = document.getElementById(this.prefix + "1");
-	if (this.firstHint == undefined) {
-		return;
-	}
-	this.firstHint.style.display = 'block';
-			
-	this.nextHint = function() {
-		var thisHint = document.getElementById(this.prefix + this.curHint++);
-		var nextHint = document.getElementById(this.prefix + this.curHint);
-		if (!nextHint) {
-			this.curHint = 1;
-			nextHint = this.firstHint;
-		}
-		thisHint.style.display = 'none';
-		nextHint.style.display = 'block';
-	}
-}
-
 var keyQueue = [];
 var strKey = "~!@#$%^&*()_+{}|:<>?\"";
 var strVal = "`1234567890-=[]\;,./\'";

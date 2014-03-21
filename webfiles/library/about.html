@@ -1,7 +1,6 @@
 <html>
 	<body>
-		<link rel="stylesheet" type="text/css" href="../docs.css">
-		<script type="text/javascript" src="../utils.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../docs.css">
 		
 		<div id="pce-macplus" class="hidden">
 		
@@ -14,38 +13,22 @@
 				</p>
 			</div>
 		
-			<p class="hint" class="pce-macplus-hint-1">
-				<strong>Hint:</strong> Double-click a floppy disk
-				above and it will show up inside the emulated Mac for
-				you to use. If you want to try out another disk,
-				drag the previous disk to the trash
-				<span class="highlight">before</span> loading another.
-			</p>
+			<ul class="hints">
+				<li>
+					Double-click a floppy disk
+					above and it will show up inside the emulated Mac for
+					you to use. If you want to try out another disk,
+					drag the previous disk to the trash
+					<span class="highlight">before</span> loading another.
+				</li>
+			</ul>
 		</div>
 		
-		<div id="pce-ibmpc" class="hidden">
-			<h2>About VisiCalc</h2>
-			<p>
-				VisiCalc, originally released for the Apple II in 1979,
-				was an early killer app that brought the full potential
-				of the personal computer to businesses. You can explore
-				VisiCalc inside the simulated IBM PC.
-			</p>
-			<h2>VisiCalc Tutorial</h2>
-			<p>
-				<ol>
-					<li>Type &ldquo;A:&rdquo; to tell DOS to access the floppy disk drive</li>
-					<li>Type &ldquo;RUN&rdquo; to read the license agreement and start up VisiCalc</li>
-					<li>Review the <a href="http://www.bricklin.com/history/refcard1.htm" target="_new">VisiCalc Reference Cards</a> to get started
-					<li>Type &ldquo;/SQY&rdquo; to quit VisiCalc</li>
-				</ol>
-			</p>
-		</div>
-		
+		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script type="text/javascript" src="../docs.js"></script>
 		<script type="text/javascript">
-			var platform = getQueryVariable("platform");
-			var hm = new HintManager(platform + "-hint-");
-			toggleElementDisplay(platform, true);
+			applyDynamicFormatting();
+			$("#" + getQueryVariable("platform")).show();
 		</script>
 		
 	</body>

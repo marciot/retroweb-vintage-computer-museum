@@ -176,13 +176,15 @@ DIV.popup P {
 	vertical-align: middle;
 	width:  40px;
 	height: 40px;
+	opacity: 0.5;
 }
 
 .sidepanel-window {
 	border-radius: 10px;
-	opacity: 0.85;
+	opacity: 0.95;
 	border-width: 1px;
 	border-style: solid;
+	border-color: #ccc;
 	display: none;
 	padding: 2px;
 	background: white;
