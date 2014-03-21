@@ -184,10 +184,11 @@ DIV.popup P {
 	opacity: 0.95;
 	border-width: 1px;
 	border-style: solid;
-	border-color: #ccc;
+	border-color: #777;
 	display: none;
 	padding: 2px;
-	background: white;
+	background-color: #eef;
+	box-shadow: 5px 5px 10px rgba(0,0,0,0.35);
 }
 
 #navigator {
@@ -293,7 +294,7 @@ DIV.popup P {
     left: 0;
     right: 15px;
     height: 25px;
-	background: linear-gradient(#fff, rgba(255,255,255,0));
+	background: linear-gradient(#eef, rgba(255,255,255,0));
 }
 
 .fade-effect-bottom {
@@ -302,7 +303,7 @@ DIV.popup P {
     left: 0;
     right: 15px;
     height: 50px;
-	background: linear-gradient(rgba(255,255,255,0),#fff);
+	background: linear-gradient(rgba(255,255,255,0),#eef);
 }
 
 /* Emscripten spinner animation */
