@@ -163,7 +163,6 @@ function adjustBubbles() {
 
 function attachBubbleAdjustment() {
 	window.addEventListener("resize", adjustBubbles, false);
-	adjustBubbles();
 }
 
 /* Sets the visibility of an element. In the case in which the
@@ -232,6 +231,11 @@ function applyDynamicFormatting() {
 	attachBubbles("footnote", "footnote");
 	attachBubbles("glossary_term", "define_");
 	activateShowTargetElements();
-	attachBubbleAdjustment();
 	attachHintManagers();
+	attachBubbleAdjustment();
+	
+	// Adjust bubbles does not works when the bubbles are hidden,
+	// so show the DIV before calling it
+	$("#" + getQueryVariable("platform")).show();
+	adjustBubbles();
 }
