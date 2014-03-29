@@ -3,8 +3,8 @@
 		"version" : 1.0,
 		"index" : {
 			"*" : [
-				["document",  "User's Guide",           "users-guide.html"],
-				["document",  "PCE Technical Info",     "tech-info.html"],
+				["document",  "User's Guide",           "users-guide.wiki"],
+				["document",  "PCE Technical Info",     "tech-info.wiki"],
 				["document",  "LICENSE",                "../LICENSE.txt"],
 				["action", 	  "Load ROM...", 	        "load-rom"],
 				["action", 	  "Local floppy...", 	    "local-floppy"],

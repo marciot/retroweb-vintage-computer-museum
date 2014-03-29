@@ -1,0 +1,119 @@
+== About disk images ==
+
+The emulated computer supports the same types of disk images that are supported by the underlying PCE emulator, such as raw block images or DiskCopy 4.2 images (see below for others).
+
+The web interface will allow you to mount floppy disk images at any time. Hard drive images can only be mounted before the emulator starts up. QED images are sparse and are useful for making hard disks with free space for distribution over the web.
+
+== Special handling for vMac 400k and 800k disk images ==
+
+The vMac emulator uses DiskCopy 4.2 images that have been stripped of their headers. PCE does not currently read such format natively. As an interim fix, my code will detect and patch these disk images before presenting them to PCE. 
+
+== Creating disk images ==
+
+This webapp does not currently allow you to create or modify disk images. You can copy files inside the running emulator, but all disk images are stored in RAM and your changes will be lost when you refresh the web page.
+
+To create disk images, you should download a stand-alone copy of PCE from [http://www.hampa.ch/pce/ here].
+
+What follows is a conversation I had with Hampa Hug, the creator of PCE, about disk images. Hampa was commenting specifically on the standalone PCE distribution, so you should download it if you wish to create disk images for this web-based version.
+
+<hr>
+
+=== What type of disk images does PCE recognize and what tools does PCE provide for creating disk images? ===
+
+PCE supports two basic types of disk images:
+
+==== 1) Block Images ====
+
+These represent a sequence of 512 byte blocks. In PCE they also have a (regular) disk geometry associated with them. If the file format does not provide a geometry, PCE takes a guess.
+
+These images are mostly used for hard disks (though not necessarily, they are just most useful for this purpose).
+
+|!  Type   |!    Description                                     |
+|   .img   | Raw disk images                                     |
+|   .qed   | QEmu Enhanced Disk image                            |
+|   .pimg  | PCE disk image (raw disk image with a short header) |
+
+The PCE tool to handle block images is pce-img. With this you can create new images:
+
+ $ pce-img create -g 1024 4 17 newimage.pimg
+
+or, if you don't care about the geometry, just the size:
+
+ $ pce-img create -m 256 newimage.qed
+
+(here the output file type is determined by looking at the extension. There's no other way.).
+
+You can also convert existing images:
+
+ $ pce-img convert source.qed dest.img
+
+Try
+
+ $ pce-img --help
+
+to get a list of all options and commands.
+
+==== 2) Sector Images ====
+
+These store individual sectors along with various degrees of meta data, such as the order of sectors on disk, CRC errors, different sector sizes and so on.
+
+These images are mostly useful for floppy disks. In PCE they are read into memory completely, modified there and then written back as a whole. Supported formats include:
+
+|!    Type  |!    Description               |
+|  .image   |  Apple Disk Copy 4.2 images   |
+|  .td0     |  Teledisk images              |
+|   ...     | Many more, mostly obscure     |
+
+The PCE tool to handle sector images is now called psi (it used to be called pfdc, I recently renamed it as well as the file format of the same name. There are very few differences between the two). This program has '''a lot''' of options to modify the images. Here are some simple commands to create new images and to convert existing images:
+
+ # List all options:
+ $ psi --help
+ 
+ # New 800K image in Disk Copy 4.2 format:
+ $ psi -N mac 800 -o newdisk.image
+ 
+ # New 400K image in PSI format:
+ $ psi -N mac 400 -o newdisk.psi
+ 
+ $ psi source.image dest.img
+ $ psi source.psi dest.image
+      ...
+
+In PCE you can use block images and sector images interchangeably (in object oriented parlance: sector images are a subclass of block images).
+
+I'm aware that is is all more complex than it should be. One reason for this complexity is the other emulators supported by PCE. All emulators share the same disk handling code, and while on the Mac you can get by perfectly fine using only block images, for the other emulators (particularly the Atari ST), storing disk images at a lower level is extremely important (mostly to handle copy protected disks).
+
+My recommendation is this:
+
+* For hard disks, use either QED or raw images. QED images are sparse, while raw images are more compatible.
+* For floppy disks, use Disk Copy 4.2 images if the images are 400K, 800K, 720K or 1440K. Otherwise use raw images.
+
+Lastly, a word about COW images. These are copy-on-write images. If you configure a COW image like this:
+
+ disk {
+   drive = 128
+   file = "myimage.qed"
+   cow = "myimage.cow"
+ }
+
+All changes to the disk images will be written to "myimage.cow", "myimage.qed" won't be touched. You can subsequently either remove the cow image (to roll back all changes) or you can commit the changes from the PCE monitor interface:
+
+ -m disk.commit 128
+
+I find this extremely useful for hard disks. For floppy disk, I usually don't bother and simply make a copy outside the emulator. Poor man's version control... ;-)
+
+=== If I have an unknown disk image from another emulator, should I try changing the file extension to try to make it work? ===
+
+For the most part extensions are irrelevant, as long as the actual file format can be detected. With the exception of a few obscure cases (that you won't run into), this is always the	case.
+
+=== Does a disk type of "auto" mean "trust the file extension," or "look inside and figure it out based on the contents"? ===
+
+It means the latter. That there even is a disk type goes back to when PCE only supported raw images (a long time ago). Raw images is the one case where auto detection can fail completely, because raw images can contain arbitrary content, including content that looks like some other file format.
+
+The "auto" type is the only one that is relevant for practical purposes. When you cange disks at runtime (using the "emu.disk.insert" message), a disk type of "auto" is implicitly assumed.
+
+''Editor's Note: This webapp uses the "emu.disk.insert" message, and thus implicitly uses auto-detection.''
+
+=== Can you give me any hints about how to make a disk image that is portable to other emulators? ===
+
+As far as I know, the only format supported by both emulators are raw images. This works quite well, I frequently use a setup where I use the same raw disk image with both PCE and Basilisk II (though not simultaneously, of course!). This works for both hard disk images and floppy disk images (Basilisk II knows the difference and will automatically do the right thing).

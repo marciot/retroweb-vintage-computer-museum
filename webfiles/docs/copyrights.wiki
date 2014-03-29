@@ -1,0 +1,15 @@
+== Copyrights and Fair Use ==
+
+This web page makes use of computer code which is copyrighted by the manufacturers of the computers presented here. It is the maintainer's belief that this work, in its present form, constitutes fair use under the U.S. Copyright Law.
+
+This work is entirely non-profit: my primary intent is to showcase software that I have written for the early Macintosh and to educate people on the personal computers that were available at the time; I have included only as much copyrighted material as is necessary to meet these goals; and I do not believe anything presented here diminishes the market value of any product which is presently being sold.
+
+'''Disclaimer: I am not a lawyer. Those wishing to do something similar or expanding upon my ideas should not take the above as legal advice.'''
+
+== Trademarks and Logos ==
+
+The trademarks and Logos used in this web page refer to the actual computers that are represented, but neither these emulated computers nor this website should be confused the actual products. This website is a fansite. It represents the work and opinions of a private individual and bears no connection to the respective companies.
+
+* Mac and Macintosh are registered trademarks of Apple Inc.
+* IBM is a trademark of the International Business Machines Corporation
+* Atari is a trademark of Atari Inc.

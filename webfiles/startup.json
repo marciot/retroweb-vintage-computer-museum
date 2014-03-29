@@ -1,6 +1,8 @@
 {
 	"startup-config" : {
 		"version"     : 1.0,
+		"initial-doc" : "docs/about.wiki",
+		"initial-index" : "docs/index.json",
 		"pce-ibmpc" : {
 			"mkdir"       : [ "/roms" ],
 			"mount-files" : [

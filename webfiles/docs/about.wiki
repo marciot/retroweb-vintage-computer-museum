@@ -1,0 +1,18 @@
+= RetroWeb Vintage Computer Museum =
+
+Welcome to the RetroWeb Vintage Computer Museum, a unique web exhibit where you get to interact with four virtual simulations of personal computers from the eighties.
+
+|!      Origin                 |!     Computer     |! Dates Sold |!       Introductory Price              |
+|^ [[Image:../artwork/us.png]] | Apple Macintosh   | 1986-1990[1]| US $2,599.00                           |
+|^ [[Image:../artwork/us.png]] | IBM Model 1560    | 1983-1987[2]| US $4,995.00                           |
+|^ [[Image:../artwork/us.png]] | Atari 1040ST      | 1986-1993[3]| US $799.99 (mono)<br>US $999.99 (color)|
+|^ [[Image:../artwork/dk.png]] | RC759 Piccoline   | 1984-1989[4]| ?                                      |
+
+To get started, click the filing cabinet ([[image-inline:../artwork/file-manager.png]]) above, choose a computer from the drop down menu and look inside the &ldquo;Boot Disks &amp; Software&rdquo; folder for a boot disk.
+
+== References ==
+
+# http://en.wikipedia.org/wiki/Macintosh_Plus
+# http://vintagecomputer.com/ibm-xt-5160.html
+# http://en.wikipedia.org/wiki/Atari_ST
+# http://rc700.dk
