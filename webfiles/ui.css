@@ -131,13 +131,10 @@ DIV.popup P {
 	padding: 5px;
 }
 
-.ui-buttons TD {
-	vertical-align: top;
+.ui-btn {
 	font-size: small;
 	font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
-}
 
-.ui-btn {
 	width: 50px;
 	text-align: center;
 }
@@ -156,6 +153,10 @@ DIV.popup P {
 }
 
 /* RetroWeb Navigator sidebar */
+
+.navigator-panel {
+	display: none;
+}
 
 .navigator-help {
 	visibility: hidden;

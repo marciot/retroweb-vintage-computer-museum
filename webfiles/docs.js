@@ -17,6 +17,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+/* JQuery regular expression selector from:
+ *   http://james.padolsey.com/javascript/regex-selector-for-jquery/
+ */
+jQuery.expr[':'].regex = function(elem, index, match) {
+    var matchParams = match[3].split(','),
+        validLabels = /^(data|css):/,
+        attr = {
+            method: matchParams[0].match(validLabels) ? 
+                        matchParams[0].split(':')[0] : 'attr',
+            property: matchParams.shift().replace(validLabels,'')
+        },
+        regexFlags = 'ig',
+        regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
+    return regex.test(jQuery(elem)[attr.method](attr.property));
+}
+
 /* Get a query variable
  *
  * Reference:
@@ -34,16 +50,16 @@ function getQueryVariable(variable) {
 	return false;
 }
 
-/* Selects the text inside an element with containerId
+/* Selects the text inside an element
  */
-function selectText(containerid) {
+function selectText(element) {
 	if (document.selection) {
 		var range = document.body.createTextRange();
-		range.moveToElementText(document.getElementById(containerid));
+		range.moveToElementText(element);
 		range.select();
 	} else if (window.getSelection) {
 		var range = document.createRange();
-		range.selectNodeContents(document.getElementById(containerid));
+		range.selectNodeContents(element);
 		var sel = window.getSelection();
         sel.removeAllRanges();
         sel.addRange(range);
@@ -110,23 +126,21 @@ function createBubble(element, text) {
  * A call to attachBubbles("term", "define_") would
  * create floating bubbles defining each term.
  */
-function attachBubbles(refClass, idPrefix) {
+function attachBubbles(refClass, callback) {
 	forEachElementInClass(refClass, function(ref) {
-		var footId  = idPrefix + ref.innerHTML;
-		var footHtml = document.getElementById(footId);
+		var footHtml = callback(ref.innerHTML);
 		if(footHtml) {
 			bubbleText = elementToString(footHtml);
 		} else {
 			bubbleText = "Footnote not found";
-			console.log("Footnote not found with id " + footId);
 		}
 		createBubble(ref, bubbleText);
 		
 		// Make it so clicking the reference highlights the reference
 		ref.onclick = function() {
-			var parent = document.getElementById(footId).parentNode;
+			var parent = footHtml.parentNode;
 			setVisibility(parent, true);
-			selectText(footId);
+			selectText(footHtml);
 		}
 	});
 }
@@ -134,7 +148,11 @@ function attachBubbles(refClass, idPrefix) {
 function getElementOverhang(element, container) {
 	var elementBounds   = element.getBoundingClientRect();
 	var containerBounds = container.getBoundingClientRect();
-
+	
+	if(containerBounds.right - containerBounds.left == 0) {
+		return 0;
+	}
+	
 	var overhang = 0;
 	if (elementBounds.right > containerBounds.right) {
 		overhang = elementBounds.right - containerBounds.right;
@@ -148,7 +166,7 @@ function adjustBubble(bubble, container) {
 	var oldDisplay = bubble.style.display;	
 	bubble.style.display = 'inline';
 	var overhang = getElementOverhang(bubble, container);
-	if(overhang) {
+	if(overhang > 0) {
 		bubble.style.left = bubble.offsetLeft - overhang;
 	} else {
 		bubble.style.left = -20;
@@ -221,21 +239,71 @@ function HintManager(element) {
 	}
 }
 
+function implicitClassNames() {
+	for(var i = 1; i <= 6; ++i) {
+		$("H" + i + ":contains('References')")
+			.nextAll("ol:first").attr("id", "references");
+	}
+}
+
+function implicitShowTarget() {	
+	$('<a class="show-target" target="glossary">Show Glossary</a>')
+		.insertBefore("#glossary");
+	$('<a class="show-target" target="references">Show References</a>')
+		.insertBefore("#references");
+}
+
 function attachHintManagers() {
 	$(".hints,.trivia").each(function(i,el) {new HintManager(el)});
+}
+
+function defineGlossaryTerms() {
+	attachBubbles("glossary_term",
+		function(ref) {
+			var elem;
+			$("#glossary DT").each(function(i,e) {
+				if(e.innerHTML.toLowerCase() == ref.toLowerCase()) {
+					elem = e;
+				}
+			});
+			return $(elem).nextAll("DD:first")[0];
+		}
+	);
+}
+
+function declareReferences() {
+	attachBubbles("reference",
+		function(ref) {
+			return $("#references LI")[parseInt(ref.match(/\d+/))-1];
+		}
+	);
+}
+
+function showPlatformDiv() {
+	$("#" + getQueryVariable("platform")).show();
+}
+
+function applyClassSetters() {
+	$("DIV:regex(class,^set-class-)").each(function(i,e) {
+		var className = e.className.substring(10);
+		$(e).children().addClass(className);
+	});
 }
 
 /* Applies all dynamic formatting to the page
  */
 function applyDynamicFormatting() {
-	attachBubbles("footnote", "footnote");
-	attachBubbles("glossary_term", "define_");
+	implicitClassNames();
+	applyClassSetters();
+	implicitShowTarget();
+	defineGlossaryTerms();
+	declareReferences();
 	activateShowTargetElements();
 	attachHintManagers();
 	attachBubbleAdjustment();
 	
 	// Adjust bubbles does not works when the bubbles are hidden,
 	// so show the DIV before calling it
-	$("#" + getQueryVariable("platform")).show();
+	showPlatformDiv();
 	adjustBubbles();
 }

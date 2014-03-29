@@ -114,6 +114,16 @@ function loadConfig(json) {
 		throw new LoadException ("The startup.json file does not contain a stanza corresponding to this platform");
 	}
 	
+	var initialIndex = platformConfig["initial-index"] || startupConfig["initial-index"];
+	if(initialIndex) {
+		fetchNavigatorUrl(initialIndex);
+	}
+	
+	var initialDoc = platformConfig["initial-doc"] || startupConfig["initial-doc"];
+	if(initialDoc) {
+		showHtmlViewer(initialDoc);
+	}
+		
 	var dirsToMake = platformConfig["mkdir"];
 	for (var i = 0; i < dirsToMake.length; ++i) {
 		var path = dirsToMake[i];
@@ -224,35 +234,88 @@ function restartComputer() {
 	emuState.requestRestart();
 }
 
+/* This object enforces the rule that when an object is shown, the
+ * previous must be hidden
+ */
+function TransitionManager() {
+	this.visibleElement;
+	this.speed;
+	this.allowConcurrent = false;
+	
+	this.makeVisible = function(el) {
+		if(el == this.visibleElement) {
+			return;
+		}
+		if(this.speed || true) {
+			if(this.visibleElement && el) {
+				if(this.allowConcurrent) {
+					$(this.visibleElement).fadeOut(this.speed);
+					$(el).fadeIn(this.speed);
+				} else {
+					$(this.visibleElement).fadeOut(this.speed,
+						function() {$(el).fadeIn(this.speed);});
+				}
+			} else if(this.visibleElement && !el) {
+				$(this.visibleElement).fadeOut(this.speed);
+			} else {
+				$(el).fadeIn(this.speed);
+			}
+		}
+		this.visibleElement = el;
+	}
+	
+	this.setSpeed = function(speed, allowConcurrent) {
+		this.speed = speed;
+		this.allowConcurrent = allowConcurrent;
+	}
+}
+
 /* This object manages popup dialog boxes. Since our pop-up boxes are translucent,
  * this object ensures that only the topmost popup box is visible at once.
  */
-function PopupManager() {
+function PopupManager(tm) {
+	this.transitionManager = tm;
 	this.popupBoxes = new Array();
 	
 	this.add = function(id) {
 		this.popupBoxes.push({"id" : id, "open" : false});
 	};
 	this.setState = function(id, state) {
-		var topmost = null;
 		for (var i = 0; i < this.popupBoxes.length; ++i) {
 			if (id == this.popupBoxes[i].id) {
 				this.popupBoxes[i].open = state;
 			}
+		}
+	};
+	this.apply = function() {
+		var topmost;
+		for (var i = 0; i < this.popupBoxes.length; ++i) {
 			if (this.popupBoxes[i].open) {
-				topmost = i;
+				topmost = this.popupBoxes[i].id;
 			}
 		}
-		for (var i = 0; i < this.popupBoxes.length; ++i) {
-			toggleElementDisplay(this.popupBoxes[i].id, i == topmost);
-		}
-	};
+		tm.makeVisible(document.getElementById(topmost));
+	}
 	this.open = function(id) {
 		this.setState(id, true);
+		this.apply();
 	};
-	this.close = function(id) {
+	this.close = function(id, speed) {
 		this.setState(id, false);
+		this.apply();
 	};
+}
+
+function clickShowNavigator() {
+	panels.setState('html-viewer',false);
+	panels.setState('navigator-panel',true);
+	panels.apply();
+}
+
+function clickShowViewer() {
+	panels.setState('html-viewer',true);
+	panels.setState('navigator-panel',false);
+	panels.apply();
 }
 
 /* This object saves the contents of a DOM element so that it can be restored
@@ -275,9 +338,43 @@ function StateSnapshot(id) {
 
 function showHtmlViewer(url) {
 	if(url) {
-		panels.open("html-viewer");
-		document.getElementById("html-iframe").src = url + "?platform=" + getPlatform();
+		if(endsWith(url, '.wiki')) {
+			panels.open("html-viewer");
+			injectWikiContent(document.getElementById("html-iframe"), url);
+		} else {
+			panels.open("html-viewer");
+			document.getElementById("html-iframe").src = url;
+		}
 	} else {
 		document.getElementById("html-iframe").src = "about:blank";
+	}
+}
+
+var wikiTemplate;
+
+function injectWikiContent(element, url) {
+	if(wikiTemplate == null) {
+		$.ajax({
+			url: "wiki-template.html",
+			success: function (data) {
+				wikiTemplate = data;
+				injectWikiContent(element, url);
+			},
+			error: function(jqXHR,textStatus) {alert("Failed to load wiki template:" + textStatus)}
+		});
+	} else {
+		$.ajax({
+			url: url,
+			success: function (data) {
+				$(element.contentWindow.document).empty();
+				html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikify(data))
+								   .replace(/\$PARENT_BASE_URL/g, removeTrailingSlash(''+window.location.pathname))
+					               .replace(/\$WIKI_BASE_URL/g, removeTrailingSlash(baseUrl(url)));
+				element.contentWindow.document.open();
+				element.contentWindow.document.write(html);
+				element.contentWindow.document.close();
+			},
+			error: function(jqXHR,textStatus) {alert("Failed to load URL:" + textStatus)}
+		});
 	}
 }

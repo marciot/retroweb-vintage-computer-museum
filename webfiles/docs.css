@@ -59,13 +59,6 @@ H1, H2, H3, H4, H5, H6 {
 OL LI {
 	padding-top: 4px;
 	padding-bottom: 4px;
-	border-bottom-style: solid;
-	border-width: 1px;
-	border-color: #ccc;
-}
-
-OL LI:last-child {
-  border: none;
 }
 
 UL:not([class]) {
@@ -75,13 +68,11 @@ UL:not([class]) {
 }
 
 UL:not([class]) LI {
-    padding-left: 1em; 
-    text-indent: -.7em;
+    padding: 3px 1em;
 }
 
 UL:not([class]) LI:before {
     content: "\25A0 ";
-	//content: "\25CF";
     color: #777;
 	padding-right:7px;
 	font-size: larger;
@@ -103,6 +94,32 @@ DT:after {
 DD {
 	margin-left: 110px;
 	padding-bottom: 0.5em;
+}
+
+DD:after {
+	content: '';
+	clear: left;
+	display: block;
+}
+
+DL.wide DT {
+	width: 30%;
+}
+
+DL.wide DD {
+	margin-left: 30%;
+	padding-left: 5px;
+}
+
+CITE {
+	text-decoration: underline;
+}
+
+HR {
+	max-width: 5%;
+	border: none;
+	border-top: 4px double #bbc;
+	margin: 30px auto;
 }
 
 /* Special styles */
@@ -163,7 +180,7 @@ SPAN.bubble-tail
     display: inline;
 }
 
-.footnote {
+.reference {
 	vertical-align: super;
 	font-size: smaller;
 	font-style: normal;
@@ -208,21 +225,74 @@ SPAN.highlight {
 	text-decoration:underline;
 }
 
-TD.centered {
+TD.align-center {
   text-align: center;
 }
 
-IMG.inline-icon {
+TD.align-right {
+  text-align: right;
+}
+
+IMG.inline {
 	height: 1em;
 	width: 1em;
 	vertical-align: text-bottom;
 }
 
+FIGURE.screenshot IMG {
+	display: block;
+	border: solid 1px black;
+	max-width: 100%;
+}
+
+FIGURE.screenshot FIGCAPTION {
+	font-size: smaller;
+	font-style: italic;
+	font-weight: bold;
+	padding-top: 5px;
+	display: block;
+	width: 100%;
+}
+
+FIGURE.screenshot {
+    margin: 20px auto;
+	display: table;
+	padding: 10px 10px;
+	border: solid 1px #bbc;
+	max-width: 75%;
+}
+
+FIGURE.float-right IMG {
+	display: block;
+	max-width: 100%;
+}
+
+FIGURE.float-right FIGCAPTION {
+	font-size: smaller;
+	font-style: italic;
+	font-weight: bold;
+	padding-top: 5px;
+	max-width: 90%;
+}
+
+FIGURE.float-right {
+	float: right;
+	padding: 10px 10px;
+	margin: 20px;
+	border: solid 1px #bbc;
+	max-width: 40%;
+}
+
+
 PRE {
 	font-family: monospace;
-    white-space: pre-line;
+    white-space: pre-wrap;
 	color: DarkGreen;
 	margin-left: 25px;
+}
+
+a[href^="http"]:after {
+     content: " " url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);   
 }
 
 .hidden {

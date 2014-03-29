@@ -179,7 +179,7 @@ function loadJSONIndex(json, callback) {
 
 var navHistory;
 var emptyNav;
-var baseURL = "docs/";
+var baseURL = "";
 var currentURL;
 
 function urlIsAbsolute(url) {
@@ -206,6 +206,14 @@ function rewriteRelativeUrl(url) {
 		rewritten = rewritten.replace(dotdot,'');
 	}
 	return rewritten;
+}
+
+function removeTrailingSlash(url) {
+	return url.replace(/\/$/,'');
+}
+
+function navGetBaseUrl() {
+	return baseURL;
 }
 
 function navGoBack() {

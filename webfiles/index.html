@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	<head>
 		<link rel="stylesheet" type="text/css" href="resizing-layout.css">
 	    <link rel="stylesheet" type="text/css" href="ui.css">
+		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 		<script type="text/javascript" src="ui.js"></script>
 		<script type="text/javascript" src="utils.js"></script>
 		<script type="text/javascript" src="navigator.js"></script>
+		<script type="text/javascript" src="wikify.js"></script>
 		<title>RetroWeb Browser</title>
 	</head>
 	<body>
@@ -91,11 +93,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<table id="ui-buttons" class="ui-buttons">
 				<tr>
 					<td class="ui-btn">
-						<img class="btn-icon" src="artwork/file-manager.png" onclick="panels.close('html-viewer'); panels.open('navigator-panel');"><br>
+						<img class="btn-icon" src="artwork/file-manager.png" onclick="clickShowNavigator();"><br>
 						<span class="btn-label">Show Navigator</span>
 					</td>
 					<td class="ui-btn">
-						<img class="btn-icon" src="artwork/document.png" onclick="panels.close('navigator-panel'); panels.open('html-viewer');"><br>
+						<img class="btn-icon" src="artwork/document.png" onclick="clickShowViewer();"><br>
 						<span class="btn-label">Show Documentation</span>
 					</td>
 					<td class="ui-btn">
@@ -115,7 +117,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 							<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
 							<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
 						</select>
-						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('navigator-panel');">
+						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('navigator-panel','fast');">
 						<img class="btn-icon" src="artwork/appbar.arrow.left.svg" onclick="navGoBack()">
 						<img class="btn-icon" src="artwork/appbar.home.svg" onclick="navGoHome()">
 					</div>
@@ -126,10 +128,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				
 				<div id="html-viewer" class="html-viewer sidepanel-window">
 					<div class="title-bar">
-						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('html-viewer');">
+						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('html-viewer','fast');">
 					</div>
 					<div class="fade-effect">
-						<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto" src="docs/about.html">
+						<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto">
 						</iframe>
 						<div class="fade-effect-top"></div>
 						<div class="fade-effect-bottom"></div>
@@ -138,9 +140,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			</div>
 		
 		</div>
-		
-		<script type="text/javascript">						
-			var popups = new PopupManager();
+				
+		<script type="text/javascript">	
+			var popupTm = new TransitionManager();
+			var popups = new PopupManager(popupTm);
 			popups.add("popup-mouse-center");
 			popups.add("popup-rom-missing");
 			popups.add("popup-ready-to-use");
@@ -148,12 +151,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			popups.add("popup-uploader");
 			popups.add("popup-mac-eject-disk");
 			
-			var panels = new PopupManager();
+			var panelTm = new TransitionManager();
+			var panels = new PopupManager(panelTm);
 			panels.add("navigator-panel");
 			panels.add("html-viewer");
 			
 			panels.open("navigator-panel");
-			panels.open("html-viewer");
 			
 			function choosePlatform() {
 				var platformMenu = document.getElementById('platform-select');
@@ -227,9 +230,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				emuPlatform = "pce-macplus";
 			}
 			setPlatform(emuPlatform);
-			
-			<!-- Load the default index into the navigator -->
-			fetchNavigatorUrl();
 
 			<!-- Load the style-sheet corresponding to the chosen platform -->
 			loadResource(emuPlatform + "/ui.css");
@@ -255,5 +255,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 		</script>
 		
+		<script type="text/javascript">		
+			// Now that the page is loaded, it is okay to start doing
+			// animation effects.
+			setTimeout( function() {
+				popupTm.setSpeed("slow", true);
+				panelTm.setSpeed("fast", false);
+			}, 1000);
+		</script>
 	</body>
 </html>
