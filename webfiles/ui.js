@@ -337,16 +337,18 @@ function StateSnapshot(id) {
 }
 
 function showHtmlViewer(url) {
+	var iframe = document.getElementById("html-iframe");
 	if(url) {
 		if(endsWith(url, '.wiki')) {
 			panels.open("html-viewer");
-			injectWikiContent(document.getElementById("html-iframe"), url);
+			injectWikiContent(iframe, url);
 		} else {
 			panels.open("html-viewer");
-			document.getElementById("html-iframe").src = url;
+			iframe.src = url;
 		}
+		$("html,body", iframe.contentWindow.document).scrollTop(0);
 	} else {
-		document.getElementById("html-iframe").src = "about:blank";
+		iframe.src = "about:blank";
 	}
 }
 
