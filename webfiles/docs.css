@@ -240,7 +240,6 @@ IMG.inline {
 }
 
 FIGURE.screenshot IMG {
-	display: block;
 	border: solid 1px black;
 	max-width: 100%;
 }
@@ -250,13 +249,16 @@ FIGURE.screenshot FIGCAPTION {
 	font-style: italic;
 	font-weight: bold;
 	padding-top: 5px;
-	display: block;
-	width: 100%;
+	max-width: 100%;
 }
 
 FIGURE.screenshot {
+	width:intrinsic; /* For Safari, see https://developer.mozilla.org/en-US/docs/CSS/width */
+    width:-moz-fit-content;
+    width:-webkit-fit-content;
+    width:fit-content;
+
     margin: 20px auto;
-	display: table;
 	padding: 10px 10px;
 	border: solid 1px #bbc;
 	max-width: 75%;
