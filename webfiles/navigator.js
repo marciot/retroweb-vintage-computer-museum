@@ -41,7 +41,7 @@ function addNavigatorIcon (type, title, value, opts) {
 			icon.ondblclick = function () {
 				if(emuState.isRunning()) {
 					gaTrackEvent("disk-mounted", title);
-					mountUrl(url, "fd1.disk");
+					mountUrl(url, "fd1");
 					post();
 				} else {
 					alert("Please boot the computer using a boot disk first");
@@ -51,13 +51,13 @@ function addNavigatorIcon (type, title, value, opts) {
 		case "boot-hd":
 			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1.img", true); post();}
+				{gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1", true); post();}
 			break;
 		case "boot-floppy":
 			icon.className = "boot-fd";
 			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); mountUrl(url,"fd1.disk", true); post();}
+				{gaTrackEvent("disk-mounted", title); mountUrl(url,"fd1", true); post();}
 			break;
 		case "boot-rom":
 			icon.ondblclick = function ()
@@ -124,26 +124,21 @@ function LoadException(message) {
 }
 
 function fetchDataFromUrl (url, callback) {
-	var xhr = new XMLHttpRequest();
-	 xhr.open('GET', url, true);
-	 xhr.onload = function(e) {
-	  if (this.status == 200) {
-		try {
-			callback(this.response);
-		} catch (e) {
-			alert ("Error processing response from " + url + ": " + e.message );
+	$.ajax({
+		url: url,
+		success: function (data) {
+			try {
+				callback(data);
+			} catch (e) {
+				alert ("Error processing response from " + url + ": " + e.message );
+				navGoBack();
+			}
+		},
+		error: function(jqXHR,textStatus) {
+			alert("Error fetching " + url + ":" + textStatus);
 			navGoBack();
 		}
-	  } else {
-		alert ("Error fetching " + url + ": Response code is " + this.status );
-		navGoBack();
-	  }
-	 };
-	 xhr.onerror = function(e) {
-		alert("Error retrieving data from " + url + ". This means the URL is invalid or because the website is not allowing CORS." );
-		navGoBack();
-	 };
-	 xhr.send();
+	});
 }
 
 function loadJSONIndex(json, callback) {
@@ -274,7 +269,7 @@ function fetchNavigatorUrl(url) {
 	
 	try {
 		fetchDataFromUrl(url, function(content) {
-				loadJSONIndex(JSON.parse(content), function(record) {
+				loadJSONIndex(content, function(record) {
 					addNavigatorIcon (record[0], record[1], record[2],record[3]);
 				} );
 			}

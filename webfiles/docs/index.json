@@ -18,6 +18,9 @@
 			],
 			"pce-rc759" : [
 				["hyperlink", "Boot Disks & Software",      "../private/pce-rc759/index.json"]
+			],
+			"jsmess-apple2e" : [
+				["hyperlink", "Boot Disks & Software",      "../private/jsmess-apple2e/index.json"]
 			]
 		}
 	}

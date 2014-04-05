@@ -19,9 +19,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 var showEjectWarning = true;
 
+function emulatorGetDrives() {
+	return {
+		"hd1" : "hd1.img",
+		"fd1" : "fd1.disk"
+	}
+}
+
+function emulatorConfigModule(module) {
+	module.arguments = [
+		"-c", "roms/pce-config.cfg",
+		"-r"
+	];
+}
+
 function emulatorPreRun() {
-	Module.arguments = ["-c", "roms/pce-config.cfg", "-r"];
-	
 	emuState.addFloppyDrive("fd1.disk");
 	emuState.addFloppyDrive("fd2.disk");
 	emuState.addFloppyDrive("fd3.disk");

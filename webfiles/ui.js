@@ -17,31 +17,109 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+function FilePreloader() {
+	this.dirs  = new Array();
+	this.files = new Array();
+
+	this.queueMakeDir = function(path) {
+		this.dirs.push({"path" : path});
+	}
+	
+	this.queuePreloadFile = function(parent, name, url) {		
+		this.files.push({
+			"parent" : parent,
+			"name" : name,
+			"url" : url
+		});
+	}
+	
+	this.preloadEmscriptenFS = function(FS) {
+		// Create the subdirectories
+		for (var i = 0; i < this.dirs.length; ++i) {
+			var d = this.dirs[i];
+			FS.mkdir (d.path);
+			console.log("Creating directory " + d.path);
+		}
+		
+		// Preload the files
+		for (var i = 0; i < this.files.length; ++i) {
+			var f = this.files[i];
+			FS.createPreloadedFile (f.parent, f.name, f.url, 1, 1, null, null);
+			console.log("Preloading " + f.url + " on " + f.parent + f.name);
+		}
+	}
+	
+	this.interactiveMount = function(where, url, isBootable) {	
+		if( typeof FS == 'undefined' ) {
+			// Defer loading of file until emulator resources are loaded
+			this.queuePreloadFile('/', where, url);
+			if (isBootable) {
+				emuState.bootMediaLoaded();
+			}
+		} else {
+			// Emulator is already running, mount immediately
+			console.log("Mounting " + url + " on " + where);
+			showStatus("Downloading...");
+			var onLoad = function() {
+				emulatorMountDisk(where);
+			}
+			var onErr = function() {
+				alert("Failed to load disk. Bummer!");
+			}
+			try {
+				FS.unlink(where);
+			} catch (err) {
+			}
+			FS.createPreloadedFile('/', where, url, 1, 1, onLoad, onErr);
+		}
+	}
+}
+
 function EmulatorState() {
+	this.loaded = false;
 	this.running = false;
 	this.gotRom = false;
 	this.gotBootMedia = false;
 	this.floppyDrives = new Array();
 	
-	addRunDependency("emu-roms");
-	addRunDependency("boot-disk");
 	popups.open("popup-rom-missing");
 	
-	this.runCalled = function() {
+	this.start = function() {
+		fetchDataFromUrl("startup.json", processStartupConfig);
+	}
+	
+	this.configLoaded = function() {
+		loadEmulatorResources(getPlatform());
+	}
+	
+	this.emscriptenPreInit = function() {
+		filePreloader.preloadEmscriptenFS(FS);
+	}
+	
+	this.emscriptenPreRun = function() {
+		emulatorPreRun();
 		this.running = true;
 	}
+	
 	this.romsLoaded = function() {
 		this.gotRoms = true;
-		removeRunDependency("emu-roms");
 		popups.close("popup-rom-missing");
-		popups.open("popup-ready-to-use");
+		popups.open("popup-need-boot-media");
 	}
 	this.bootMediaLoaded = function() {
-		removeRunDependency("boot-disk");
-		popups.close("popup-ready-to-use");
+		popups.close("popup-need-boot-media",0);
+		if(!this.running) {
+			this.requestRestart();
+		}
 	}
 	this.requestRestart = function() {
 		if (!this.romsLoaded || this.gotBootMedia) {
+			return;
+		}
+		if (!this.loaded) {
+			popups.open("popup-status", 0);
+			loadEmulator();
+			this.loaded = true;
 			return;
 		}
 		if(!this.running) {
@@ -72,9 +150,74 @@ function EmulatorState() {
 	}
 }
 
-var emuState;
+function createEmscriptenModule() {
+	var statusElement = document.getElementById('status');
+	var progressElement = document.getElementById('progress');
+	var macStatus = document.getElementById('popup-status');
+	var module = {
+		preRun: [function () {emuState.emscriptenPreRun();}],
+		postRun: [],
+		preInit: [function () {emuState.emscriptenPreInit();}],
+		arguments: ["-c", "roms/pce-config.cfg", "-r"],
+		noInitialRun: false,
+		print: function(text) {
+			text = Array.prototype.slice.call(arguments).join(' ');
+			console.log(text);
+		},
+		printErr: function(text) {
+			text = Array.prototype.slice.call(arguments).join(' ');
+			console.log(text);
+		},
+		canvas: document.getElementById('screen'),
+		setStatus: function(text) {console.log("Emscripten Status Update: " + text);},
+		totalDependencies: 0,
+		monitorRunDependencies: function(left) {
+			if(left > 0) {
+				popups.open("popup-status");
+			} else {
+				popups.close("popup-status");
+			}
+		}
+	};
+	return module;
+}
+
+function loadEmulatorResources(emuPlatform) {
+	console.log("Loading emulator resources");
+	loadResource(emuPlatform + "/ui.css");
+	loadResource(emuPlatform + "/glue.js");
+}
+
+function loadEmulator() {
+	emulatorConfigModule(Module);
+	loadResource(emuPlatform + "/" + getPlatform() + ".js", true);
+	//loadResource(emuPlatform + "/" + getPlatform() + ".js.gz", true);
+}
+
 var romFileName;
 var emuPlatform;
+
+/* Platform drop-down menu */
+function addPlatform(platform, title) {
+	var label  = document.createTextNode(title);
+	var option = document.createElement("option");
+	option.appendChild(label);
+	option.value = platform;
+	document.getElementById("platform-select").appendChild(option);
+}
+
+/* onChange handler for the platform drop-down menu */
+function onPlatformChange() {
+	var platformMenu = document.getElementById('platform-select');
+	var newPlatform = "platform=" + platformMenu.options[platformMenu.selectedIndex].value;
+	var newPage = new String(window.location);
+	if(newPage.indexOf("?") != -1) {
+		newPage = newPage.replace(/platform=[a-zA-Z0-9-]+/i, newPlatform);
+	} else {
+		newPage = newPage + "?" + newPlatform;
+	}
+	window.location = newPage;
+}
 
 function setPlatform(platform) {
 	emuPlatform = platform;
@@ -84,31 +227,21 @@ function getPlatform() {
 	return emuPlatform;
 }
 
-function preInit() {
-	addRunDependency();
-	fetchDataFromUrl("startup.json",
-		function(content) {
-			loadConfig(JSON.parse(content))
-		}
-	);
-	emuState = new EmulatorState();
-}
-
-function preRun() {
-	emulatorPreRun();
-	emuState.runCalled();
-}
-
-function loadConfig(json) {
+function processStartupConfig(json) {
 	var startupConfig = json["startup-config"];
 	if (
 		typeof startupConfig == 'undefined' ||
-		typeof startupConfig.version == 'undefined'
+		typeof startupConfig.version == 'undefined' ||
+		typeof startupConfig.emulators == 'undefined'
 	) {
 		throw new LoadException ("Index fails startup-config JSON format validation");
 	}
 	
-	platformConfig = startupConfig[getPlatform()];
+	for(var platform in startupConfig.emulators) {
+		addPlatform(platform, startupConfig.emulators[platform].name);
+	}
+	
+	platformConfig = startupConfig.emulators[getPlatform()];
 	
 	if (platformConfig == undefined) {
 		throw new LoadException ("The startup.json file does not contain a stanza corresponding to this platform");
@@ -127,8 +260,7 @@ function loadConfig(json) {
 	var dirsToMake = platformConfig["mkdir"];
 	for (var i = 0; i < dirsToMake.length; ++i) {
 		var path = dirsToMake[i];
-		FS.mkdir (path);
-		console.log("Creating directory " + path);
+		filePreloader.queueMakeDir(path);
 	}
 		
 	var filesToMount = platformConfig["mount-files"];
@@ -137,39 +269,18 @@ function loadConfig(json) {
 		if (parent == "_disabled") continue;
 		var name   = filesToMount[i][1];
 		var url    = filesToMount[i][2];
-		FS.createPreloadedFile (parent, name, url, 1, 1, null, function() {alert("Failed to load " + url);});
-		console.log("Preloading " + url + " on " + parent + name);
+		filePreloader.queuePreloadFile(parent,name,url);
 	}
 	if (!platformConfig["ask-for-rom"]) {
 		emuState.romsLoaded();
 	} else {
 		romFileName = platformConfig["ask-for-rom"];
 	}
-	removeRunDependency();
+	emuState.configLoaded();
 }
 
-function mountUrl(url, where, isBootable) {
-	console.log("Mounting " + url + " on " + where);
-	showStatus("Downloading...");
-	var onLoad = function () {
-		if (!emuState.isRunning()) {
-			if (isBootable) {
-				emuState.bootMediaLoaded();
-			}
-		} else {
-			emulatorMountDisk(where);
-		}
-		showStatus(false);
-	};
-	var onErr = function () {
-		showStatus(false);
-		alert("Failed to load disk. Bummer!");
-	};
-	try {
-		FS.unlink(where);
-	} catch (err) {
-	}
-	FS.createPreloadedFile('/', where, url, 1, 1, onLoad, onErr);
+function mountUrl(url, drive, isBootable) {
+	filePreloader.interactiveMount(emulatorGetDrives()[drive],url,isBootable);
 }
 
 function showStatus(text) {
@@ -239,27 +350,28 @@ function restartComputer() {
  */
 function TransitionManager() {
 	this.visibleElement;
-	this.speed;
+	this.speed = 0;
 	this.allowConcurrent = false;
 	
-	this.makeVisible = function(el) {
+	this.makeVisible = function(el,speed) {
 		if(el == this.visibleElement) {
 			return;
 		}
-		if(this.speed || true) {
-			if(this.visibleElement && el) {
-				if(this.allowConcurrent) {
-					$(this.visibleElement).fadeOut(this.speed);
-					$(el).fadeIn(this.speed);
-				} else {
-					$(this.visibleElement).fadeOut(this.speed,
-						function() {$(el).fadeIn(this.speed);});
-				}
-			} else if(this.visibleElement && !el) {
-				$(this.visibleElement).fadeOut(this.speed);
+		if(typeof speed == 'undefined') {
+			speed = this.speed;
+		}
+		if(this.visibleElement && el) {
+			if(this.allowConcurrent) {
+				$(this.visibleElement).fadeOut(speed);
+				$(el).fadeIn(speed);
 			} else {
-				$(el).fadeIn(this.speed);
+				$(this.visibleElement).fadeOut(speed,
+					function() {$(el).fadeIn(speed);});
 			}
+		} else if(this.visibleElement && !el) {
+			$(this.visibleElement).fadeOut(speed);
+		} else {
+			$(el).fadeIn(speed);
 		}
 		this.visibleElement = el;
 	}
@@ -287,22 +399,22 @@ function PopupManager(tm) {
 			}
 		}
 	};
-	this.apply = function() {
+	this.apply = function(speed) {
 		var topmost;
 		for (var i = 0; i < this.popupBoxes.length; ++i) {
 			if (this.popupBoxes[i].open) {
 				topmost = this.popupBoxes[i].id;
 			}
 		}
-		tm.makeVisible(document.getElementById(topmost));
+		tm.makeVisible(document.getElementById(topmost),speed);
 	}
-	this.open = function(id) {
+	this.open = function(id,speed) {
 		this.setState(id, true);
-		this.apply();
+		this.apply(speed);
 	};
 	this.close = function(id, speed) {
 		this.setState(id, false);
-		this.apply();
+		this.apply(speed);
 	};
 }
 

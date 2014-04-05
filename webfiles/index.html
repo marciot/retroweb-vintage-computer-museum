@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		<script type="text/javascript" src="navigator.js"></script>
 		<script type="text/javascript" src="wikify.js"></script>
 		<title>RetroWeb Browser</title>
-	</head>
-	<body>
+</head>
+<body>	
 		<div class="main no-select">
 			<div class="background" id="background">
 				<!-- Main rendering canvas for emulator: -->
@@ -47,7 +47,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 						</div>
 					</div>
 					
-					<div id="popup-ready-to-use" class="popup">
+					<div id="popup-need-boot-media" class="popup">
 						<img src="artwork/sunny.png" class="small-icon">
 						<h1>This computer needs a boot disk! Go find an icon with a green dot!</h1>
 					</div>
@@ -110,12 +110,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<div class="sidepanel" id="sidepanel">
 				<div id="navigator-panel" class="sidepanel-window">
 					<div class="title-bar">
-						<select id="platform-select" onchange="choosePlatform()">
+						<select id="platform-select" onchange="onPlatformChange()">
 							<option>Change computer type...</option>
-							<option value="pce-macplus">Apple Macintosh (pce/macplus)</option>
-							<option value="pce-atarist">Atari 1040ST (pce/atarist)</option>
-							<option value="pce-ibmpc">IBM PC Model 5160 (pce/ibmpc)</option>
-							<option value="pce-rc759">RC759 Piccoline(pce/rc759)</option>
 						</select>
 						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('navigator-panel','fast');">
 						<img class="btn-icon" src="artwork/appbar.arrow.left.svg" onclick="navGoBack()">
@@ -146,7 +142,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			var popups = new PopupManager(popupTm);
 			popups.add("popup-mouse-center");
 			popups.add("popup-rom-missing");
-			popups.add("popup-ready-to-use");
+			popups.add("popup-need-boot-media");
 			popups.add("popup-status");
 			popups.add("popup-uploader");
 			popups.add("popup-mac-eject-disk");
@@ -157,87 +153,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			panels.add("html-viewer");
 			
 			panels.open("navigator-panel");
-			
-			function choosePlatform() {
-				var platformMenu = document.getElementById('platform-select');
-				var newPlatform = "platform=" + platformMenu.options[platformMenu.selectedIndex].value;
-				var newPage = new String(window.location);
-				if(newPage.indexOf("?") != -1) {
-					newPage = newPage.replace(/platform=[a-zA-Z0-9-]+/i, newPlatform);
-				} else {
-					newPage = newPage + "?" + newPlatform;
-				}
-				window.location = newPage;
-			}
 		</script>
 		
 		<textarea class="emscripten" id="output" rows="8" hidden=1></textarea>
-		
-		<script type='text/javascript'>
-			var statusElement = document.getElementById('status');
-			var progressElement = document.getElementById('progress');
-			var macStatus = document.getElementById('popup-status');
-
-			var Module = {
-				preRun: [preRun],
-				postRun: [],
-				preInit: [preInit],
-				arguments: ["-c", "roms/pce-config.cfg", "-r"],
-				noInitialRun: false,
-				print: function(text) {
-					text = Array.prototype.slice.call(arguments).join(' ');
-					console.log(text);
-				},
-				printErr: function(text) {
-					text = Array.prototype.slice.call(arguments).join(' ');
-					console.log(text);
-				},
-				canvas: document.getElementById('screen'),
-				setStatus: function(text) {
-					  if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
-					  if (text === Module.setStatus.text) return;
-					  var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-					  var now = Date.now();
-					  if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
-					  if (m) {
-						text = m[1];
-						//progressElement.value = parseInt(m[2])*100;
-						//progressElement.max = parseInt(m[4])*100;
-						//progressElement.hidden = false;
-						popups.open("popup-status");
-					  } else {
-						//progressElement.value = null;
-						//progressElement.max = null;
-						//progressElement.hidden = true;
-						if (!text) popups.close("popup-status");
-					  }
-					  statusElement.innerHTML = text;
-					},
-				totalDependencies: 0,
-				monitorRunDependencies: function(left) {
-					this.totalDependencies = Math.max(this.totalDependencies, left);
-					Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
-				}
-			};
-			Module.setStatus('Downloading...');
-		</script>
 
 		<!-- Load the appropriate css and javascript depending on the platform -->
 		
 		<script type="text/javascript">
+			var Module = createEmscriptenModule();
+			//Module.setStatus('Downloading...');
+			
 			var emuPlatform = getQueryVariable("platform");
 			if (!emuPlatform) {
 				emuPlatform = "pce-macplus";
 			}
 			setPlatform(emuPlatform);
-
-			<!-- Load the style-sheet corresponding to the chosen platform -->
-			loadResource(emuPlatform + "/ui.css");
 			
-			<!-- Try to load either a gzipped version of the emulator code, or a regular version -->
-			loadResource(emuPlatform + "/glue.js");
-			loadResource(emuPlatform + "/" + emuPlatform + ".js", true);
-			<!-- loadResource(emuPlatform + "/" + emuPlatform + ".js.gz", true); -->
+			var Module        = createEmscriptenModule();
+			var emuState      = new EmulatorState();
+			var filePreloader = new FilePreloader();
+			
+			emuState.start();
 		</script>
 		
 		<!-- The following will enable Google Analytics if the .include file exists -->
@@ -263,5 +199,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				panelTm.setSpeed("fast", false);
 			}, 1000);
 		</script>
+
 	</body>
 </html>

@@ -7,6 +7,8 @@ This webapp brings together the work of many people. In particular:
 : [http://www.hampa.ch/pce/ Hampa Hug] for his excellent emulators
 ; PCE.js
 : [http://jamesfriend.com.au/pcejs-classic-mac-os James Friend] for porting PCE to JavaScript
+; JSMESS
+: The [http://www.mess.org/ MESS] and [http://jsmess.textfiles.com/ JSMESS team] for their emulators
 ; Emscripten and LLVM
 : The [https://github.com/kripken/emscripten Emscripten] and [http://llvm.org LLVM] teams for the cross-compilers.
 ; Mac Photo

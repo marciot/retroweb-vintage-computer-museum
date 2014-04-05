@@ -17,6 +17,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+function emulatorGetDrives() {
+	return {
+		"hd1" : "hd1.img",
+		"fd1" : "fd1.disk"
+	}
+}
+
+function emulatorConfigModule(module) {
+	module.arguments = [
+		"-c", "roms/pce-config.cfg",
+		"-r"
+	];
+}
+
 function emulatorPreRun() {
 	Module.arguments = ["-c", "roms/pce-config.cfg", "-g", "cga", "-r"];
 }

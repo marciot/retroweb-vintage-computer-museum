@@ -17,16 +17,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+function emulatorGetDrives() {
+	return {
+		"hd1" : "hd1.img",
+		"fd1" : "fd0.st"
+	}
+}
+
+function emulatorConfigModule(module) {
+	module.arguments = [
+		"-c", "roms/pce-config.cfg",
+		"-r"
+	];
+}
+
 function emulatorPreRun() {
-	Module.arguments = ["-c", "roms/pce-config.cfg", "-r"];
 	popups.open("popup-mouse-center");
 }
 
 // Loads a disk that has been copied to the emscripten local store
 function emulatorMountDisk(disk) {
 	console.log("Mounting " + disk);
-	FS.rename(disk,"fd0.st");
-	stSetMessage ("emu.disk.insert", "0:fd0.st");
+	stSetMessage ("emu.disk.insert", "0:" + disk);
 }
 
 function emulatorReset() {
