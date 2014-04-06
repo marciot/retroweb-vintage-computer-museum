@@ -270,14 +270,9 @@ function processStartupConfig(json) {
 		throw new LoadException ("The startup.json file does not contain a stanza corresponding to this platform");
 	}
 	
-	var initialIndex = platformConfig["initial-index"] || startupConfig["initial-index"];
-	if(initialIndex) {
-		fetchNavigatorUrl(initialIndex);
-	}
-	
-	var initialDoc = platformConfig["initial-doc"] || startupConfig["initial-doc"];
-	if(initialDoc) {
-		showHtmlViewer(initialDoc);
+	var doc = initialDoc || platformConfig["initial-doc"] || startupConfig["initial-doc"];
+	if(doc) {
+		fetchResource(doc);
 	}
 		
 	var dirsToMake = platformConfig["mkdir"];

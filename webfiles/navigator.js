@@ -17,31 +17,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-function getNavOptionsFunc(opts) {
-	if(opts && opts.document) {
-		var url = rewriteRelativeUrl(opts.document);
-		return function() {gaTrackEvent("document-shown", opts.document); showHtmlViewer(url);}
-	}
-	return function() {};
-}
-
 /* Adds an icon to the icon navigator */
 function addNavigatorIcon (type, title, value, opts) {
 	console.log("Adding navigator icon: type = " + type + " title = " + title);
 	
 	var label = document.createTextNode(title);
-	var icon = document.createElement("li");	
+	var icon  = document.createElement("li");	
 	
-	var post = getNavOptionsFunc(opts);
+	var post = (opts && opts.document) ?
+			function() {fetchHtmlDocument(null, opts.document);} :
+			function() {};
 	
 	icon.className = type;
 	switch(type) {
 		case "floppy":
-			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function () {
 				if(emuState.isRunning()) {
-					gaTrackEvent("disk-mounted", title);
-					mountDriveFromUrl("fd1", url, false);
+					fetchDriveFromUrl(title, "fd1", value, false);
 					post();
 				} else {
 					alert("Please boot the computer using a boot disk first");
@@ -49,15 +41,13 @@ function addNavigatorIcon (type, title, value, opts) {
 			}
 			break;
 		case "boot-hd":
-			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); mountDriveFromUrl("hd1", url, true); post();}
+				{fetchDriveFromUrl(title, "hd1", value, true); post();}
 			break;
 		case "boot-floppy":
 			icon.className = "boot-fd";
-			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); mountDriveFromUrl("fd1", url, true); post();}
+				{fetchDriveFromUrl(title, "fd1", value, true); post();}
 			break;
 		case "boot-rom":
 			icon.ondblclick = function ()
@@ -77,9 +67,8 @@ function addNavigatorIcon (type, title, value, opts) {
 			}
 			break;
 		case "document":
-			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
-				{gaTrackEvent("document-read", title); showHtmlViewer(url);}
+				{fetchHtmlDocument(title, url);}
 			break;
 		case "action":
 			icon.className = value;
@@ -234,10 +223,7 @@ function navHistoryPush(url) {
 }
 
 function fetchNavigatorUrl(url) {
-	var homeUrl = "index.json";
-	if (url == undefined) {
-		url = homeUrl;
-	}
+	url        = rewriteRelativeUrl(url);
 	
 	// If first time, store the DOM of an empty navigator so we can
 	// clear it again later
@@ -255,7 +241,6 @@ function fetchNavigatorUrl(url) {
 	// But if we have an absolute URL for our index, that
 	// becomes the new base prefix.
 	
-	url        = rewriteRelativeUrl(url);
 	baseURL    = baseUrl(url);
 	currentURL = urlFile(url);
 	
@@ -274,8 +259,30 @@ function fetchNavigatorUrl(url) {
 }
 
 function promptNavigatorUrl () {
-	var url = window.prompt("Please enter a URL to a RetroWeb JSON library index file","http://marciot.freeshell.org/macplus/library/index.json");
-	if (url) {
+	var example = "http://example.com/index.json";
+	var url = window.prompt("Please enter a URL to a RetroWeb JSON library index file", example);
+	if (url & url != example) {
 		fetchNavigatorUrl(url);
 	}
+}
+
+function fetchResource(url) {
+	if(endsWith(url, ".json")) {
+		fetchNavigatorUrl(url);
+	} else {
+		showHtmlViewer(url);
+		fetchNavigatorUrl(baseUrl(url) + "index.json");
+	}
+}
+
+function fetchDriveFromUrl(title, drive, url, isBootable) {
+	gaTrackEvent("disk-mounted", title);
+	mountDriveFromUrl(drive, rewriteRelativeUrl(url), isBootable);
+}
+
+function fetchHtmlDocument(title, url) {
+	if(title) {
+		gaTrackEvent("document-read", title);
+	}
+	showHtmlViewer(rewriteRelativeUrl(url));
 }

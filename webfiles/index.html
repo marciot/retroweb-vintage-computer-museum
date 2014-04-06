@@ -161,13 +161,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		
 		<script type="text/javascript">
 			var Module = createEmscriptenModule();
-			//Module.setStatus('Downloading...');
 			
 			var emuPlatform = getQueryVariable("platform");
 			if (!emuPlatform) {
 				emuPlatform = "pce-macplus";
 			}
 			setPlatform(emuPlatform);
+			
+			var initialDoc    = getQueryVariable("doc");
 			
 			var Module        = createEmscriptenModule();
 			var emuState      = new EmulatorState();

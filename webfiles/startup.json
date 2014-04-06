@@ -2,7 +2,6 @@
 	"startup-config" : {
 		"version"     : 1.0,
 		"initial-doc" : "docs/about.wiki",
-		"initial-index" : "docs/index.json",
 		"emulators" : {
 			"pce-ibmpc" : {
 				"name" : "IBM PC Model 5160 (pce/ibmpc)",
