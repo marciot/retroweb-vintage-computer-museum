@@ -26,7 +26,7 @@ function emulatorGetDrives() {
 
 function emulatorConfigModule(module) {
 	module.arguments = [
-		"-c", "roms/pce-config.cfg",
+		"-c", "pce-config.cfg",
 		"-r"
 	];
 }

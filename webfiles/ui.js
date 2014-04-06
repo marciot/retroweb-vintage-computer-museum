@@ -17,62 +17,83 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-function FilePreloader() {
+function FileManager() {
 	this.dirs  = new Array();
 	this.files = new Array();
-
-	this.queueMakeDir = function(path) {
-		this.dirs.push({"path" : path});
-	}
 	
-	this.queuePreloadFile = function(parent, name, url) {		
-		this.files.push({
-			"parent" : parent,
-			"name" : name,
-			"url" : url
-		});
-	}
-	
-	this.preloadEmscriptenFS = function(FS) {
-		// Create the subdirectories
+	/* The following function performs enqueued file operations
+	 * on an Emscripten FS object.
+	 */
+	this.writeEmscriptenFS = function(FS) {
+		// Create subdirectories
 		for (var i = 0; i < this.dirs.length; ++i) {
 			var d = this.dirs[i];
 			FS.mkdir (d.path);
 			console.log("Creating directory " + d.path);
 		}
 		
-		// Preload the files
+		// Write files
 		for (var i = 0; i < this.files.length; ++i) {
 			var f = this.files[i];
-			FS.createPreloadedFile (f.parent, f.name, f.url, 1, 1, null, null);
-			console.log("Preloading " + f.url + " on " + f.parent + f.name);
+			console.log("Writing " + f.name + " to Emscripten FS");
+			FS.writeFile(f.name, new Uint8Array(f.data), { encoding: 'binary' });
 		}
 	}
 	
-	this.interactiveMount = function(where, url, isBootable) {	
+	/* The following functions will behave differently depending on whether
+	   the emulator is running. If it is, they will perform the file operations
+	   immediately. Otherwise, the operations are enqueued so that
+	   writeEmscriptenFS will perform them once the emulator has started up. */
+	
+	this.makeDir = function(path) {
+		if( typeof FS == 'undefined' ) {
+			this.dirs.push({"path" : path});
+		} else {
+			FS.mkdir (path);
+			console.log("Creating directory " + path);
+		}
+	}
+	
+	this.writeFileFromBinaryData = function(name, data, isBootable) {
 		if( typeof FS == 'undefined' ) {
 			// Defer loading of file until emulator resources are loaded
-			this.queuePreloadFile('/', where, url);
+			this.files.push({"name" : name, "data" : data});
 			if (isBootable) {
 				emuState.bootMediaLoaded();
 			}
 		} else {
 			// Emulator is already running, mount immediately
-			console.log("Mounting " + url + " on " + where);
-			showStatus("Downloading...");
-			var onLoad = function() {
-				emulatorMountDisk(where);
-			}
-			var onErr = function() {
-				alert("Failed to load disk. Bummer!");
-			}
+			console.log("Mounting data on " + name);
 			try {
-				FS.unlink(where);
+				FS.unlink(name);
 			} catch (err) {
 			}
-			FS.createPreloadedFile('/', where, url, 1, 1, onLoad, onErr);
+			FS.writeFile(name, new Uint8Array(data), { encoding: 'binary' });
+			emulatorMountDisk(name);
 		}
 	}
+	
+	this.writeFileFromUrl = function(name, url, isBootable) {
+		var me = this;
+		console.log("Fetching " + url);
+		showStatus("Downloading...");
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.responseType = "arraybuffer";
+		xhr.onload = function(e) {
+			showStatus(false);
+			me.writeFileFromBinaryData(name,xhr.response, isBootable);
+		};
+		xhr.send();
+	}
+}
+
+function mountDriveFromUrl(drive, url, isBootable) {
+	fileManager.writeFileFromUrl(emulatorGetDrives()[drive],url,isBootable);
+}
+
+function mountDriveFromData(drive, data, isBootable) {
+	fileManager.writeFileFromBinaryData(emulatorGetDrives()[drive],data,isBootable);
 }
 
 function EmulatorState() {
@@ -93,7 +114,8 @@ function EmulatorState() {
 	}
 	
 	this.emscriptenPreInit = function() {
-		filePreloader.preloadEmscriptenFS(FS);
+		popups.close("popup-status");
+		fileManager.writeEmscriptenFS(FS);
 	}
 	
 	this.emscriptenPreRun = function() {
@@ -107,7 +129,7 @@ function EmulatorState() {
 		popups.open("popup-need-boot-media");
 	}
 	this.bootMediaLoaded = function() {
-		popups.close("popup-need-boot-media",0);
+		popups.close("popup-need-boot-media");
 		if(!this.running) {
 			this.requestRestart();
 		}
@@ -117,8 +139,9 @@ function EmulatorState() {
 			return;
 		}
 		if (!this.loaded) {
-			popups.open("popup-status", 0);
-			loadEmulator();
+			showStatus("Starting emulator...");
+			// Need to delay a bit otherwise the status will not update
+			setTimeout(loadEmulator, 100);
 			this.loaded = true;
 			return;
 		}
@@ -158,7 +181,7 @@ function createEmscriptenModule() {
 		preRun: [function () {emuState.emscriptenPreRun();}],
 		postRun: [],
 		preInit: [function () {emuState.emscriptenPreInit();}],
-		arguments: ["-c", "roms/pce-config.cfg", "-r"],
+		arguments: [],
 		noInitialRun: false,
 		print: function(text) {
 			text = Array.prototype.slice.call(arguments).join(' ');
@@ -258,18 +281,24 @@ function processStartupConfig(json) {
 	}
 		
 	var dirsToMake = platformConfig["mkdir"];
-	for (var i = 0; i < dirsToMake.length; ++i) {
-		var path = dirsToMake[i];
-		filePreloader.queueMakeDir(path);
+	if(dirsToMake) {
+		for (var i = 0; i < dirsToMake.length; ++i) {
+			var path = dirsToMake[i];
+			fileManager.makeDir(path);
+		}
+	}
+	
+	function filePart(path) {
+		return path.substr(path.lastIndexOf("/")+1);
 	}
 		
-	var filesToMount = platformConfig["mount-files"];
+	var filesToMount = platformConfig["preload-files"];
 	for (var i = 0; i < filesToMount.length; ++i) {
-		var parent = filesToMount[i][0];
-		if (parent == "_disabled") continue;
-		var name   = filesToMount[i][1];
-		var url    = filesToMount[i][2];
-		filePreloader.queuePreloadFile(parent,name,url);
+		if (filesToMount[i].charAt(0) == '#') continue;
+		var parts = filesToMount[i].split(/\s+->\s+/);
+		var url = parts[0];
+		var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
+		fileManager.writeFileFromUrl('/' + name, url);
 	}
 	if (!platformConfig["ask-for-rom"]) {
 		emuState.romsLoaded();
@@ -277,10 +306,6 @@ function processStartupConfig(json) {
 		romFileName = platformConfig["ask-for-rom"];
 	}
 	emuState.configLoaded();
-}
-
-function mountUrl(url, drive, isBootable) {
-	filePreloader.interactiveMount(emulatorGetDrives()[drive],url,isBootable);
 }
 
 function showStatus(text) {
@@ -295,58 +320,35 @@ function showStatus(text) {
 
 /* Upload from local disk functionality */
 
-function openFileUploader (message, callback) {
-	document.getElementById('uploader-text').innerHTML = message;
+function mountLocalFile(drive, isBootable) {
+	document.getElementById('uploader-text').innerHTML = "Select floppy disk image";
 	document.getElementById('uploader-ok-btn').onclick = function(evt) {
-		callback(document.getElementById('uploaderfile').files[0]);
+		popups.close("popup-uploader");
+		var file = document.getElementById('uploaderfile').files[0];
+		if(!window.FileReader) return; // Browser is not compatible
+		var reader = new FileReader();
+		reader.onload = function(evt) {
+			if(evt.target.readyState != 2) return;
+			if(evt.target.error) {
+				showStatus(false);
+				alert('Error while reading file');
+				return;
+			}
+			mountDriveFromData(drive, evt.target.result,isBootable);
+			showStatus(false);
+		};
+		showStatus("Loading...");
+		reader.readAsArrayBuffer(file);
 		return false;
 	}
 	popups.open("popup-uploader");
-}
-
-function doLocalUpload (file, path, callback) {
-	if(!window.FileReader) return; // Browser is not compatible
-	var reader = new FileReader();
-
-    reader.onload = function(evt) {
-        if(evt.target.readyState != 2) return;
-        if(evt.target.error) {
-			showStatus(false);
-            alert('Error while reading file');
-            return;
-        }
-
-        var filecontent =  new Uint8Array(evt.target.result);
-		FS.writeFile(path, filecontent, { encoding: 'binary' });
-		callback();
-		showStatus(false);
-    };
-	showStatus("Loading...");
-    reader.readAsArrayBuffer(file);
-}
-
-function doFloppyUpload (file) {
-	if(!file) return;
-	popups.close("popup-uploader");
-	doLocalUpload(file, "/fd1.disk", function() {
-		emulatorMountDisk("fd1.disk");
-	});
-}
-
-function doRomUpload (file) {
-	if(!file) return;
-	popups.close("popup-uploader");
-	doLocalUpload(file, romFileName, function() {
-		emuState.romsLoaded();
-	});
 }
 
 function restartComputer() {
 	emuState.requestRestart();
 }
 
-/* This object enforces the rule that when an object is shown, the
- * previous must be hidden
+/* This object handles visibility transitions from one object to the next
  */
 function TransitionManager() {
 	this.visibleElement;

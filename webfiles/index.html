@@ -171,7 +171,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			
 			var Module        = createEmscriptenModule();
 			var emuState      = new EmulatorState();
-			var filePreloader = new FilePreloader();
+			var fileManager   = new FileManager();
 			
 			emuState.start();
 		</script>
@@ -195,7 +195,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			// Now that the page is loaded, it is okay to start doing
 			// animation effects.
 			setTimeout( function() {
-				popupTm.setSpeed("slow", true);
 				panelTm.setSpeed("fast", false);
 			}, 1000);
 		</script>

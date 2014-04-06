@@ -8637,7 +8637,7 @@ function copyTempDouble(ptr) {
         switch (event.type) {
           case 'keydown': case 'keyup': {
             var down = event.type === 'keydown';
-            //Module.print('Received key event: ' + event.keyCode);
+            Module.print('Received key event: ' + event.keyCode);
             var key = event.keyCode;
             if (key >= 65 && key <= 90) {
               key += 32; // make lowercase for SDL

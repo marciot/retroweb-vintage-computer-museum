@@ -41,7 +41,7 @@ function addNavigatorIcon (type, title, value, opts) {
 			icon.ondblclick = function () {
 				if(emuState.isRunning()) {
 					gaTrackEvent("disk-mounted", title);
-					mountUrl(url, "fd1");
+					mountDriveFromUrl("fd1", url, false);
 					post();
 				} else {
 					alert("Please boot the computer using a boot disk first");
@@ -51,13 +51,13 @@ function addNavigatorIcon (type, title, value, opts) {
 		case "boot-hd":
 			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); mountUrl(url,"hd1", true); post();}
+				{gaTrackEvent("disk-mounted", title); mountDriveFromUrl("hd1", url, true); post();}
 			break;
 		case "boot-floppy":
 			icon.className = "boot-fd";
 			var url = rewriteRelativeUrl(value);
 			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); mountUrl(url,"fd1", true); post();}
+				{gaTrackEvent("disk-mounted", title); mountDriveFromUrl("fd1", url, true); post();}
 			break;
 		case "boot-rom":
 			icon.ondblclick = function ()
@@ -84,17 +84,11 @@ function addNavigatorIcon (type, title, value, opts) {
 		case "action":
 			icon.className = value;
 			switch (value) {
-				case "load-rom":
-					icon.className = "rom";
-					icon.ondblclick = function () {
-						openFileUploader ("Select a ROM image", doRomUpload);
-					};
-					break;
 				case "local-floppy":
 					icon.className = "upload";
 					icon.ondblclick = function () {
 						gaTrackEvent("disk-mounted", "local-floppy");
-						openFileUploader ("Select floppy disk image", doFloppyUpload);
+						mountLocalFile("fd1", true);
 					};
 					break;
 				case "enter-url":
