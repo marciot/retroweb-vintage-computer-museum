@@ -65,7 +65,7 @@ function table_row(m,p) {
 			attr += ' colspan="' + args[3] + '"';
 		}
 		if(args[4] != '') {
-			attr += ' rowspan="' + args[4] + '"';
+			attr += ' rowspan="' + args[4].substring(1) + '"';
 		}
 		if(args[1] == '!') {
 			s += '<th' + attr + '>' + args[5] + '</th>';

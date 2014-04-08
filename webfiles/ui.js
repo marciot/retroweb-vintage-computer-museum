@@ -143,11 +143,7 @@ function EmulatorState() {
 			// Need to delay a bit otherwise the status will not update
 			setTimeout(loadEmulator, 100);
 			this.loaded = true;
-			return;
-		}
-		if(!this.running) {
-			run();
-		} else {
+		} else if(this.running) {
 			emulatorReset();
 		}
 	}
@@ -250,6 +246,29 @@ function getPlatform() {
 	return emuPlatform;
 }
 
+function fetchDataFromUrl (url, callback) {
+	$.ajax({
+		url: url,
+		success: function (data) {
+			try {
+				callback(data);
+			} catch (e) {
+				alert ("Error processing response from " + url + ": " + e.message );
+				navGoBack();
+			}
+		},
+		error: function(jqXHR,textStatus) {
+			alert("Error fetching " + url + ":" + textStatus);
+			navGoBack();
+		}
+	});
+}
+
+function LoadException(message) {
+   this.message = message;
+   this.name = "LoadException";
+}
+
 function processStartupConfig(json) {
 	var startupConfig = json["startup-config"];
 	if (
@@ -272,7 +291,7 @@ function processStartupConfig(json) {
 	
 	var doc = initialDoc || platformConfig["initial-doc"] || startupConfig["initial-doc"];
 	if(doc) {
-		fetchResource(doc);
+		navFetchResource(doc);
 	}
 		
 	var dirsToMake = platformConfig["mkdir"];
@@ -415,18 +434,6 @@ function PopupManager(tm) {
 	};
 }
 
-function clickShowNavigator() {
-	panels.setState('html-viewer',false);
-	panels.setState('navigator-panel',true);
-	panels.apply();
-}
-
-function clickShowViewer() {
-	panels.setState('html-viewer',true);
-	panels.setState('navigator-panel',false);
-	panels.apply();
-}
-
 /* This object saves the contents of a DOM element so that it can be restored
  * later.
  */
@@ -443,49 +450,4 @@ function StateSnapshot(id) {
 		parent.replaceChild(this.state.cloneNode(true), element);
 	};
 	return this;
-}
-
-function showHtmlViewer(url) {
-	var iframe = document.getElementById("html-iframe");
-	if(url) {
-		if(endsWith(url, '.wiki')) {
-			panels.open("html-viewer");
-			injectWikiContent(iframe, url);
-		} else {
-			panels.open("html-viewer");
-			iframe.src = url;
-		}
-		$("html,body", iframe.contentWindow.document).scrollTop(0);
-	} else {
-		iframe.src = "about:blank";
-	}
-}
-
-var wikiTemplate;
-
-function injectWikiContent(element, url) {
-	if(wikiTemplate == null) {
-		$.ajax({
-			url: "wiki-template.html",
-			success: function (data) {
-				wikiTemplate = data;
-				injectWikiContent(element, url);
-			},
-			error: function(jqXHR,textStatus) {alert("Failed to load wiki template:" + textStatus)}
-		});
-	} else {
-		$.ajax({
-			url: url,
-			success: function (data) {
-				$(element.contentWindow.document).empty();
-				html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikify(data))
-								   .replace(/\$PARENT_BASE_URL/g, removeTrailingSlash(''+window.location.pathname))
-					               .replace(/\$WIKI_BASE_URL/g, removeTrailingSlash(baseUrl(url)));
-				element.contentWindow.document.open();
-				element.contentWindow.document.write(html);
-				element.contentWindow.document.close();
-			},
-			error: function(jqXHR,textStatus) {alert("Failed to load URL:" + textStatus)}
-		});
-	}
 }

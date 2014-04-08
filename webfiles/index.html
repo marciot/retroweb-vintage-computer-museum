@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	<head>
 		<link rel="stylesheet" type="text/css" href="resizing-layout.css">
 	    <link rel="stylesheet" type="text/css" href="ui.css">
+	    <link rel="stylesheet" type="text/css" href="icons.css">
 		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 		<script type="text/javascript" src="ui.js"></script>
 		<script type="text/javascript" src="utils.js"></script>
@@ -49,7 +50,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					
 					<div id="popup-need-boot-media" class="popup">
 						<img src="artwork/sunny.png" class="small-icon">
-						<h1>This computer needs a boot disk! Go find an icon with a green dot!</h1>
+						<h1>This computer needs a boot disk!<br>Follow the green dots!</h1>
 					</div>
 					
 					<div id="popup-rom-missing" class="popup">
@@ -93,12 +94,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<table id="ui-buttons" class="ui-buttons">
 				<tr>
 					<td class="ui-btn">
-						<img class="btn-icon" src="artwork/file-manager.png" onclick="clickShowNavigator();"><br>
+						<img class="btn-icon" src="artwork/document.png" onclick="panels.open('navigator-panel');"><br>
 						<span class="btn-label">Show Navigator</span>
-					</td>
-					<td class="ui-btn">
-						<img class="btn-icon" src="artwork/document.png" onclick="clickShowViewer();"><br>
-						<span class="btn-label">Show Documentation</span>
 					</td>
 					<td class="ui-btn">
 						<img class="btn-icon" src="artwork/power.png" onclick="restartComputer()"><br>
@@ -107,24 +104,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				</tr>
 			</table>
 				
-			<div class="sidepanel" id="sidepanel">
-				<div id="navigator-panel" class="sidepanel-window">
+			<div class="sidepanel" id="sidepanel">				
+				<div id="navigator-panel" class="navigator sidepanel-window">
 					<div class="title-bar">
 						<select id="platform-select" onchange="onPlatformChange()">
 							<option>Change computer type...</option>
 						</select>
-						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('navigator-panel','fast');">
+						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('navigator-panel');">
 						<img class="btn-icon" src="artwork/appbar.arrow.left.svg" onclick="navGoBack()">
 						<img class="btn-icon" src="artwork/appbar.home.svg" onclick="navGoHome()">
-					</div>
-					<ul class="navigator" id="navigator">
-					</ul>
-					<p class="navigator-help">Double-click an icon to open</p>
-				</div>
-				
-				<div id="html-viewer" class="html-viewer sidepanel-window">
-					<div class="title-bar">
-						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('html-viewer','fast');">
 					</div>
 					<div class="fade-effect">
 						<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto">
@@ -150,9 +138,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			var panelTm = new TransitionManager();
 			var panels = new PopupManager(panelTm);
 			panels.add("navigator-panel");
-			panels.add("html-viewer");
-			
 			panels.open("navigator-panel");
+
+			// Add tab index to ensure the canvas retains focus			
+			$("#screen").attr("tabindex", "0").mousedown(function(){ $(this).focus(); return false; });
 		</script>
 		
 		<textarea class="emscripten" id="output" rows="8" hidden=1></textarea>

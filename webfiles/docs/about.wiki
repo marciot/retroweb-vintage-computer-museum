@@ -9,7 +9,14 @@ Welcome to the RetroWeb Vintage Computer Museum, an unique web exhibit where you
 |^ [[Image:../artwork/us.png]] | Atari 1040ST      | 1986-1993[5]| US $799.99 (mono)<br>US $999.99 (color)|
 |^ [[Image:../artwork/dk.png]] | RC759 Piccoline   | 1984-1989[6]| ?                                      |
 
-To get started, click the filing cabinet ([[image-inline:../artwork/file-manager.png]]) above, choose a computer from the drop down menu and look inside the &ldquo;Boot Disks &amp; Software&rdquo; folder for a boot disk.
+== Click an icon to get started: ==
+				
+<div class="icons">
+# [[?doc=copyrights.wiki                           Copyrights & Fair Use]]
+# [[?doc=credits.wiki                              Thanks to...]]
+# [[?folder-dot=../private/$PLATFORM/index.wiki    Web Demos]]
+# [[?folder=more.wiki                              Docs & Extras]]
+</div>
 
 == References ==
 

@@ -1,0 +1,33 @@
+= Advanced Actions =
+
+The advanced actions allow you to access special emulator features. These actions are intended for more technically savvy users.
+
+== Local floppy ==
+
+<div class="icons float-right">
+# [[?local-floppy           Local floppy]]
+</div>
+
+This action can be used to load floppy images that are stored on local computer into the emulator.
+
+Not all disk images will be compatible with this emulator and vintage software is often distributed in files that must be unpacked and copied into disk images using other tools.
+
+=== RetroWeb URL ===
+
+<div class="icons float-right">
+# [[?enter-url              RetroWeb URL]]
+</div>
+
+The "RetroWeb URL" icon allows you to enter an URL for a RetroWeb wiki file. These are similar to web URLs, but must point to files written in a special wiki style markup. You may use this feature to access content that others have written, or to experiment writing your own content.
+
+== What is the RetroWeb? ==
+
+The RetroWeb is the name I coined for a hyper-linked collection of content for use with an emulated computer. A RetroWeb browser, by extension, is an emulator running alongside an interface that allows you to navigate that content. This webapp, which curiously runs inside your web browser, is thus a RetroWeb browser. It allows you to surf a specially curated portion of the web related to this emulated computer.
+
+Although computer emulators already exist in various forms and there are many web sites devoted to the preservation of historical software, I believe this webapp represents the first time that the means to find software and documentation has been put right next to the means to interact with it.
+
+== Hosting RetroWeb Content ==
+
+This webapp makes use of [http://www.json.org/ JSON] and [http://enable-cors.org CORS] technologies to allow for the dynamic hyper-linking of resources, thus providing the "web" part of RetroWeb.
+
+If you own a website, you can use this functionality to host your own resources for this emulator. By publishing an index file and implementing CORS, others will be allowed to link from their content to yours.

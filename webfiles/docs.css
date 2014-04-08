@@ -285,6 +285,10 @@ FIGURE.float-right {
 	max-width: 40%;
 }
 
+DIV.float-right {
+	float: right;
+	padding: 0px 20px;
+}
 
 PRE {
 	font-family: monospace;

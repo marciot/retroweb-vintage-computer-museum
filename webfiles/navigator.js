@@ -17,148 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* Adds an icon to the icon navigator */
-function addNavigatorIcon (type, title, value, opts) {
-	console.log("Adding navigator icon: type = " + type + " title = " + title);
-	
-	var label = document.createTextNode(title);
-	var icon  = document.createElement("li");	
-	
-	var post = (opts && opts.document) ?
-			function() {fetchHtmlDocument(null, opts.document);} :
-			function() {};
-	
-	icon.className = type;
-	switch(type) {
-		case "floppy":
-			icon.ondblclick = function () {
-				if(emuState.isRunning()) {
-					fetchDriveFromUrl(title, "fd1", value, false);
-					post();
-				} else {
-					alert("Please boot the computer using a boot disk first");
-				}
-			}
-			break;
-		case "boot-hd":
-			icon.ondblclick = function ()
-				{fetchDriveFromUrl(title, "hd1", value, true); post();}
-			break;
-		case "boot-floppy":
-			icon.className = "boot-fd";
-			icon.ondblclick = function ()
-				{fetchDriveFromUrl(title, "fd1", value, true); post();}
-			break;
-		case "boot-rom":
-			icon.ondblclick = function ()
-				{gaTrackEvent("disk-mounted", title); emulatorBootFromRom(); post();}
-			break;
-		case "hyperlink":
-			if (endsWith(value, ".json")) {
-				if (value.indexOf("http://") === 0) {
-					icon.className = "world";
-				} else {
-					icon.className = "folder";
-				}
-				icon.ondblclick = function () {fetchNavigatorUrl(value); post();}
-			} else {
-				icon.className = "html-doc";
-				icon.ondblclick = function () {window.open(value);}
-			}
-			break;
-		case "document":
-			icon.ondblclick = function ()
-				{fetchHtmlDocument(title, url);}
-			break;
-		case "action":
-			icon.className = value;
-			switch (value) {
-				case "local-floppy":
-					icon.className = "upload";
-					icon.ondblclick = function () {
-						gaTrackEvent("disk-mounted", "local-floppy");
-						mountLocalFile("fd1", true);
-					};
-					break;
-				case "enter-url":
-					icon.className = "world";
-					icon.ondblclick = promptNavigatorUrl;
-					break;
-				default:
-					console.log("Undefined action: value = " + value);
-					return;
-			}
-			break;
-		default:
-			console.log("Undefined icon type: type = " + type);
-			return;
-	}
-
-	icon.appendChild(label);
-		
-	document.getElementById("navigator").appendChild(icon);
-}
-
-/* Navigator I/O functions */
-
-function LoadException(message) {
-   this.message = message;
-   this.name = "LoadException";
-}
-
-function fetchDataFromUrl (url, callback) {
-	$.ajax({
-		url: url,
-		success: function (data) {
-			try {
-				callback(data);
-			} catch (e) {
-				alert ("Error processing response from " + url + ": " + e.message );
-				navGoBack();
-			}
-		},
-		error: function(jqXHR,textStatus) {
-			alert("Error fetching " + url + ":" + textStatus);
-			navGoBack();
-		}
-	});
-}
-
-function loadJSONIndex(json, callback) {
-	if (
-		typeof json.retroweb == 'undefined' ||
-		typeof json.retroweb.version == 'undefined' ||
-		typeof json.retroweb.index == 'undefined'
-	) {
-		throw new LoadException ("Index fails RetroWeb JSON format validation");
-	}
-	
-	try {
-		// Load platform specific index
-		var index = json.retroweb.index[getPlatform()];
-		if( index != undefined ) {
-			for (var i = 0; i < index.length; ++i) {
-				callback (index[i]);
-			}
-		}
-		// Load platform generic index
-		var index = json.retroweb.index["*"];
-		if( index != undefined ) {
-			for (var i = 0; i < index.length; ++i) {
-				callback (index[i]);
-			}
-		}
-	} catch (err) {
-		alert (err.message);
-	}
-}
-
-// Navigator functionality
-
 var navHistory;
-var emptyNav;
 var baseURL = "";
 var currentURL;
+var wikiTemplate;
 
 function urlIsAbsolute(url) {
 	return url.indexOf("://") != -1;
@@ -200,7 +62,7 @@ function navGoBack() {
 		baseURL = last[0];
 		url     = last[1];
 		currentURL = null;
-		fetchNavigatorUrl(url);
+		navFetchResource(url);
 	}
 }
 
@@ -211,7 +73,7 @@ function navGoHome() {
 		url     = first[1];
 		navHistory.length = 0;
 		currentURL = null;
-		fetchNavigatorUrl(url);
+		navFetchResource(url);
 	}
 }
 
@@ -222,15 +84,8 @@ function navHistoryPush(url) {
 	navHistory.push([baseURL, url]);
 }
 
-function fetchNavigatorUrl(url) {
-	url        = rewriteRelativeUrl(url);
-	
-	// If first time, store the DOM of an empty navigator so we can
-	// clear it again later
-	if (emptyNav == null) {
-		emptyNav = new StateSnapshot("navigator").capture();
-	}
-	emptyNav.restore();
+function navFetchResource(url) {
+	url = rewriteRelativeUrl(url);
 	
 	// Push the current page into the history
 	if(currentURL) {
@@ -246,32 +101,99 @@ function fetchNavigatorUrl(url) {
 	
 	console.log( "BaseURL: " + baseURL + "  url: " + url );
 	
-	try {
-		fetchDataFromUrl(url, function(content) {
-				loadJSONIndex(content, function(record) {
-					addNavigatorIcon (record[0], record[1], record[2],record[3]);
-				} );
-			}
-		);
-	} catch (err) {
-		alert(err.message);
-	}
-}
-
-function promptNavigatorUrl () {
-	var example = "http://example.com/index.json";
-	var url = window.prompt("Please enter a URL to a RetroWeb JSON library index file", example);
-	if (url & url != example) {
-		fetchNavigatorUrl(url);
-	}
-}
-
-function fetchResource(url) {
-	if(endsWith(url, ".json")) {
-		fetchNavigatorUrl(url);
+	var iframe = document.getElementById("html-iframe");
+	if(url) {
+		if(endsWith(url, '.wiki')) {
+			panels.open("navigator-panel");
+			injectWikiContent(iframe, url);
+		} else {
+			panels.open("navigator-panel");
+			iframe.src = url;
+		}
+		$("html,body", iframe.contentWindow.document).scrollTop(0);
 	} else {
-		showHtmlViewer(url);
-		fetchNavigatorUrl(baseUrl(url) + "index.json");
+		iframe.src = "about:blank";
+	}
+}
+
+function injectWikiContent(element, url) {
+	if(wikiTemplate == null) {
+		$.ajax({
+			url: "wiki-template.html",
+			success: function (data) {
+				wikiTemplate = data;
+				injectWikiContent(element, url);
+			},
+			error: function(jqXHR,textStatus) {alert("Failed to load wiki template:" + textStatus)}
+		});
+	} else {
+		$.ajax({
+			url: url,
+			success: function (data) {
+				$(element.contentWindow.document).empty();
+				var wikiSrc = wikify(data);
+				html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikiSrc)
+								   .replace(/\$WIKI_SOURCE/g,
+										wikiSrc.replace(/</g,'&lt;')
+											   .replace(/>/g,'&gt;'))
+								   .replace(/\$PLATFORM/g, getPlatform())
+								   .replace(/\$PARENT_BASE_URL/g, removeTrailingSlash(''+window.location.pathname))
+					               .replace(/\$WIKI_BASE_URL/g, removeTrailingSlash(baseUrl(url)));
+				element.contentWindow.document.open();
+				element.contentWindow.document.write(html);
+				element.contentWindow.document.close();
+			},
+			error: function(jqXHR,textStatus) {alert("Failed to load URL: " + textStatus)}
+		});
+	}
+}
+
+function parseQuery(url) {
+	var vars = (url || window.location.search).substring(1).split("&");
+	var query = {};
+	for (var i=0;i<vars.length;i++) {
+		var pair = vars[i].split("=");
+		query[pair[0]] = pair[1];
+	}
+	return query;
+}
+
+function processIconClick(href,text) {
+	console.log("Click: " + href);
+	
+	if(href.indexOf("http") == 0) {
+		window.open(href);
+	} else
+	if(href.indexOf("?") == 0) {
+		var q = parseQuery(href);
+		if(q.hasOwnProperty("doc") || q.hasOwnProperty("folder") || q.hasOwnProperty("folder-dot")) {
+			gaTrackEvent("document-read", text);
+			navFetchResource(q.doc || q.folder || q["folder-dot"]); 
+		}
+		else if(q.hasOwnProperty("boot-hd")) {
+			fetchDriveFromUrl(text, "hd1", q["boot-hd"], true);
+		}
+		else if(q.hasOwnProperty("boot-floppy")) {
+			fetchDriveFromUrl(text, "fd1", q["boot-floppy"], true);
+		}
+		else if(q.hasOwnProperty("boot-rom")) {
+			gaTrackEvent("disk-mounted", text);
+			emulatorBootFromRom();
+		}
+		else if(q.hasOwnProperty("floppy")) {
+			if(emuState.isRunning()) {
+				fetchDriveFromUrl(text, "fd1", value, false);
+			} else {
+				alert("Please boot the computer using a boot disk first");
+			}
+		}
+		else if(q.hasOwnProperty("local-floppy")) {
+			gaTrackEvent("disk-mounted", "local-floppy");
+			mountLocalFile("fd1", true);
+		}
+		else if(q.hasOwnProperty("enter-url")) {
+			promptNavigatorUrl();
+		}
 	}
 }
 
@@ -280,9 +202,10 @@ function fetchDriveFromUrl(title, drive, url, isBootable) {
 	mountDriveFromUrl(drive, rewriteRelativeUrl(url), isBootable);
 }
 
-function fetchHtmlDocument(title, url) {
-	if(title) {
-		gaTrackEvent("document-read", title);
+function promptNavigatorUrl () {
+	var example = "http://example.com/index.wiki";
+	var url = window.prompt("Please enter a URL to a RetroWeb file", example);
+	if (url & url != example) {
+		navFetchResource(url);
 	}
-	showHtmlViewer(rewriteRelativeUrl(url));
 }

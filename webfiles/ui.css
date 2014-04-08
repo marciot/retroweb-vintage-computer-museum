@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #screen {
 	cursor: none;
+	outline: none;
 }
 
 .small-icon {
@@ -158,17 +159,6 @@ DIV.popup P {
 	display: none;
 }
 
-.navigator-help {
-	visibility: hidden;
-	font-size: small;
-	font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
-	text-align: center;
-}
-
-.navigator:hover ~.navigator-help{
-    visibility: visible;
-}
-
 .title-bar {
 	padding: 5px;
 }
@@ -192,88 +182,7 @@ DIV.popup P {
 	box-shadow: 5px 5px 10px rgba(0,0,0,0.35);
 }
 
-#navigator {
-	padding: 0px;
-	overflow: auto;
-}
-
-#navigator LI {
-	float: left;
-	margin: 10px; /* Spacing between icons */
-	text-align: center;
-	font-size: 15px;
-	font-family: Tahoma, Geneva, sans-serif;
-	list-style-type: none;
-	
-	/* Add ellipses to oversized icon labels */
-	max-width: 200px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-#navigator LI:before {
-	content: '';
-	margin-left:auto;
-	margin-right:auto;
-	width:  60px;
-	height: 60px;
-	display: block;
-}
-
-#navigator LI.boot-fd:before {
-	background: url('artwork/boot-fd.png');
-	background-size: 60px 60px;
-}
-
-#navigator LI.boot-hd:before {
-	background: url('artwork/boot-hd.png');
-	background-size: 60px 60px;
-}
-
-#navigator LI.boot-rom:before {
-	background: url('artwork/boot-rom.png');
-	background-size: 60px 60px;
-}
-
-#navigator LI.document:before {
-	background: url('artwork/document.png');
-	background-size: 60px 60px;
-}
-
-#navigator LI.floppy:before {
-	background: url('artwork/floppy.png');
-	background-size: 60px 60px;
-}
-
-#navigator LI.folder:before {
-	background: url('artwork/folder.png');
-	background-size: 60px 60px;
-}
-
-#navigator LI.html-doc:before {
-	background: url('artwork/html-doc.png');
-	background-size: 60px 60px;
-}
-
-#navigator LI.rom:before {
-	background: url('artwork/rom.png');
-	background-size: 60px 60px;
-}
-
-#navigator LI.upload:before {
-	background: url('artwork/upload.png');
-	background-size: 60px 60px;
-}
-
-#navigator LI.world:before {
-	background: url('artwork/world.png');
-	background-size: 60px 60px;
-}
-
-/* HTML viewer sidebar */
-
-.html-viewer {
+.navigator {
 	height: 80%;
 }
 
