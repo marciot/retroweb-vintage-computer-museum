@@ -17,6 +17,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+/* Removes embedded JSON content from the wiki markup. If a jsonStorage object
+ * is provided, all JSON content will be parsed and placed in the object as
+ * a property; a "code" HTML tag whose id corresponds to the property in the
+ * jsonStorage object will serve as a placeholder.
+ */
+function json(str, jsonStorage) {
+	str = str.replace( /^{\s*"[\w-]+"\s*:\s*[^}]+}/gm, function(m) {
+		if(jsonStorage) {
+			var id = 'json_' + Object.keys(jsonStorage).length;
+			try {
+				jsonStorage[id] = JSON.parse(m);
+				return '<code id="' + id + '"></code>';
+			} catch (e) {
+				throw new Error(e.message + " (parsing " + id + ")");
+			}
+		}
+		return '';
+	});
+	return str;
+}
+
 function lists(str) {
 	str = str.replace( /(?:^[#].*$\n?)+/gm, '<ol>\n$&</ol>');
 	str = str.replace( /(?:^[*].*$\n?)+/gm, '<ul>\n$&</ul>');
@@ -134,7 +155,7 @@ function paragraphs(str) {
 	return str;
 }
 
-function wikify (str) {
-	str = links(figs(formatting(tables(headers(def_lists(preformatted(lists(lists(lists(lists(lists(paragraphs(str)))))))))))));
+function wikify (str, jsonStorage) {
+	str = links(figs(formatting(tables(headers(def_lists(preformatted(lists(lists(lists(lists(lists(paragraphs(json(str,jsonStorage))))))))))))));
 	return str;
 }

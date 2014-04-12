@@ -1,7 +1,8 @@
-
-<div class="icons">
-# [[?doc=users-guide.wiki   User's Guide]]
-# [[?doc=tech-info.wiki     PCE Technical Info]]
-# [[?doc=../LICENSE.txt     LICENSE]]
-# [[?folder=advanced.wiki   Advanced Features]]
-</div>
+{ "icons" :
+	[
+		["User's Guide",       "doc",        "users-guide.wiki"],
+		["PCE Technical Info", "doc",        "tech-info.wiki"],
+		["LICENSE",            "doc",        "../LICENSE.txt"],
+		["Advanced Features",  "folder",     "advanced.wiki"]
+	]
+}

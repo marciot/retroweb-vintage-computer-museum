@@ -11,12 +11,14 @@ Welcome to the RetroWeb Vintage Computer Museum, an unique web exhibit where you
 
 == Click an icon to get started: ==
 				
-<div class="icons">
-# [[?doc=copyrights.wiki                           Copyrights & Fair Use]]
-# [[?doc=credits.wiki                              Thanks to...]]
-# [[?folder-dot=../private/$PLATFORM/index.wiki    Web Demos]]
-# [[?folder=more.wiki                              Docs & Extras]]
-</div>
+{ "icons" :
+	[
+		["Copyrights & Fair Use",  "doc",        "copyrights.wiki"],
+		["Thanks to...",           "doc",        "credits.wiki"],
+		["Web Demos",              "folder-dot", "../private/$PLATFORM/index.wiki"],
+		["Docs & Extras",          "folder",     "more.wiki"]
+	]
+}
 
 == References ==
 

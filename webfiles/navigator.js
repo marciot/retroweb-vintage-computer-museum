@@ -116,6 +116,49 @@ function navFetchResource(url) {
 	}
 }
 
+function navJSONtoDOM( json ) {
+	if(json.hasOwnProperty("icons")) {
+		var typeToClassMap = {
+			"floppy"         : "floppy",
+			"boot-hd"        : "hd-dot",
+			"boot-floppy"    : "floppy-dot",
+			"boot-rom"       : "rom-dot",
+			"folder"         : "folder",
+			"folder-dot"     : "folder-dot",
+			"doc"            : "document",
+			"local-floppy"   : "upload",
+			"enter-url"      : "world",
+			"hyperlink"      : "html-doc"
+		}
+	
+		var div = document.createElement("div");
+		div.className += "icons";
+		var list = document.createElement("OL");
+		div.appendChild(list);
+		for (var i = 0; i < json.icons.length; ++i) {
+			var name = json.icons[i][0];
+			var type = json.icons[i][1];
+			var arg  = json.icons[i][2];
+			
+			var disk = document.createElement( "LI" );
+			var icon = document.createElement( "A" );
+			disk.appendChild(icon);
+			icon.className += typeToClassMap[type];
+			icon.appendChild(document.createTextNode(name));
+			function getHandler(name, type, args) {
+				return function() {
+					navProcessIconClick(name, type, args);
+				}
+			}
+			icon.onclick = getHandler(name, type, arg);
+			list.appendChild(disk);
+		}
+	}
+	return div;
+}
+
+var finishFormatting;
+
 function injectWikiContent(element, url) {
 	if(wikiTemplate == null) {
 		$.ajax({
@@ -131,14 +174,25 @@ function injectWikiContent(element, url) {
 			url: url,
 			success: function (data) {
 				$(element.contentWindow.document).empty();
-				var wikiSrc = wikify(data);
+				var jsonStorage = {};
+				var data = data.replace(/\$PLATFORM/g, getPlatform());
+				var wikiSrc = wikify(data, jsonStorage);
 				html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikiSrc)
 								   .replace(/\$WIKI_SOURCE/g,
 										wikiSrc.replace(/</g,'&lt;')
 											   .replace(/>/g,'&gt;'))
-								   .replace(/\$PLATFORM/g, getPlatform())
 								   .replace(/\$PARENT_BASE_URL/g, removeTrailingSlash(''+window.location.pathname))
 					               .replace(/\$WIKI_BASE_URL/g, removeTrailingSlash(baseUrl(url)));
+				/* A bit of kludge here to handle the fact that document.write() seems to execute asynchronously.
+				 * Rather than calling finishFormatting directly, we set a global function that gets
+				 * called by the wiki template when the browser is done rendering the wiki content.
+				 */
+				finishFormatting = function() {
+					// Expand JSON elements embedded in the wiki text into DOM elements
+					for(jsonId in jsonStorage) {
+						$("#"+jsonId,element.contentWindow.document).replaceWith(navJSONtoDOM(jsonStorage[jsonId]));
+					}
+				}
 				element.contentWindow.document.open();
 				element.contentWindow.document.write(html);
 				element.contentWindow.document.close();
@@ -158,42 +212,43 @@ function parseQuery(url) {
 	return query;
 }
 
-function processIconClick(href,text) {
-	console.log("Click: " + href);
-	
-	if(href.indexOf("http") == 0) {
-		window.open(href);
-	} else
-	if(href.indexOf("?") == 0) {
-		var q = parseQuery(href);
-		if(q.hasOwnProperty("doc") || q.hasOwnProperty("folder") || q.hasOwnProperty("folder-dot")) {
-			gaTrackEvent("document-read", text);
-			navFetchResource(q.doc || q.folder || q["folder-dot"]); 
-		}
-		else if(q.hasOwnProperty("boot-hd")) {
-			fetchDriveFromUrl(text, "hd1", q["boot-hd"], true);
-		}
-		else if(q.hasOwnProperty("boot-floppy")) {
-			fetchDriveFromUrl(text, "fd1", q["boot-floppy"], true);
-		}
-		else if(q.hasOwnProperty("boot-rom")) {
-			gaTrackEvent("disk-mounted", text);
+function navProcessIconClick(name, type, param) {
+	switch(type) {
+		case "doc":
+		case "folder":
+		case "folder-dot":
+			gaTrackEvent("document-read", name);
+			navFetchResource(param);
+			break;
+		case "boot-hd":
+			fetchDriveFromUrl(name, "hd1", param, true);
+			break;
+		case "boot-floppy":
+			fetchDriveFromUrl(name, "fd1", param, true);
+			break;
+		case "boot-rom":
+			gaTrackEvent("disk-mounted", name);
 			emulatorBootFromRom();
-		}
-		else if(q.hasOwnProperty("floppy")) {
+		case "floppy":
 			if(emuState.isRunning()) {
-				fetchDriveFromUrl(text, "fd1", value, false);
+				fetchDriveFromUrl(name, "fd1", param, false);
 			} else {
 				alert("Please boot the computer using a boot disk first");
 			}
-		}
-		else if(q.hasOwnProperty("local-floppy")) {
+			break;
+		case "local-floppy":
 			gaTrackEvent("disk-mounted", "local-floppy");
 			mountLocalFile("fd1", true);
-		}
-		else if(q.hasOwnProperty("enter-url")) {
+			break;
+		case "enter-url":
 			promptNavigatorUrl();
-		}
+			break;
+		case "hyperlink":
+			window.open(param);
+			break;
+		default:
+			alert("Action " + type + " is unknown");
+			break;
 	}
 }
 

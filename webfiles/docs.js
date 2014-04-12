@@ -290,26 +290,6 @@ function applyClassSetters() {
 	});
 }
 
-function defineIconAttributes(callback) {
-	var actionToClassMap = {
-		"\?floppy"         : "floppy",
-		"\?boot-hd"        : "hd-dot",
-		"\?boot-floppy"    : "floppy-dot",
-		"\?boot-rom"       : "rom-dot",
-		"\?folder="        : "folder",
-		"\?folder-dot"     : "folder-dot",
-		"\?doc"            : "document",
-		"\?local-floppy"   : "upload",
-		"\?enter-url"      : "world",
-		"http"             : "html-doc"
-	}
-	
-	for( action in actionToClassMap) {
-		$("DIV.icons a[href^='" + action + "']").addClass(actionToClassMap[action])
-			.click(function(){callback($(this).attr('href'), $(this).text()); return false;});
-	}
-}
-
 /* Applies all dynamic formatting to the page
  */
 function applyDynamicFormatting() {
