@@ -1,10 +1,25 @@
 retroweb-browser
 ================
 
-This webapp provides a versatile user-interface to the PCE/PCE.js suite of machine emulators. This
-webapp builds upon the emulation core to provide you with the ability to access documentation
-and disk images that reside on the web or locally on your own computer. This wrapper has been
-written generally enough that it may be modified for use by any emulator that has been
-cross-compiled into JavaScript using the Emscripten toolchain. The current release provides a
-functional, web-based simulation of several vintage machines alongside a navigator interface
-for accessing hyper-linked resources on the web.
+This JavaScript framework allows you to easily develop content-rich, fully-interactive
+websites that make use of JavaScript computer emulators to teach your visitors about
+computer history.
+
+The code presented here is the foundation of the RetroWeb Vintage Computer Museum:
+
+http://retroweb.maclab.org
+
+This framework has been written generally enough that it may be modified for use by any
+emulator that has been cross-compiled into JavaScript using the Emscripten toolchain.
+
+The current release provides support for the PCE (http://www.hampa.ch/pce) and JSMESS
+(http://jsmess.textfiles.com) collections of emulators.
+
+## Highlights of this framework:
+
+1. An easy-to-use icon-based interface for managing disk images
+2. A documentation viewer that runs right next to the emulated computer
+3. A Wiki-style markup for quick and simple development of content
+4. Realistic photographic skins to lend realism to the emulated computers
+5. Client-side JavaScript for easy hosting
+6. Support for Google Analytics for tracking
