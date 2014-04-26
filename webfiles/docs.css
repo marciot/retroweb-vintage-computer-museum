@@ -54,6 +54,7 @@ H1, H2, H3, H4, H5, H6 {
 	border-width: 1px;
 	border-color: #555;
 	color: #555;
+	clear: both;
 }
 
 OL LI {
@@ -64,7 +65,7 @@ OL LI {
 UL:not([class]) {
     list-style: none;
     padding-left:1em;
-    margin:0;
+    margin: 20px 0
 }
 
 UL:not([class]) LI {
@@ -233,6 +234,21 @@ TD.align-right {
   text-align: right;
 }
 
+IMG.float-right {
+	float: right;
+	margin: 0px 20px 10px 20px;
+}
+
+IMG.float-left {
+	float: left;
+	margin: 0px 20px 10px 20px;
+}
+
+IMG.center {
+	margin: 0 auto;
+	display: block;
+}
+
 IMG.inline {
 	height: 1em;
 	width: 1em;
@@ -242,6 +258,8 @@ IMG.inline {
 FIGURE.screenshot IMG {
 	border: solid 1px black;
 	max-width: 100%;
+	display: block;
+	margin: 0 auto;
 }
 
 FIGURE.screenshot FIGCAPTION {
@@ -264,12 +282,12 @@ FIGURE.screenshot {
 	max-width: 75%;
 }
 
-FIGURE.float-right IMG {
+FIGURE.float-right IMG, FIGURE.float-left IMG {
 	display: block;
 	max-width: 100%;
 }
 
-FIGURE.float-right FIGCAPTION {
+FIGURE.float-right FIGCAPTION, FIGURE.float-left FIGCAPTION {
 	font-size: smaller;
 	font-style: italic;
 	font-weight: bold;
@@ -280,7 +298,15 @@ FIGURE.float-right FIGCAPTION {
 FIGURE.float-right {
 	float: right;
 	padding: 10px 10px;
-	margin: 20px;
+	margin: 0 20px 20px 20px;
+	border: solid 1px #bbc;
+	max-width: 40%;
+}
+
+FIGURE.float-left {
+	float: left;
+	padding: 10px 10px;
+	margin: 0 20px 20px 20px;
 	border: solid 1px #bbc;
 	max-width: 40%;
 }

@@ -75,61 +75,61 @@ DIV.icons {
 	height: 60px;
 	display: block;
 	
-	background: url('artwork/floppy.png');
+	background: url('ui-artwork/floppy.png');
 	background-size: 60px 60px;
 }
 
 .icons A.floppy-dot:before {
-	background: url('artwork/floppy-dot.png');
+	background: url('ui-artwork/floppy-dot.png');
 	background-size: 60px 60px;
 }
 
 .icons A.hd-dot:before {
-	background: url('artwork/hd-dot.png');
+	background: url('ui-artwork/hd-dot.png');
 	background-size: 60px 60px;
 }
 
 .icons A.rom-dot:before {
-	background: url('artwork/rom-dot.png');
+	background: url('ui-artwork/rom-dot.png');
 	background-size: 60px 60px;
 }
 
 .icons A.document:before {
-	background: url('artwork/document.png');
+	background: url('ui-artwork/document.png');
 	background-size: 60px 60px;
 }
 
 .icons A.floppy:before {
-	background: url('artwork/floppy.png');
+	background: url('ui-artwork/floppy.png');
 	background-size: 60px 60px;
 }
 
 .icons A.folder:before {
-	background: url('artwork/folder.png');
+	background: url('ui-artwork/folder.png');
 	background-size: 60px 60px;
 }
 
 .icons A.folder-dot:before {
-	background: url('artwork/folder-dot.png');
+	background: url('ui-artwork/folder-dot.png');
 	background-size: 60px 60px;
 }
 
 .icons A.html-doc:before {
-	background: url('artwork/html-doc.png');
+	background: url('ui-artwork/html-doc.png');
 	background-size: 60px 60px;
 }
 
 .icons A.rom:before {
-	background: url('artwork/rom.png');
+	background: url('ui-artwork/rom.png');
 	background-size: 60px 60px;
 }
 
 .icons A.upload:before {
-	background: url('artwork/upload.png');
+	background: url('ui-artwork/upload.png');
 	background-size: 60px 60px;
 }
 
 .icons A.world:before {
-	background: url('artwork/world.png');
+	background: url('ui-artwork/world.png');
 	background-size: 60px 60px;
 }

@@ -126,7 +126,7 @@ DIV.popup P {
 
 /* Emulator selector and navigation buttons */
 
-#platform-select {
+#emulator-select {
 	float: right;
 	background: transparent;
 	padding: 5px;

@@ -1,8 +1,8 @@
 { "icons" :
 	[
-		["User's Guide",       "doc",        "users-guide.wiki"],
-		["PCE Technical Info", "doc",        "tech-info.wiki"],
+		["User's Guide",       "doc",        "users-guide"],
+		["PCE Technical Info", "doc",        "tech-info"],
 		["LICENSE",            "doc",        "../LICENSE.txt"],
-		["Advanced Features",  "folder",     "advanced.wiki"]
+		["Advanced Features",  "folder",     "advanced"]
 	]
 }

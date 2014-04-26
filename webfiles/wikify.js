@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * jsonStorage object will serve as a placeholder.
  */
 function json(str, jsonStorage) {
-	str = str.replace( /^{\s*"[\w-]+"\s*:\s*[^}]+}/gm, function(m) {
+	str = str.replace( /^{\s*"[\w-]+"\s*:\s*(?:.|\n)+?^}/gm, function(m) {
 		if(jsonStorage) {
 			var id = 'json_' + Object.keys(jsonStorage).length;
 			try {
@@ -136,8 +136,8 @@ function figs(str) {
 
 function links(str) {	
 	// Internal links
-	str = str.replace( /\[\[([^\] ]+)\]\]/g, '<a href="$1">$1</a>');
-	str = str.replace( /\[\[([^\] ]+) ([^\]]+)\]\]/g, '<a href="$1">$2</a>');
+	str = str.replace( /\[\[([^\]|]+)\]\]/g, '<a href="$1">$1</a>');
+	str = str.replace( /\[\[([^\]|]+)\|([^\]]+)\]\]/g, '<a href="$2">$1</a>');
 	
 	// Reference
 	str = str.replace( /\[\d+\]/g, '<span class="reference">$&</span>');
@@ -156,6 +156,6 @@ function paragraphs(str) {
 }
 
 function wikify (str, jsonStorage) {
-	str = links(figs(formatting(tables(headers(def_lists(preformatted(lists(lists(lists(lists(lists(paragraphs(json(str,jsonStorage))))))))))))));
+	str = formatting(tables(links(figs(headers(def_lists(preformatted(lists(lists(lists(lists(lists(paragraphs(json(str,jsonStorage))))))))))))));
 	return str;
 }

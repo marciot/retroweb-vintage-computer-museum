@@ -17,21 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* Get a query variable
- *
- * Reference:
- *    http://css-tricks.com/snippets/javascript/get-url-variables/
+/* Decode the query variable
  */
-function getQueryVariable(variable, url) {
-	var query = (url || window.location.search).substring(1);
-	var vars = query.split("&");
+function parseQuery(url) {
+	var vars = (url || window.location.search).substring(1).split("&");
+	var query = {};
 	for (var i=0;i<vars.length;i++) {
 		var pair = vars[i].split("=");
-		if(pair[0] == variable) {
-			return pair[1];
-		}
+		query[pair[0]] = pair[1];
 	}
-	return false;
+	return query;
 }
 
 /* Dynamically load a css or js object

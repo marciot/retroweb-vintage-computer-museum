@@ -12,6 +12,12 @@
 
 # ROM images
 *.rom
+*.zip
 
 # Private stuff
 private
+browser-tests
+disks
+articles
+artwork
+.htaccess

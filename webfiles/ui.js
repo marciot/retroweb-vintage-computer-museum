@@ -25,6 +25,10 @@ function FileManager() {
 	 * on an Emscripten FS object.
 	 */
 	this.writeEmscriptenFS = function(FS) {
+		if(typeof FS == 'undefined') {
+			console.error("Enscripten FS not defined");
+			return;
+		}
 		// Create subdirectories
 		for (var i = 0; i < this.dirs.length; ++i) {
 			var d = this.dirs[i];
@@ -36,7 +40,20 @@ function FileManager() {
 		for (var i = 0; i < this.files.length; ++i) {
 			var f = this.files[i];
 			console.log("Writing " + f.name + " to Emscripten FS");
-			FS.writeFile(f.name, new Uint8Array(f.data), { encoding: 'binary' });
+			if(FS.hasOwnProperty("writeFile")) {
+				FS.writeFile(f.name, new Uint8Array(f.data), { encoding: 'binary' });
+			} else {
+				// Older Emscripten API
+				var stream = FS.open(f.name, 'w');
+				var buff = new Uint8Array(f.data);
+				FS.write(stream, buff, 0, buff.length, 0);
+				FS.close(stream);
+			}
+			if(f.isBootable) {
+				if( typeof emulatorPreMountDisk == 'function' ) {
+					emulatorPreMountDisk(f.name);
+				}
+			}
 		}
 	}
 	
@@ -57,7 +74,7 @@ function FileManager() {
 	this.writeFileFromBinaryData = function(name, data, isBootable) {
 		if( typeof FS == 'undefined' ) {
 			// Defer loading of file until emulator resources are loaded
-			this.files.push({"name" : name, "data" : data});
+			this.files.push({"name" : name, "data" : data, "isBootable" : isBootable});
 			if (isBootable) {
 				emuState.bootMediaLoaded();
 			}
@@ -96,21 +113,66 @@ function mountDriveFromData(drive, data, isBootable) {
 	fileManager.writeFileFromBinaryData(emulatorGetDrives()[drive],data,isBootable);
 }
 
+function download(content, filename, contentType)
+{
+	if(!contentType) {
+		contentType = 'application/octet-stream';
+	}
+	var a = document.createElement('a');
+	var blob = new Blob([content], {'type':contentType});
+	a.href = window.URL.createObjectURL(blob);
+	a.download = filename;
+	a.click();
+}
+
+function exportToLocal(drive) {
+	if(typeof FS == 'undefined') {
+		alert("The emulator must be initialized");
+		return;
+	}
+	var fileName = emulatorGetDrives()[drive];
+	var contents = FS.readFile(fileName, { encoding: 'binary' });
+	download(contents, fileName);
+}
+
 function EmulatorState() {
+	this.emuName = null;
+	this.startupConfig = null;
+	
 	this.loaded = false;
 	this.running = false;
-	this.gotRom = false;
+	this.gotRoms = false;
 	this.gotBootMedia = false;
 	this.floppyDrives = new Array();
 	
-	popups.open("popup-rom-missing");
-	
-	this.start = function() {
-		fetchDataFromUrl("startup.json", processStartupConfig);
+	this.setEmulator = function (emulator) {
+		this.emuName = emulator;
+	}
+
+	this.getEmulator = function() {
+		return this.emuName;
 	}
 	
-	this.configLoaded = function() {
-		loadEmulatorResources(getPlatform());
+	this.getInitialDoc = function () {
+		return this.getConfig["initial-doc"] || this.startupConfig["initial-doc"];
+	}
+	
+	this.getConfig = function () {
+		return this.startupConfig.emulators[this.emuName];
+	}
+	
+	this.start = function() {
+		fetchDataFromUrl("/startup.json", processStartupConfig);
+		navAddPopStateHandler();
+	}
+	
+	this.configLoaded = function(config) {
+		this.startupConfig = config;
+		navInitialDoc();
+		loadEmulatorResources();
+		if(!this.gotRoms) {
+			popups.open("popup-rom-missing");
+		}
 	}
 	
 	this.emscriptenPreInit = function() {
@@ -129,13 +191,14 @@ function EmulatorState() {
 		popups.open("popup-need-boot-media");
 	}
 	this.bootMediaLoaded = function() {
+		this.gotBootMedia = true;
 		popups.close("popup-need-boot-media");
 		if(!this.running) {
 			this.requestRestart();
 		}
 	}
 	this.requestRestart = function() {
-		if (!this.romsLoaded || this.gotBootMedia) {
+		if (!this.gotRoms || !this.gotBootMedia) {
 			return;
 		}
 		if (!this.loaded) {
@@ -150,22 +213,14 @@ function EmulatorState() {
 	this.isRunning = function() {
 		return this.running;
 	}
-	this.addFloppyDrive = function(fname) {
-		this.floppyDrives.push({"fname" : fname, "mounted" : false});	
-	}
-	this.getFloppyObj = function(fname) {
-		for (var i = 0; i < this.floppyDrives.length; ++i) {
-			if(this.floppyDrives[i].fname == fname) {
-				return this.floppyDrives[i]; 
-			};
-		}
-		return undefined;
-	}
 	this.floppyMounted = function(fname) {
-		this.getFloppyObj(fname).mounted = true;
+		if( !(fname in this.floppyDrives)) {
+			this.floppyDrives[fname] = {};
+		}
+		this.floppyDrives[fname].mounted = true;
 	}
 	this.isFloppyMounted = function(fname) {
-		return this.getFloppyObj(fname).mounted;
+		return this.floppyDrives.hasOwnProperty(fname) ? this.floppyDrives[fname].mounted : false;
 	}
 }
 
@@ -201,49 +256,44 @@ function createEmscriptenModule() {
 	return module;
 }
 
-function loadEmulatorResources(emuPlatform) {
+function loadEmulatorResources() {
 	console.log("Loading emulator resources");
-	loadResource(emuPlatform + "/ui.css");
-	loadResource(emuPlatform + "/glue.js");
+	var config = emuState.getConfig();
+	for(var i = 0; i < config.pre.length; i++) {
+		loadResource(config.pre[i], true);
+	}
 }
 
 function loadEmulator() {
+	console.log("Loading emulator scripts");
+	var config = emuState.getConfig();
+	Module = createEmscriptenModule();
 	emulatorConfigModule(Module);
-	loadResource(emuPlatform + "/" + getPlatform() + ".js", true);
-	//loadResource(emuPlatform + "/" + getPlatform() + ".js.gz", true);
+	for(var i = 0; i < config.run.length; i++) {
+		loadResource(config.run[i], true);
+	}
 }
 
-var romFileName;
-var emuPlatform;
-
-/* Platform drop-down menu */
-function addPlatform(platform, title) {
+/* Emulator drop-down menu */
+function addEmulator(emulator, title) {
 	var label  = document.createTextNode(title);
 	var option = document.createElement("option");
 	option.appendChild(label);
-	option.value = platform;
-	document.getElementById("platform-select").appendChild(option);
+	option.value = emulator;
+	document.getElementById("emulator-select").appendChild(option);
 }
 
-/* onChange handler for the platform drop-down menu */
-function onPlatformChange() {
-	var platformMenu = document.getElementById('platform-select');
-	var newPlatform = "platform=" + platformMenu.options[platformMenu.selectedIndex].value;
+/* onChange handler for the emulator drop-down menu */
+function onEmulatorChange() {
+	var emulatorMenu = document.getElementById('emulator-select');
+	var newEmulator = "emulator=" + emulatorMenu.options[emulatorMenu.selectedIndex].value;
 	var newPage = new String(window.location);
 	if(newPage.indexOf("?") != -1) {
-		newPage = newPage.replace(/platform=[a-zA-Z0-9-]+/i, newPlatform);
+		newPage = newPage.replace(/(platform|emulator)=[a-zA-Z0-9-]+/i, newEmulator);
 	} else {
-		newPage = newPage + "?" + newPlatform;
+		newPage = newPage + "?" + newEmulator;
 	}
 	window.location = newPage;
-}
-
-function setPlatform(platform) {
-	emuPlatform = platform;
-}
-
-function getPlatform() {
-	return emuPlatform;
 }
 
 function fetchDataFromUrl (url, callback) {
@@ -254,12 +304,10 @@ function fetchDataFromUrl (url, callback) {
 				callback(data);
 			} catch (e) {
 				alert ("Error processing response from " + url + ": " + e.message );
-				navGoBack();
 			}
 		},
 		error: function(jqXHR,textStatus) {
 			alert("Error fetching " + url + ":" + textStatus);
-			navGoBack();
 		}
 	});
 }
@@ -279,22 +327,26 @@ function processStartupConfig(json) {
 		throw new LoadException ("Index fails startup-config JSON format validation");
 	}
 	
-	for(var platform in startupConfig.emulators) {
-		addPlatform(platform, startupConfig.emulators[platform].name);
+	var emulators = [];
+	for(e in startupConfig.emulators) {
+		startupConfig.emulators[e].key = e;
+		emulators.push(startupConfig.emulators[e]);
+	}
+	emulators.sort(function(a,b){return a.name.localeCompare(b.name);});
+	for(var i = 0; i < emulators.length; ++i) {
+		addEmulator(emulators[i].key, emulators[i].name);
 	}
 	
-	platformConfig = startupConfig.emulators[getPlatform()];
+	var emulator = query.platform || query.emulator || emulators[Math.floor((Math.random()*emulators.length))].key;
 	
-	if (platformConfig == undefined) {
-		throw new LoadException ("The startup.json file does not contain a stanza corresponding to this platform");
-	}
+	emuState.setEmulator(emulator);
+	emulatorConfig = startupConfig.emulators[emulator];
 	
-	var doc = initialDoc || platformConfig["initial-doc"] || startupConfig["initial-doc"];
-	if(doc) {
-		navFetchResource(doc);
+	if (emulatorConfig == undefined) {
+		throw new LoadException ("The startup.json file does not contain a stanza corresponding to this emulator");
 	}
 		
-	var dirsToMake = platformConfig["mkdir"];
+	var dirsToMake = emulatorConfig["mkdir"];
 	if(dirsToMake) {
 		for (var i = 0; i < dirsToMake.length; ++i) {
 			var path = dirsToMake[i];
@@ -306,7 +358,7 @@ function processStartupConfig(json) {
 		return path.substr(path.lastIndexOf("/")+1);
 	}
 		
-	var filesToMount = platformConfig["preload-files"];
+	var filesToMount = emulatorConfig["preload-files"];
 	for (var i = 0; i < filesToMount.length; ++i) {
 		if (filesToMount[i].charAt(0) == '#') continue;
 		var parts = filesToMount[i].split(/\s+->\s+/);
@@ -314,12 +366,8 @@ function processStartupConfig(json) {
 		var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
 		fileManager.writeFileFromUrl('/' + name, url);
 	}
-	if (!platformConfig["ask-for-rom"]) {
-		emuState.romsLoaded();
-	} else {
-		romFileName = platformConfig["ask-for-rom"];
-	}
-	emuState.configLoaded();
+	emuState.romsLoaded();
+	emuState.configLoaded(startupConfig);
 }
 
 function showStatus(text) {

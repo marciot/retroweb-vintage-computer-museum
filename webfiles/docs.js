@@ -279,8 +279,8 @@ function declareReferences() {
 	);
 }
 
-function showPlatformDiv() {
-	$("#" + getQueryVariable("platform")).show();
+function showEmulatorDiv(emulator) {
+	$("." + emulator).show();
 }
 
 function applyClassSetters() {
@@ -292,7 +292,7 @@ function applyClassSetters() {
 
 /* Applies all dynamic formatting to the page
  */
-function applyDynamicFormatting() {
+function applyDynamicFormatting(emulator) {
 	implicitClassNames();
 	applyClassSetters();
 	implicitShowTarget();
@@ -304,6 +304,6 @@ function applyDynamicFormatting() {
 	
 	// Adjust bubbles does not works when the bubbles are hidden,
 	// so show the DIV before calling it
-	showPlatformDiv();
+	showEmulatorDiv(emulator);
 	adjustBubbles();
 }

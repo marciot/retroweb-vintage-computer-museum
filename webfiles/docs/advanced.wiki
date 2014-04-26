@@ -2,29 +2,30 @@
 
 The advanced actions allow you to access special emulator features. These actions are intended for more technically savvy users.
 
-== Local floppy ==
+== Upload and Download Floppy ==
 
-<div class="icons float-right">
-{ "icons" :
-	[
-		["Local floppy", "local-floppy"]
-	]
+{
+	"icons" : [
+		["Upload Floppy",   "upload-floppy"],
+		["Download Floppy", "download-floppy"]
+	],
+	"class" : "float-right"
 }
-</div>
 
-This action can be used to load floppy images that are stored on local computer into the emulator.
+The "Upload Floppy" action can be used to load floppy images that are stored on local computer into the emulator.
+
+The "Download Floppy" action can be to save back the modified disk image. Generally this will only work if the emulator has saved changes back to the disk image.
 
 Not all disk images will be compatible with this emulator and vintage software is often distributed in files that must be unpacked and copied into disk images using other tools.
 
 === RetroWeb URL ===
 
-<div class="icons float-right">
-{ "icons" :
-	[
+{
+	"icons" : [
 		["RetroWeb URL", "enter-url"]
-	]
+	],
+	"class" : "float-right"
 }
-</div>
 
 The "RetroWeb URL" icon allows you to enter an URL for a RetroWeb wiki file. These are similar to web URLs, but must point to files written in a special wiki style markup. You may use this feature to access content that others have written, or to experiment writing your own content.
 

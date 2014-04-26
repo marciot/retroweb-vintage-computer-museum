@@ -19,14 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="resizing-layout.css">
-	    <link rel="stylesheet" type="text/css" href="ui.css">
-	    <link rel="stylesheet" type="text/css" href="icons.css">
+		<link rel="stylesheet" type="text/css" href="/resizing-layout.css">
+	    <link rel="stylesheet" type="text/css" href="/ui.css">
+	    <link rel="stylesheet" type="text/css" href="/icons.css">
 		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-		<script type="text/javascript" src="ui.js"></script>
-		<script type="text/javascript" src="utils.js"></script>
-		<script type="text/javascript" src="navigator.js"></script>
-		<script type="text/javascript" src="wikify.js"></script>
+		<script type="text/javascript" src="/ui.js"></script>
+		<script type="text/javascript" src="/utils.js"></script>
+		<script type="text/javascript" src="/navigator.js"></script>
+		<script type="text/javascript" src="/wikify.js"></script>
 		<title>RetroWeb Browser</title>
 </head>
 <body>	
@@ -49,12 +49,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					</div>
 					
 					<div id="popup-need-boot-media" class="popup">
-						<img src="artwork/sunny.png" class="small-icon">
+						<img src="/ui-artwork/sunny.png" class="small-icon">
 						<h1>This computer needs a boot disk!<br>Follow the green dots!</h1>
 					</div>
 					
 					<div id="popup-rom-missing" class="popup">
-						<img src="artwork/rom.png" class="small-icon">
+						<img src="/ui-artwork/rom.png" class="small-icon">
 						<p>This computer cannot start without a valid ROM file.</p>
 						<input type="button" value="Select ROM file..."
 							onclick="openFileUploader ('Select ROM image', doRomUpload);">
@@ -73,11 +73,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					
 					<div id="popup-mouse-center" class="popup">
 						<h1>Wait for the desktop to appear then double-click the icon.</h1>
-						<img src="artwork/sunny.png" id="popup-mouse-center-target" onclick="popups.close('popup-mouse-center');">
+						<img src="/ui-artwork/sunny.png" id="popup-mouse-center-target" onclick="popups.close('popup-mouse-center');">
 					</div>
 					
 					<div id="popup-mac-eject-disk" class="popup">
-						<img src="artwork/drag-to-trash.png">
+						<img src="/ui-artwork/drag-to-trash.png">
 						<div>
 							<h1>Ejecting disks on the Macintosh</h1>
 							<p>
@@ -94,11 +94,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<table id="ui-buttons" class="ui-buttons">
 				<tr>
 					<td class="ui-btn">
-						<img class="btn-icon" src="artwork/document.png" onclick="panels.open('navigator-panel');"><br>
+						<img class="btn-icon" src="/ui-artwork/document.png" onclick="panels.open('navigator-panel');"><br>
 						<span class="btn-label">Show Navigator</span>
 					</td>
 					<td class="ui-btn">
-						<img class="btn-icon" src="artwork/power.png" onclick="restartComputer()"><br>
+						<img class="btn-icon" src="/ui-artwork/power.png" onclick="restartComputer()"><br>
 						<span class="btn-label">Restart Computer</span>
 					</td>
 				</tr>
@@ -107,15 +107,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<div class="sidepanel" id="sidepanel">				
 				<div id="navigator-panel" class="navigator sidepanel-window">
 					<div class="title-bar">
-						<select id="platform-select" onchange="onPlatformChange()">
+						<select id="emulator-select" onchange="onEmulatorChange()">
 							<option>Change computer type...</option>
 						</select>
-						<img class="btn-icon" src="artwork/appbar.close.svg" onclick="panels.close('navigator-panel');">
-						<img class="btn-icon" src="artwork/appbar.arrow.left.svg" onclick="navGoBack()">
-						<img class="btn-icon" src="artwork/appbar.home.svg" onclick="navGoHome()">
+						<img class="btn-icon" src="/ui-artwork/appbar.close.svg" onclick="panels.close('navigator-panel');">
+						<img class="btn-icon" src="/ui-artwork/appbar.arrow.left.svg" onclick="navGoBack()">
+						<img class="btn-icon" src="/ui-artwork/appbar.home.svg" onclick="navGoHome()">
 					</div>
 					<div class="fade-effect">
-						<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto">
+						<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto" src="about:blank">
 						</iframe>
 						<div class="fade-effect-top"></div>
 						<div class="fade-effect-bottom"></div>
@@ -125,7 +125,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		
 		</div>
 				
-		<script type="text/javascript">	
+		<script type="text/javascript">
+			var Module;
+			var query       = parseQuery();			
+			var emuState    = new EmulatorState();
+			var fileManager = new FileManager();
+			
 			var popupTm = new TransitionManager();
 			var popups = new PopupManager(popupTm);
 			popups.add("popup-mouse-center");
@@ -142,27 +147,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 			// Add tab index to ensure the canvas retains focus			
 			$("#screen").attr("tabindex", "0").mousedown(function(){ $(this).focus(); return false; });
-		</script>
-		
-		<textarea class="emscripten" id="output" rows="8" hidden=1></textarea>
-
-		<!-- Load the appropriate css and javascript depending on the platform -->
-		
-		<script type="text/javascript">
-			var Module = createEmscriptenModule();
 			
-			var emuPlatform = getQueryVariable("platform");
-			if (!emuPlatform) {
-				emuPlatform = "pce-macplus";
-			}
-			setPlatform(emuPlatform);
-			
-			var initialDoc    = getQueryVariable("doc");
-			
-			var Module        = createEmscriptenModule();
-			var emuState      = new EmulatorState();
-			var fileManager   = new FileManager();
-			
+			// Ignore arrow keys and pageup/pagedown
+			window.addEventListener('keydown', function(e) {
+				console.log(e.keyCode);
+				if([32, 33, 34,  37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+					e.preventDefault();
+				}
+			}, false);
+  
 			emuState.start();
 		</script>
 		

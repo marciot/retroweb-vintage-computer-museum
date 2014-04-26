@@ -1,0 +1,43 @@
+/*
+RetroWeb Browser
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+.main {
+	max-width: 1550px;
+}
+
+.background {
+	width:    1800px;
+	height:    930px;
+	background:url(rc759.jpg);
+	background-repeat:no-repeat;
+	background-size:100%;
+	margin-right: -290px;
+}
+
+.screen {
+	left:      710px;
+	top:       180px;
+	width:     560px;
+	height:    412px;
+}
+
+.sidepanel {
+	margin:       0;
+	margin-right: 955px;
+}

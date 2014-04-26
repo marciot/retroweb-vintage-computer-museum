@@ -1,48 +1,91 @@
 {
 	"startup-config" : {
 		"version"     : 1.0,
-		"initial-doc" : "docs/about.wiki",
+		"initial-doc" : "/articles/Introduction",
 		"emulators" : {
 			"pce-ibmpc" : {
-				"name" : "IBM PC Model 5160 (pce/ibmpc)",
+				"name" : "IBM PC Model 5160",
+				"pre" : ["/skins/ibm5160.css", "/emulators/pce-ibmpc/glue.js"],
+				"run" : ["/emulators/pce-ibmpc/pce-ibmpc.js"],
 				"preload-files" : [
-					"pce-ibmpc/pce-config.cfg",
-					"roms/ibm-xt-1986-05-09.rom",
-					"roms/ibm-mfm-1985-10-28.rom",
-					"roms/ibm-ega-1984-09-13.rom",
-					"roms/ibm-vga-1986-10-27.rom",
-					"roms/ibmpc-pcex.rom"
+					"/emulators/pce-ibmpc/pce-config-5160.cfg          -> pce-config.cfg",
+					"/emulators/pce-ibmpc/pce-config-5160-msys-mouse.cfg",
+					"/emulators/pce-ibmpc/pce-config-5160-ser-mouse.cfg",
+					"/roms/ibm-xt-1986-05-09.rom",
+					"/roms/ibm-mfm-1985-10-28.rom",
+					"/roms/ibm-ega-1984-09-13.rom",
+					"/roms/ibm-vga-1986-10-27.rom",
+					"/roms/ibmpc-pcex.rom",
+					"/roms/ibm-xt-1982-11-08.rom",
+					"/roms/ibm-basic-1.10.rom",
+					"/roms/ibm-hdc-1985.rom"
 				]
 			},
 			"pce-macplus" : {
-				"name" : "Apple Macintosh (pce/macplus)",
+				"name" : "Apple Macintosh",
+				"pre" : ["/skins/original-mac.css", "/emulators/pce-macplus/glue.js"],
+				"run" : ["/emulators/pce-macplus/pce-macplus.js"],
 				"preload-files" : [
-					"pce-macplus/pce-config.cfg",
-					"roms/mac-plus-3.rom",
-					"roms/macplus-pcex.rom"
+					"/emulators/pce-macplus/pce-config.cfg",
+					"/emulators/pce-macplus/pce-mac-128k.cfg",
+					"/roms/mac-plus-3.rom",
+					"/roms/macplus-pcex.rom",
+					"/roms/mac-128k.rom"
 				]
 			},
 			"pce-atarist" : {
-				"name" : "Atari 1040ST (pce/atarist)",
+				"name" : "Atari 1040ST",
+				"pre" : ["/skins/atari1040st.css", "/emulators/pce-atarist/glue.js" ], 
+				"run" : ["/emulators/pce-atarist/pce-atarist.js"],
 				"mkdir" : [ "/roms" ],
 				"preload-files" : [
-					"pce-atarist/pce-config.cfg -> roms/pce-config.cfg",
-					"roms/tos-1.04-us.rom"
+					"/emulators/pce-atarist/pce-config.cfg -> /roms/pce-config.cfg",
+					"/roms/tos-1.04-us.rom"
 				]
 			},
 			"pce-rc759" : {
-				"name" : "RC759 Piccoline (pce/rc759)",
+				"name" : "RC759 Piccoline",
+				"pre" : ["/skins/rc759.css", "/emulators/pce-rc759/glue.js" ],
+				"run" : ["/emulators/pce-rc759/pce-rc759.js"],
+				"mkdir" : [ "/roms" ],
 				"preload-files" : [
-					"pce-rc759/pce-config.cfg",
-					"roms/rc759-1-2.1.rom"
+					"/emulators/pce-rc759/pce-config.cfg -> /roms/pce-config.cfg",
+					"/roms/rc759-1-2.1.rom"
 				]
 			},
 			"jsmess-apple2e" : {
-				"name"        : "Apple IIe (jsmess/apple2e)",
+				"name" : "Apple IIe",
+				"pre" : ["/skins/apple2e.css", "/emulators/jsmess-apple2e/glue.js"],
+				"run" : ["/emulators/jsmess-apple2e/jsmess-apple2e.js"],
 				"preload-files" : [
-					"roms/a2diskii.zip",
-					"roms/apple2ee.zip"
+					"/roms/a2diskii.zip",
+					"/roms/apple2ee.zip"
 				]
+			},
+			"jsmess-c64" : {
+				"name" : "Commodore 64",
+				"pre" : ["/skins/commodore64c.css", "/emulators/jsmess-c64/glue.js"],
+				"run" : ["/emulators/jsmess-c64/jsmess-c64.js"],
+				"mkdir" : [ "/cfg" ],
+				"preload-files" : [
+					"/roms/c64.zip",
+					"/emulators/jsmess-c64/jsmess-c64.cfg -> cfg/c64c.cfg"
+				]
+			},
+			"jsmess-trs80" : {
+				"name" : "TRS-80 Model 1",
+				"pre" : ["/skins/trs80-model1.css", "/emulators/jsmess-trs80/glue.js"],
+				"run" : ["/emulators/jsmess-trs80/jsmess-trs80.js"],
+				"mkdir" : [ "/cfg" ],
+				"preload-files" : [
+					"/roms/trs80l2.zip"
+				]
+			},
+			"xerox-star" : {
+				"name" : "Xerox Star",
+				"pre" : ["/skins/xerox-star.css"],
+				"run" : ["/emulators/xerox-star/xerox-star.js"],
+				"preload-files" : []
 			}
 		}
 	}
