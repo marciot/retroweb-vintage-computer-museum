@@ -26,7 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		<script type="text/javascript" src="/ui.js"></script>
 		<script type="text/javascript" src="/utils.js"></script>
 		<script type="text/javascript" src="/navigator.js"></script>
-		<script type="text/javascript" src="/wikify.js"></script>
+		<script type="text/javascript" src="/lib/wikify.js"></script>
+		<script type="text/javascript" src="/lib/emscripten-fs-utils.js"></script>
 		<script type="text/javascript" src="/emulators/default-interface.js"></script>
 		<title>RetroWeb Browser</title>
 </head>
@@ -65,7 +66,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 						<h1 id="uploader-text">Select a file:</h1>
 						<form name="file-upload" onsubmit="return false">
 							<p>
-							<input type="file" id="uploaderfile" chars="80"><br>
+							<input type="file" id="uploader-file" chars="80"><br>
 							</p>
 							<input type="submit" value="OK" id="uploader-ok-btn">
 							<input type="button" value="Cancel" onclick="popups.close('popup-uploader');">
@@ -130,7 +131,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			var Module;
 			var query       = parseQuery();			
 			var emuState    = new EmulatorState();
-			var fileManager = new FileManager();
+			var fileManager = new EmscriptenFileManager();
 			
 			var popupTm = new TransitionManager();
 			var popups = new PopupManager(popupTm);

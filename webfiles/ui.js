@@ -17,118 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-function FileManager() {
-	this.dirs  = new Array();
-	this.files = new Array();
-	
-	/* The following function performs enqueued file operations
-	 * on an Emscripten FS object.
-	 */
-	this.writeEmscriptenFS = function(FS) {
-		if(typeof FS == 'undefined') {
-			console.error("Enscripten FS not defined");
-			return;
-		}
-		// Create subdirectories
-		for (var i = 0; i < this.dirs.length; ++i) {
-			var d = this.dirs[i];
-			FS.mkdir (d.path);
-			console.log("Creating directory " + d.path);
-		}
-		
-		// Write files
-		for (var i = 0; i < this.files.length; ++i) {
-			var f = this.files[i];
-			console.log("Writing " + f.name + " to Emscripten FS");
-			if(FS.hasOwnProperty("writeFile")) {
-				FS.writeFile(f.name, new Uint8Array(f.data), { encoding: 'binary' });
-			} else {
-				// Older Emscripten API
-				var stream = FS.open(f.name, 'w');
-				var buff = new Uint8Array(f.data);
-				FS.write(stream, buff, 0, buff.length, 0);
-				FS.close(stream);
-			}
-			if(f.isBootable) {
-				emuState.getEmulatorInterface().prepareDisk(f.name);
-			}
-		}
-	}
-	
-	/* The following functions will behave differently depending on whether
-	   the emulator is running. If it is, they will perform the file operations
-	   immediately. Otherwise, the operations are enqueued so that
-	   writeEmscriptenFS will perform them once the emulator has started up. */
-	
-	this.makeDir = function(path) {
-		if( typeof FS == 'undefined' ) {
-			this.dirs.push({"path" : path});
-		} else {
-			FS.mkdir (path);
-			console.log("Creating directory " + path);
-		}
-	}
-	
-	this.writeFileFromBinaryData = function(name, data, isBootable) {
-		if( typeof FS == 'undefined' ) {
-			// Defer loading of file until emulator resources are loaded
-			this.files.push({"name" : name, "data" : data, "isBootable" : isBootable});
-			if (isBootable) {
-				emuState.bootMediaLoaded();
-			}
-		} else {
-			// Emulator is already running, mount immediately
-			console.log("Mounting data on " + name);
-			try {
-				FS.unlink(name);
-			} catch (err) {
-			}
-			FS.writeFile(name, new Uint8Array(data), { encoding: 'binary' });
-			emuState.getEmulatorInterface().mountDisk(name);
-		}
-	}
-	
-	this.writeFileFromUrl = function(name, url, isBootable) {
-		var me = this;
-		console.log("Fetching " + url);
-		showStatus("Downloading...");
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", url, true);
-		xhr.responseType = "arraybuffer";
-		xhr.onload = function(e) {
-			showStatus(false);
-			me.writeFileFromBinaryData(name,xhr.response, isBootable);
-		};
-		xhr.send();
-	}
-}
-
-function mountDriveFromUrl(drive, url, isBootable) {
-	fileManager.writeFileFromUrl(emuState.getEmulatorInterface().getFileNameForDrive(drive, url), url, isBootable);
-}
-
-function download(content, filename, contentType)
-{
-	if(!contentType) {
-		contentType = 'application/octet-stream';
-	}
-	var a = document.createElement('a');
-	var blob = new Blob([content], {'type':contentType});
-	a.href = window.URL.createObjectURL(blob);
-	a.download = filename;
-	a.click();
-}
-
-function exportToLocal(drive) {
-	if(typeof FS == 'undefined') {
-		alert("The emulator must be initialized");
-		return;
-	}
-	var fileName = emuState.getEmulatorInterface().getFileNameForDrive(drive, null);
-	var contents = FS.readFile(fileName, { encoding: 'binary' });
-	download(contents, fileName);
-}
-
 function EmulatorState() {
 	this.emuName = null;
 	this.startupConfig = null;
@@ -164,6 +52,25 @@ function EmulatorState() {
 		return this.startupConfig.emulators[this.emuName];
 	}
 	
+	this.waitForMedia = function(fileName, isBootable) {
+		showStatus("Loading...");
+		var me = this;
+		var waitFunc = function(remaining, depName) {
+			if(isBootable && depName == fileName) {
+				me.bootMediaLoaded();
+			}
+			if(remaining == 0) {
+				if(me.running) {
+					me.syncEmscriptenFS(true); 
+				} else if(me.gotBootMedia) {
+					me.requestRestart();
+				}
+				showStatus(false);
+			}
+		}
+		fileManager.setFileReadyCallback(waitFunc);
+	}
+	
 	this.start = function() {
 		fetchDataFromUrl("/startup.json", processStartupConfig);
 		navAddPopStateHandler();
@@ -178,9 +85,19 @@ function EmulatorState() {
 		}
 	}
 	
+	this.syncEmscriptenFS = function(doMount) {
+		var filesWritten = fileManager.syncEmscriptenFS(FS);
+		for(var i = 0; i < filesWritten.length; i++) {
+			emuState.getEmulatorInterface().prepareDisk(filesWritten[i]);
+			if(doMount) {
+				emuState.getEmulatorInterface().mountDisk(filesWritten[i]);
+			}
+		}
+	}
+	
 	this.emscriptenPreInit = function() {
 		popups.close("popup-status");
-		fileManager.writeEmscriptenFS(FS);
+		this.syncEmscriptenFS(false);
 	}
 	
 	this.emscriptenPreRun = function() {
@@ -196,9 +113,6 @@ function EmulatorState() {
 	this.bootMediaLoaded = function() {
 		this.gotBootMedia = true;
 		popups.close("popup-need-boot-media");
-		if(!this.running) {
-			this.requestRestart();
-		}
 	}
 	this.requestRestart = function() {
 		if (!this.gotRoms || !this.gotBootMedia) {
@@ -275,6 +189,10 @@ function loadEmulator() {
 	for(var i = 0; i < config.run.length; i++) {
 		loadResource(config.run[i], true);
 	}
+}
+
+function restartComputer() {
+	emuState.requestRestart();
 }
 
 /* Emulator drop-down menu */
@@ -383,38 +301,41 @@ function showStatus(text) {
 	}
 }
 
-/* Upload from local disk functionality */
+/* File management - Most of the heavy-lifting is done by the EmscriptenFileManager object */
 
-function mountLocalFile(drive, isBootable) {
+function mountDriveFromUrl(drive, url, isBootable) {
+	var dstName = emuState.getEmulatorInterface().getFileNameForDrive(drive, url);
+	fileManager.writeFileFromUrl(dstName, url, isBootable);
+	emuState.waitForMedia(dstName, isBootable);
+}
+
+function uploadFloppy(drive, isBootable) {
+	if(!window.FileReader) {
+		// Browser is not compatible
+		alert("Your web browser does not support this feature");
+		return;
+	}
 	document.getElementById('uploader-text').innerHTML = "Select floppy disk image";
 	document.getElementById('uploader-ok-btn').onclick = function(evt) {
 		popups.close("popup-uploader");
-		var file = document.getElementById('uploaderfile').files[0];
-		if(!window.FileReader) return; // Browser is not compatible
-		var reader = new FileReader();
-		reader.onload = function(evt) {
-			if(evt.target.readyState != 2) return;
-			if(evt.target.error) {
-				showStatus(false);
-				alert('Error while reading file');
-				return;
-			}
-			fileManager.writeFileFromBinaryData(
-				emuState.getEmulatorInterface().getFileNameForDrive(drive, file.name),
-				evt.target.result,
-				isBootable
-			);
-			showStatus(false);
-		};
-		showStatus("Loading...");
-		reader.readAsArrayBuffer(file);
+		
+		var file = document.getElementById('uploader-file').files[0];
+		var dstName = emuState.getEmulatorInterface().getFileNameForDrive(drive, file.name);
+		
+		fileManager.writeFileFromFile(dstName, file);
+		emuState.waitForMedia(dstName, isBootable);
 		return false;
 	}
 	popups.open("popup-uploader");
 }
 
-function restartComputer() {
-	emuState.requestRestart();
+function downloadFloppy(drive) {
+	var fileName = emuState.getEmulatorInterface().getFileNameForDrive(drive, null);
+	if(typeof FS == 'undefined') {
+		alert("The emulator must be initialized");
+		return;
+	}	
+	saveEmscriptenFile(FS, fileName);
 }
 
 /* This object handles visibility transitions from one object to the next

@@ -314,10 +314,10 @@ function navProcessIconClick(name, type, param, opts) {
 			break;
 		case "upload-floppy":
 			gaTrackEvent("disk-mounted", "local-floppy");
-			mountLocalFile("fd1", true);
+			uploadFloppy("fd1", true);
 			break;
 		case "download-floppy":
-			exportToLocal("fd1");
+			downloadFloppy("fd1");
 			break;
 		case "enter-url":
 			promptNavigatorUrl();
