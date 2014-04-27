@@ -17,7 +17,38 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* JSMESS Glue Code (not sure what this does) */
+/* Interface to RetroWeb Browser */
+
+var ifce = createDefaultEmulatorInterface();
+
+ifce.setArgument("apple2ee", "");
+ifce.setArgument("-verbose", "");
+ifce.setArgument("-rompath", ".");
+ifce.setArgument("-flop1", "fd1.DSK");
+ifce.setArgument("-window", "");
+ifce.setArgument("-resolution", "560x192");
+ifce.setArgument("-nokeepaspect", "");
+ifce.setArgument("-autoframeskip", "");
+ifce.setArgument("-nosound", "");
+
+ifce.configModule = function(module) {
+	EmulatorInterface.prototype.configModule.call(this, module); /* Call the superclass */
+	
+	module.SDL_numSimultaneouslyQueuedBuffers = 5;
+	module.screenIsReadOnly = true;
+	module.canvas.width  = 280;
+	module.canvas.height = 192;
+}
+
+ifce.getDrives = function() {
+	return {
+		"hd1" : null,
+		"fd1" : "fd1.DSK"
+	}
+}
+
+/* JSMESS specific glue code (not sure what this does) */
+
 var JSMESS = JSMESS || {};
 
 JSMESS._readySet = false;
@@ -45,45 +76,3 @@ JSMESS.ready = function(r) {
 		if (!(JSMESS._readySet)) JSMESS._readyCheck();
 	};
 };
-
-/* Generic glue code */
-
-function emulatorGetDrives() {
-	return {
-		"hd1" : null,
-		"fd1" : "fd1.DSK"
-	}
-}
-
-function emulatorConfigModule(module) {
-	module.arguments = [
-		"apple2ee",
-		"-verbose",
-		"-rompath",".",
-		"-flop1", "fd1.DSK",
-		"-window",
-		"-resolution","560x192",
-		"-nokeepaspect",
-		"-autoframeskip",
-		"-nosound"
-	];
-	module.SDL_numSimultaneouslyQueuedBuffers = 5;
-	module.screenIsReadOnly = true;
-	module.canvas.width  = 280;
-	module.canvas.height = 192;
-}
-
-function emulatorPreInit() {
-}
-
-function emulatorPreRun() {
-}
-
-function emulatorMountDisk(disk) {
-	alert( "Disk insertion is not available for this emulator. To try another disk, reload the page to reset the emulator." );
-}
-
-function emulatorReset() {
-	alert( "This functionality is not available for this emulator. Refresh the page to restart the emulator." );
-}
-

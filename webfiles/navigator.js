@@ -281,7 +281,7 @@ function processBootOptions(opts) {
 	if(opts && "emulator-args" in opts) {
 		var args = opts["emulator-args"];
 		for(var arg in args) {
-			emulatorSetArgument(arg, args[arg]);
+			emuState.getEmulatorInterface().setArgument(arg, args[arg]);
 		}
 	}
 }
@@ -304,7 +304,7 @@ function navProcessIconClick(name, type, param, opts) {
 			break;
 		case "boot-rom":
 			gaTrackEvent("disk-mounted", name);
-			emulatorBootFromRom();
+			emuState.getEmulatorInterface().bootFromRom();
 		case "floppy":
 			if(emuState.isRunning()) {
 				fetchDriveFromUrl(name, "fd1", param, false);

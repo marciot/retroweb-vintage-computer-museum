@@ -17,57 +17,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-var emulatorArguments = {
-	"-c" : "pce-config.cfg",
-	"-g" : "cga",
-	"-r" : ""
-}
+/* Interface to RetroWeb Browser */
 
-function emulatorGetDrives() {
+var ifce = createDefaultEmulatorInterface();
+ifce.setArgument("-c", "pce-config.cfg");
+ifce.setArgument("-g", "cga");
+ifce.setArgument("-r", "");
+
+ifce.getDrives = function() {
 	return {
 		"hd1" : "hd1.img",
 		"fd1" : "fd1.disk"
 	}
 }
 
-function emulatorSetArgument(arg, value) {
-	emulatorArguments[arg] = value;
-	console.log("Setting argument " + arg + " to " + value);
-}
-
-function emulatorConfigModule(module) {
-	module.arguments = [];
-	for (var arg in emulatorArguments) {
-		module.arguments.push(arg);
-		if(emulatorArguments[arg] != '') {
-			module.arguments.push(emulatorArguments[arg]);
-		}
-	}
-}
-
-function emulatorPreRun() {
-}
-
-// Loads a disk that has been copied to the emscripten local store
-function emulatorMountDisk(disk) {
+ifce.mountDisk = function(disk) {
 	console.log("Mounting " + disk);
 	pcSetMessage ("emu.disk.insert", "0:" + disk);
 }
 
-// Note: this function should not be called directly. Call
-// restartComputer() instead since it properly deals the
-// with the case where the computer has not begun running.
-function emulatorReset() {
+ifce.reset = function() {
 	pcSetMessage ("emu.reset", "");
 }
 
-function emulatorBootFromRom() {
-	if(emuState.isRunning()) {
-		alert("Cannot change the boot media once the computer has already restarted. Please reload the page to reset");
-	} else {
-		emuState.bootMediaLoaded();
-	}
-}
+/* Helper functions */
 
 function pcSetMessage(msg,val) {
 	var sim = _pc_get_sim();

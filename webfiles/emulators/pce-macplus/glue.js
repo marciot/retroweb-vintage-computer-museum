@@ -17,49 +17,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-var showEjectWarning = true;
+/* Interface to RetroWeb Browser */
 
-var emulatorArguments = {
-	"-c" : "pce-config.cfg",
-	"-r" : ""
-}
+var ifce = createDefaultEmulatorInterface();
+ifce.setArgument("-c", "pce-config.cfg");
+ifce.setArgument("-r", "");
 
-function emulatorGetDrives() {
+ifce.showEjectWarning = true;
+
+ifce.getDrives = function() {
 	return {
 		"hd1" : "hd1.img",
 		"fd1" : "fd1.disk"
 	}
 }
 
-function emulatorSetArgument(arg, value) {
-	emulatorArguments[arg] = value;
-	console.log("Setting argument " + arg + " to " + value);
-}
-
-function emulatorConfigModule(module) {
-	module.arguments = [];
-	for (var arg in emulatorArguments) {
-		module.arguments.push(arg);
-		if(emulatorArguments[arg] != '') {
-			module.arguments.push(emulatorArguments[arg]);
-		}
-	}
-}
-
-function emulatorPreInit() {
-}
-
-function emulatorPreRun() {
-}
-
-function emulatorPreMountDisk(disk) {
+ifce.prepareDisk = function(disk) {
 	fixVMacDisks(disk);
 }
 
-// Loads a disk that has been copied to the emscripten local store
-function emulatorMountDisk(disk) {
+ifce.mountDisk = function(disk) {
 	console.log("Mounting " + disk);
-	emulatorPreMountDisk(disk);
+	this.prepareDisk(disk);
 	if(emuState.isFloppyMounted(disk) && showEjectWarning) {
 		showEjectWarning = false;
 		popups.open("popup-mac-eject-disk");		
@@ -71,9 +50,11 @@ function emulatorMountDisk(disk) {
 	}
 }
 
-function emulatorReset() {
+ifce.reset = function() {
 	macSetMessage ("emu.reset", "");
 }
+
+/* Helper functions */
 
 function macSetMessage(msg,val) {
 	var sim = _mac_get_sim();
@@ -117,9 +98,7 @@ function fixVMacDisks(disk) {
 			return;
 	}
 
-	/* Fill out all the fields in the DC42 header except for the checksum,
-	 * as PCE was modified to issue a warning rather than error out
-	 */
+	/* Fill out all the fields in the DC42 header */
 	 
 	var header = new Uint8Array(84);
 	for(var i = 0; i < 84; i++) {

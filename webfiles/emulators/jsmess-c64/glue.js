@@ -17,7 +17,70 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
+/* Interface to RetroWeb Browser */
+
+var ifce = createDefaultEmulatorInterface();
+
+ifce.setArgument("c64", "");
+ifce.setArgument("-verbose", "");
+ifce.setArgument("-joystick", "");
+ifce.setArgument("-rompath", ".");
+ifce.setArgument("-window", "");
+ifce.setArgument("-resolution", "1024x768");
+ifce.setArgument("-nokeepaspect", "");
+ifce.setArgument("-autoframeskip", "");
+ifce.setArgument("-nosound", "");
+
+ifce.createModule = function(module) {
+	EmulatorInterface.prototype.configModule.call(this, module); /* Call the superclass */
+	
+	module.SDL_numSimultaneouslyQueuedBuffers = 5;
+	module.screenIsReadOnly = true;
+	module.canvas.width  = 1024;
+	module.canvas.height = 768;
+}
+
+ifce.getDrives = function() {
+	return {
+		"hd1" : null,
+		"fd1" : "fd1.prg"
+	}
+}
+
+ifce.getFileNameForDrive = function(drive, fileName) {
+	var extension = fileName.match(/\.[a-zA-Z0-9]+$/)[0];
+	var diskFile;
+	switch(extension) {
+		case ".tap":
+		case ".wav":
+			diskFile = "cass" + extension;
+			this.setArgument("-cass", diskFile);
+			break;
+		case ".crt":
+		case ".80":
+			diskFile = "cart1" + extension;
+			this.setArgument("-cart1", diskFile);
+			break;
+		case ".prg":
+		case ".t64":
+		case ".p00":
+			diskFile = "game" + extension;
+			this.setArgument("-quik", diskFile);
+			break;
+		case ".d64":
+		case ".g64":
+			diskFile = "fd1" + extension;
+			this.setArgument("-flop", diskFile);
+			break;
+		default:
+			alert("Cannot determine format for " + fileName);
+	}
+	return diskFile;
+}
+
 /* JSMESS Glue Code (not sure what this does) */
+
 var JSMESS = JSMESS || {};
 
 JSMESS._readySet = false;
@@ -45,57 +108,3 @@ JSMESS.ready = function(r) {
 		if (!(JSMESS._readySet)) JSMESS._readyCheck();
 	};
 };
-
-/* Generic glue code */
-
-var emulatorArguments = {
-	"-verbose" : "",
-	"-joystick" : "",
-	"-rompath" : ".",
-	"-window" : "",
-	"-resolution" : "1024x768",
-	"-nokeepaspect" : "",
-	"-autoframeskip" : "",
-	"-nosound" : ""
-}
-
-function emulatorGetDrives() {
-	return {
-		"hd1" : null,
-		"fd1" : "fd1.prg"
-	}
-}
-
-function emulatorSetArgument(arg, value) {
-	emulatorArguments[arg] = value;
-	console.log("Setting argument " + arg + " to " + value);
-}
-
-function emulatorConfigModule(module) {
-	module.arguments = ["c64"];
-	for (var arg in emulatorArguments) {
-		module.arguments.push(arg);
-		if(emulatorArguments[arg] != '') {
-			module.arguments.push(emulatorArguments[arg]);
-		}
-	}
-	module.SDL_numSimultaneouslyQueuedBuffers = 5;
-	module.screenIsReadOnly = true;
-	module.canvas.width  = 1024;
-	module.canvas.height = 768;
-}
-
-function emulatorPreInit() {
-}
-
-function emulatorPreRun() {
-}
-
-function emulatorMountDisk(disk) {
-	alert( "Disk insertion is not available for this emulator. To try another disk, reload the page to reset the emulator." );
-}
-
-function emulatorReset() {
-	alert( "This functionality is not available for this emulator. Refresh the page to restart the emulator." );
-}
-

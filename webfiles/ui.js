@@ -50,9 +50,7 @@ function FileManager() {
 				FS.close(stream);
 			}
 			if(f.isBootable) {
-				if( typeof emulatorPreMountDisk == 'function' ) {
-					emulatorPreMountDisk(f.name);
-				}
+				emuState.getEmulatorInterface().prepareDisk(f.name);
 			}
 		}
 	}
@@ -86,7 +84,7 @@ function FileManager() {
 			} catch (err) {
 			}
 			FS.writeFile(name, new Uint8Array(data), { encoding: 'binary' });
-			emulatorMountDisk(name);
+			emuState.getEmulatorInterface().mountDisk(name);
 		}
 	}
 	
@@ -106,11 +104,7 @@ function FileManager() {
 }
 
 function mountDriveFromUrl(drive, url, isBootable) {
-	fileManager.writeFileFromUrl(emulatorGetDrives()[drive],url,isBootable);
-}
-
-function mountDriveFromData(drive, data, isBootable) {
-	fileManager.writeFileFromBinaryData(emulatorGetDrives()[drive],data,isBootable);
+	fileManager.writeFileFromUrl(emuState.getEmulatorInterface().getFileNameForDrive(drive, url), url, isBootable);
 }
 
 function download(content, filename, contentType)
@@ -130,7 +124,7 @@ function exportToLocal(drive) {
 		alert("The emulator must be initialized");
 		return;
 	}
-	var fileName = emulatorGetDrives()[drive];
+	var fileName = emuState.getEmulatorInterface().getFileNameForDrive(drive, null);
 	var contents = FS.readFile(fileName, { encoding: 'binary' });
 	download(contents, fileName);
 }
@@ -138,6 +132,7 @@ function exportToLocal(drive) {
 function EmulatorState() {
 	this.emuName = null;
 	this.startupConfig = null;
+	this.emuIfce = null;
 	
 	this.loaded = false;
 	this.running = false;
@@ -151,6 +146,14 @@ function EmulatorState() {
 
 	this.getEmulator = function() {
 		return this.emuName;
+	}
+	
+	this.setEmulatorInterface = function(ifce) {
+		this.emuIfce = ifce;
+	}
+	
+	this.getEmulatorInterface = function() {
+		return this.emuIfce;
 	}
 	
 	this.getInitialDoc = function () {
@@ -181,7 +184,7 @@ function EmulatorState() {
 	}
 	
 	this.emscriptenPreRun = function() {
-		emulatorPreRun();
+		emuState.getEmulatorInterface().preRun();
 		this.running = true;
 	}
 	
@@ -207,7 +210,7 @@ function EmulatorState() {
 			setTimeout(loadEmulator, 100);
 			this.loaded = true;
 		} else if(this.running) {
-			emulatorReset();
+			emuState.getEmulatorInterface().reset();
 		}
 	}
 	this.isRunning = function() {
@@ -268,7 +271,7 @@ function loadEmulator() {
 	console.log("Loading emulator scripts");
 	var config = emuState.getConfig();
 	Module = createEmscriptenModule();
-	emulatorConfigModule(Module);
+	emuState.getEmulatorInterface().configModule(Module);
 	for(var i = 0; i < config.run.length; i++) {
 		loadResource(config.run[i], true);
 	}
@@ -396,7 +399,11 @@ function mountLocalFile(drive, isBootable) {
 				alert('Error while reading file');
 				return;
 			}
-			mountDriveFromData(drive, evt.target.result,isBootable);
+			fileManager.writeFileFromBinaryData(
+				emuState.getEmulatorInterface().getFileNameForDrive(drive, file.name),
+				evt.target.result,
+				isBootable
+			);
 			showStatus(false);
 		};
 		showStatus("Loading...");

@@ -17,33 +17,33 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-function emulatorGetDrives() {
+/* Interface to RetroWeb Browser */
+
+var ifce = createDefaultEmulatorInterface();
+ifce.setArgument("-c", "pce-config.cfg");
+ifce.setArgument("-r", "");
+
+ifce.getDrives = function() {
 	return {
 		"hd1" : "hd1.img",
 		"fd1" : "fd0.st"
 	}
 }
 
-function emulatorConfigModule(module) {
-	module.arguments = [
-		"-c", "pce-config.cfg",
-		"-r"
-	];
-}
-
-function emulatorPreRun() {
+ifce.preRun = function() {
 	popups.open("popup-mouse-center");
 }
 
-// Loads a disk that has been copied to the emscripten local store
-function emulatorMountDisk(disk) {
+ifce.mountDisk = function(disk) {
 	console.log("Mounting " + disk);
 	stSetMessage ("emu.disk.insert", "0:" + disk);
 }
 
-function emulatorReset() {
+ifce.reset = function() {
 	stSetMessage ("emu.reset", "");
 }
+
+/* Helper functions */
 
 function stSetMessage(msg,val) {
 	var sim = _st_get_sim();
