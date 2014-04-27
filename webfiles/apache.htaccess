@@ -93,5 +93,5 @@ AddType application/json .json
 # a .wiki extension is used
 ###############################################################
 RewriteEngine On
-RewriteCond %{REQUEST_URI} !^/articles/.*\.wiki
-RewriteRule ^articles/ index.html [L]
+RewriteCond %{REQUEST_URI} !^/(articles|docs)/.*\.wiki
+RewriteRule ^(articles|docs)/ index.html [L]
