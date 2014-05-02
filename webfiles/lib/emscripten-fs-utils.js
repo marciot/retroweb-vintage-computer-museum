@@ -120,8 +120,8 @@ function EmscriptenFileManager() {
 		for (var i = 0; i < this.dirs.length; ++i) {
 			var d = this.dirs[i];
 			if(!d.written) {
-				this.print("Creating directory /" + d + " in the Emscripten FS");
-				FS.mkdir (d);
+				this.print("Creating directory /" + d.path + " in the Emscripten FS");
+				FS.mkdir (d.path);
 				d.written = true;
 			}
 		}
@@ -184,7 +184,9 @@ function EmscriptenFileManager() {
 	 *   srcUrl :      URL for the resource
 	 */
 	this.writeFileFromBinaryData = function(dstFileName, srcData) {
-		this._fileRef(dstFileName).data = new Uint8Array(srcData);
+		var ref = this._fileRef(dstFileName);
+		ref.data = new Uint8Array(srcData);
+		ref.written = false;
 	}
 	
 	/* Causes a file to be retrieved via HTTP from a URL and prepares

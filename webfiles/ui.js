@@ -87,6 +87,7 @@ function EmulatorState() {
 	
 	this.syncEmscriptenFS = function(doMount) {
 		var filesWritten = fileManager.syncEmscriptenFS(FS);
+		console.log("Preparing disks...");
 		for(var i = 0; i < filesWritten.length; i++) {
 			emuState.getEmulatorInterface().prepareDisk(filesWritten[i]);
 			if(doMount) {
