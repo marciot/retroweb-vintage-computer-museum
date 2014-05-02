@@ -79,5 +79,6 @@ EmulatorInterface.prototype.bootFromRom = function() {
 		alert("Cannot change the boot media once the computer has already restarted. Please reload the page to reset");
 	} else {
 		emuState.bootMediaLoaded();
+		emuState.requestRestart();
 	}
 }

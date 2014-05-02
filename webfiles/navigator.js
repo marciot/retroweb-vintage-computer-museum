@@ -305,6 +305,7 @@ function navProcessIconClick(name, type, param, opts) {
 		case "boot-rom":
 			gaTrackEvent("disk-mounted", name);
 			emuState.getEmulatorInterface().bootFromRom();
+			break;
 		case "floppy":
 			if(emuState.isRunning()) {
 				fetchDriveFromUrl(name, "fd1", param, false);
