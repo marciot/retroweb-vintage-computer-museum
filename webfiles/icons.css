@@ -133,3 +133,8 @@ DIV.icons {
 	background: url('ui-artwork/world.png');
 	background-size: 60px 60px;
 }
+
+.icons A.cassette:before {
+	background: url('ui-artwork/cassette.png');
+	background-size: 60px 60px;
+}

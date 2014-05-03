@@ -26,7 +26,7 @@ ifce.setArgument("-r", "");
 ifce.getDrives = function() {
 	return {
 		"hd1" : "hd1.img",
-		"fd1" : "fd0.st"
+		"fd1" : "fd1.st"
 	}
 }
 
@@ -34,9 +34,10 @@ ifce.preRun = function() {
 	popups.open("popup-mouse-center");
 }
 
-ifce.mountDisk = function(disk) {
-	console.log("Mounting " + disk);
-	stSetMessage ("emu.disk.insert", "0:" + disk);
+ifce.mountDisk = function(diskFile) {
+	console.log("Mounting " + diskFile);
+	var driveId = diskFile.match(/fd(\d)+/)[1];
+	rcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
 }
 
 ifce.reset = function() {

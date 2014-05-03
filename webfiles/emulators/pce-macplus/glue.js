@@ -28,7 +28,8 @@ ifce.showEjectWarning = true;
 ifce.getDrives = function() {
 	return {
 		"hd1" : "hd1.img",
-		"fd1" : "fd1.disk"
+		"fd1" : "fd1.disk",
+		"fd2" : "fd2.disk"
 	}
 }
 
@@ -36,17 +37,18 @@ ifce.prepareDisk = function(disk) {
 	fixVMacDisks(disk);
 }
 
-ifce.mountDisk = function(disk) {
-	console.log("Mounting " + disk);
-	this.prepareDisk(disk);
-	if(emuState.isFloppyMounted(disk) && showEjectWarning) {
+ifce.mountDisk = function(diskFile) {
+	console.log("Mounting " + diskFile);
+	var driveId = diskFile.match(/fd(\d)+/)[1];
+	this.prepareDisk(diskFile);
+	if(emuState.isFloppyMounted("fd" + driveId) && showEjectWarning) {
 		showEjectWarning = false;
 		popups.open("popup-mac-eject-disk");		
 	}
 	if(emuState.isRunning()) {
-		emuState.floppyMounted(disk);
-		macSetMessage ("emu.disk.insert", "2:" + disk);
-		macSetMessage ("mac.insert", "2");
+		emuState.floppyMounted("fd" + driveId);
+		macSetMessage ("emu.disk.insert", driveId + ":" + diskFile);
+		macSetMessage ("mac.insert", driveId);
 	}
 }
 

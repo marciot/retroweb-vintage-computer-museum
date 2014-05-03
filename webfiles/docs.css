@@ -123,6 +123,10 @@ HR {
 	margin: 30px auto;
 }
 
+.clear-both {
+	clear: both;
+}
+
 /* Special styles */
 
 .no-select {
@@ -313,6 +317,11 @@ FIGURE.float-left {
 
 DIV.float-right {
 	float: right;
+	padding: 0px 20px;
+}
+
+DIV.float-left {
+	float: left;
 	padding: 0px 20px;
 }
 

@@ -256,7 +256,7 @@ function processStartupConfig(json) {
 	}
 	emulators.sort(function(a,b){return a.name.localeCompare(b.name);});
 	for(var i = 0; i < emulators.length; ++i) {
-		addEmulator(emulators[i].key, emulators[i].name);
+		addEmulator(emulators[i].key, emulators[i].menu || emulators[i].name);
 	}
 	
 	var emulator = query.platform || query.emulator || emulators[Math.floor((Math.random()*emulators.length))].key;
@@ -310,6 +310,11 @@ function mountDriveFromUrl(drive, url, isBootable) {
 	emuState.waitForMedia(dstName, isBootable);
 }
 
+function getFileFromUrl(url, file) {
+	fileManager.writeFileFromUrl(file, url);
+	emuState.waitForMedia(file);
+}
+
 function uploadFloppy(drive, isBootable) {
 	if(!window.FileReader) {
 		// Browser is not compatible
@@ -330,6 +335,23 @@ function uploadFloppy(drive, isBootable) {
 	popups.open("popup-uploader");
 }
 
+function uploadFile(dstName, what, isBootable) {
+	if(!window.FileReader) {
+		// Browser is not compatible
+		alert("Your web browser does not support this feature");
+		return;
+	}
+	document.getElementById('uploader-text').innerHTML = "Please select a " + what;
+	document.getElementById('uploader-ok-btn').onclick = function(evt) {
+		popups.close("popup-uploader");
+		var file = document.getElementById('uploader-file').files[0];
+		fileManager.writeFileFromFile(dstName, file);
+		emuState.waitForMedia(dstName, isBootable);
+		return false;
+	}
+	popups.open("popup-uploader");
+}
+
 function downloadFloppy(drive) {
 	var fileName = emuState.getEmulatorInterface().getFileNameForDrive(drive, null);
 	if(typeof FS == 'undefined') {
@@ -337,6 +359,22 @@ function downloadFloppy(drive) {
 		return;
 	}	
 	saveEmscriptenFile(FS, fileName);
+}
+
+function downloadFile(file) {
+	if(typeof FS == 'undefined') {
+		alert("The emulator must be initialized");
+		return;
+	}	
+	saveEmscriptenFile(FS, file);
+}
+
+function cassetteAction(action) {
+	if(!emuState.isRunning()) {
+		alert("The emulator must be running before you use this action.");
+		return;
+	}
+	emuState.getEmulatorInterface().cassetteAction(action);
 }
 
 /* This object handles visibility transitions from one object to the next

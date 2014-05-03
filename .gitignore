@@ -18,6 +18,7 @@
 private
 browser-tests
 disks
+cassettes
 articles
 artwork
 .htaccess

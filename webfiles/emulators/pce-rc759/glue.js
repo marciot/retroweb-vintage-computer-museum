@@ -26,13 +26,15 @@ ifce.setArgument("-r", "");
 ifce.getDrives = function() {
 	return {
 		"hd1" : "h1.img",
-		"fd1" : "fd1.disk"
+		"fd1" : "fd1.disk",
+		"fd2" : "fd2.disk"		
 	}
 }
 
-ifce.mountDisk = function(disk) {
-	console.log("Mounting " + disk);
-	rcSetMessage ("emu.disk.insert", "0:" + disk);
+ifce.mountDisk = function(diskFile) {
+	console.log("Mounting " + diskFile);
+	var driveId = diskFile.match(/fd(\d)+/)[1];
+	rcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
 }
 
 ifce.reset = function() {

@@ -63,10 +63,10 @@ EmulatorInterface.prototype.preInit = function() {
 EmulatorInterface.prototype.preRun = function() {
 }
 	
-EmulatorInterface.prototype.prepareDisk = function(disk) {
+EmulatorInterface.prototype.prepareDisk = function(diskFile) {
 }
 
-EmulatorInterface.prototype.mountDisk = function(disk) {
+EmulatorInterface.prototype.mountDisk = function(diskFile) {
 	alert( "Disk insertion after boot is not available for this emulator. Reload the page to reset the emulator." );
 }
 
@@ -81,4 +81,8 @@ EmulatorInterface.prototype.bootFromRom = function() {
 		emuState.bootMediaLoaded();
 		emuState.requestRestart();
 	}
+}
+
+EmulatorInterface.prototype.cassetteAction = function(action) {
+	alert( "This emulator does not support the cassette interface." );
 }

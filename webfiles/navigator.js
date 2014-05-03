@@ -115,8 +115,11 @@ function navJSONtoDOM( json ) {
 			"doc"             : "document",
 			"upload-floppy"   : "upload",
 			"download-floppy" : "upload",
+			"download-file"   : "upload",
+			"upload-file"     : "upload",
 			"enter-url"       : "world",
-			"hyperlink"       : "html-doc"
+			"hyperlink"       : "html-doc",
+			"cassette"        : "cassette"
 		}
 	
 		var div = document.createElement("div");
@@ -135,7 +138,11 @@ function navJSONtoDOM( json ) {
 			var disk = document.createElement( "LI" );
 			var icon = document.createElement( "A" );
 			disk.appendChild(icon);
-			icon.className += typeToClassMap[type];
+			if( opts && opts.hasOwnProperty("className") ) {
+				icon.className = opts.className;
+			} else {
+				icon.className += typeToClassMap[type];
+			}
 			icon.appendChild(document.createTextNode(name));
 			function getHandler(name, type, arg, opts) {
 				return function() {
@@ -303,12 +310,13 @@ function navProcessIconClick(name, type, param, opts) {
 			fetchDriveFromUrl(name, "fd1", param, true);
 			break;
 		case "boot-rom":
+			processBootOptions(opts);
 			gaTrackEvent("disk-mounted", name);
 			emuState.getEmulatorInterface().bootFromRom();
 			break;
 		case "floppy":
 			if(emuState.isRunning()) {
-				fetchDriveFromUrl(name, "fd1", param, false);
+				fetchDriveFromUrl(name, (opts && opts.drive) ? opts.drive : "fd1", param, false);
 			} else {
 				alert("Please boot the computer using a boot disk first");
 			}
@@ -319,6 +327,18 @@ function navProcessIconClick(name, type, param, opts) {
 			break;
 		case "download-floppy":
 			downloadFloppy("fd1");
+			break;
+		case "download-file":
+			downloadFile(param);
+			break;
+		case "upload-file":
+			uploadFile(param, "cassette file (.cas)");
+			break;
+		case "get-file":
+			getFileFromUrl(param, opts.saveAs);
+			break;
+		case "cassette":
+			cassetteAction(param);
 			break;
 		case "enter-url":
 			promptNavigatorUrl();
@@ -333,8 +353,12 @@ function navProcessIconClick(name, type, param, opts) {
 }
 
 function fetchDriveFromUrl(title, drive, url, isBootable) {
-	gaTrackEvent("disk-mounted", title);
-	mountDriveFromUrl(drive, rewriteRelativeUrl(url), isBootable);
+	if(isBootable && emuState.isRunning()) {
+		alert("Cannot change the boot media once the computer has already restarted. Please reload the page to reset");
+	} else {
+		gaTrackEvent("disk-mounted", title);
+		mountDriveFromUrl(drive, rewriteRelativeUrl(url), isBootable);
+	}
 }
 
 function promptNavigatorUrl () {

@@ -27,17 +27,38 @@ ifce.setArgument("-r", "");
 ifce.getDrives = function() {
 	return {
 		"hd1" : "hd1.img",
-		"fd1" : "fd1.disk"
+		"fd1" : "fd1.disk",
+		"fd2" : "fd2.disk"
 	}
 }
 
-ifce.mountDisk = function(disk) {
-	console.log("Mounting " + disk);
-	pcSetMessage ("emu.disk.insert", "0:" + disk);
+ifce.mountDisk = function(diskFile) {
+	console.log("Mounting " + diskFile);
+	var driveId = diskFile.match(/fd(\d)+/)[1];
+	pcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
 }
 
 ifce.reset = function() {
 	pcSetMessage ("emu.reset", "");
+}
+
+ifce.cassetteAction = function(action) {
+	switch(action) {
+		case "record":
+			pcSetMessage ("emu.tape.save", "end");
+			break;
+		case "playback":
+			pcSetMessage ("emu.tape.load", "0");
+			break;
+		case "rewind":
+			pcSetMessage ("emu.tape.rewind", "");
+			break;
+		case "append":
+			pcSetMessage ("emu.tape.append", "");
+			break;
+		default:
+			alert("Unknown action: " + action);
+	}
 }
 
 /* Helper functions */
