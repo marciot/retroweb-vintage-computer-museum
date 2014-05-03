@@ -24,7 +24,7 @@
 					"/emulators/pce-ibmpc/pce-config-5160.cfg          -> pce-config.cfg",
 					"/emulators/pce-ibmpc/pce-config-5160-early-msys-mouse.cfg",
 					"/emulators/pce-ibmpc/pce-config-5160-early-ser-mouse.cfg",
-					"/emulators/pce-ibmpc/pce-config-5160-later-ser-mouse.cfg"
+					"/emulators/pce-ibmpc/pce-config-5160-later-ser-mouse.cfg",
 					
 					"/roms/ibm-xt-1982-11-08.rom",
 					"/roms/ibm-basic-1.10.rom",

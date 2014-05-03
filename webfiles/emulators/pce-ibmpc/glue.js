@@ -34,8 +34,10 @@ ifce.getDrives = function() {
 
 ifce.mountDisk = function(diskFile) {
 	console.log("Mounting " + diskFile);
-	var driveId = diskFile.match(/fd(\d)+/)[1];
-	pcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
+	var driveId = diskFile.match(/fd(\d)+/);
+	if(driveId) {
+		pcSetMessage ("emu.disk.insert", (driveId[1] - 1) + ":" + diskFile);
+	}
 }
 
 ifce.reset = function() {
