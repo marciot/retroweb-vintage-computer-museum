@@ -45,11 +45,11 @@ function EmulatorState() {
 	}
 	
 	this.getInitialDoc = function () {
-		return this.getConfig["initial-doc"] || this.startupConfig["initial-doc"];
+		return this.startupConfig["initial-doc"];
 	}
 	
-	this.getConfig = function () {
-		return this.startupConfig.emulators[this.emuName];
+	this.getConfig = function (emulator) {
+		return this.startupConfig.emulators[emulator || this.emuName];
 	}
 	
 	this.waitForMedia = function(fileName, isBootable) {
@@ -208,14 +208,7 @@ function addEmulator(emulator, title) {
 /* onChange handler for the emulator drop-down menu */
 function onEmulatorChange() {
 	var emulatorMenu = document.getElementById('emulator-select');
-	var newEmulator = "emulator=" + emulatorMenu.options[emulatorMenu.selectedIndex].value;
-	var newPage = new String(window.location);
-	if(newPage.indexOf("?") != -1) {
-		newPage = newPage.replace(/(platform|emulator)=[a-zA-Z0-9-]+/i, newEmulator);
-	} else {
-		newPage = newPage + "?" + newEmulator;
-	}
-	window.location = newPage;
+	navTo("/?emulator=" + emulatorMenu.options[emulatorMenu.selectedIndex].value);
 }
 
 function fetchDataFromUrl (url, callback) {
@@ -253,12 +246,15 @@ function processStartupConfig(json) {
 	for(e in startupConfig.emulators) {
 		var emu = startupConfig.emulators[e];
 		emu.key = e;
-		emulators.push(emu);
 		if(!emu.hasOwnProperty("menu")) {
 			emu.menu = emu.name;
 		} else if(!emu.hasOwnProperty("name")) {
 			emu.name = emu.menu;
 		}
+		if(!emu.hasOwnProperty("emulator-doc")) {
+			emu["emulator-doc"] = "/articles/" + emu.name;
+		}
+		emulators.push(emu);
 	}
 	emulators.sort(function(a,b){return a.menu.localeCompare(b.menu);});
 	for(var i = 0; i < emulators.length; ++i) {

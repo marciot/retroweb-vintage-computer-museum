@@ -98,8 +98,7 @@ function navGoBack() {
 }
 
 function navGoHome() {
-	pageURL = '/';
-	navTo(emuState.getInitialDoc());
+	navTo("/");
 }
 
 function navInitialDoc() {
@@ -108,7 +107,7 @@ function navInitialDoc() {
 
 function navJSONtoDOM( json ) {
 	if(json.hasOwnProperty("emulators")) {
-		if(json.emulators.indexOf(emuState.getEmulator()) == -1) {
+		if(json.emulators.indexOf(emuState.getEmulator()) == -1 && !query.emulator) {
 			navTo("?emulator=" + json.emulators[0]);
 		}
 	}
@@ -235,14 +234,14 @@ function navTo(url, specialBehavior) {
 	var params = u.search != '' ? parseQuery(u.search) : {};
 	console.log( "Path: " + u.path + "  Search: " + u.search );
 	
-	/* Replace spaces in the path with dashes */
-	
-	u.path = u.path.replace(/ /g,'-');
-	
 	/* Figure out where we are going and adjust the URL */
 	
 	if(u.path == '/') {
-		u.path = emuState.getInitialDoc();
+		if(params.emulator) {
+			u.path = emuState.getConfig(params.emulator)["emulator-doc"];
+		} else {
+			u.path = emuState.getInitialDoc();
+		}
 	}
 	
 	if(u.path == '') {
@@ -250,6 +249,13 @@ function navTo(url, specialBehavior) {
 	} else {
 		u.path  = rewriteRelativeUrl(u.path); 
 	}
+	
+	/* Replace spaces in the path with dashes */
+	
+	u.path = u.path.replace(/ /g,'-');
+	
+	/* Transition to the new page */
+	
 	pageURL = u.path;
 	url = u.path + u.search;
 	
