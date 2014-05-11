@@ -251,12 +251,18 @@ function processStartupConfig(json) {
 	
 	var emulators = [];
 	for(e in startupConfig.emulators) {
-		startupConfig.emulators[e].key = e;
-		emulators.push(startupConfig.emulators[e]);
+		var emu = startupConfig.emulators[e];
+		emu.key = e;
+		emulators.push(emu);
+		if(!emu.hasOwnProperty("menu")) {
+			emu.menu = emu.name;
+		} else if(!emu.hasOwnProperty("name")) {
+			emu.name = emu.menu;
+		}
 	}
-	emulators.sort(function(a,b){return a.name.localeCompare(b.name);});
+	emulators.sort(function(a,b){return a.menu.localeCompare(b.menu);});
 	for(var i = 0; i < emulators.length; ++i) {
-		addEmulator(emulators[i].key, emulators[i].menu || emulators[i].name);
+		addEmulator(emulators[i].key, emulators[i].menu);
 	}
 	
 	var emulator = query.platform || query.emulator || emulators[Math.floor((Math.random()*emulators.length))].key;
