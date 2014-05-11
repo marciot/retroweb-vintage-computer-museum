@@ -77,7 +77,7 @@ function insertAfter(referenceNode, newNode) {
 function forEachElementInClass(className, callback, arg) {
 	var references = document.getElementsByClassName(className);
 	for (i = 0; i < references.length; ++i) {
-		callback(references[i], arg);
+		callback(references[i], i, arg);
 	}
 }
 
@@ -127,7 +127,7 @@ function createBubble(element, text) {
  * create floating bubbles defining each term.
  */
 function attachBubbles(refClass, callback) {
-	forEachElementInClass(refClass, function(ref) {
+	forEachElementInClass(refClass, function(ref, i) {
 		var footHtml = callback(ref.innerHTML);
 		if(footHtml) {
 			bubbleText = elementToString(footHtml);
@@ -142,6 +142,10 @@ function attachBubbles(refClass, callback) {
 			setVisibility(parent, true);
 			selectText(footHtml);
 		}
+		
+		var anchor = "citation_" + i;
+		ref.href = "#" + anchor;
+		$(footHtml).prepend("<a name='" + anchor + "'></a>");
 	});
 }
 
@@ -162,7 +166,7 @@ function getElementOverhang(element, container) {
 	return overhang;
 }
 
-function adjustBubble(bubble, container) {
+function adjustBubble(bubble, i, container) {
 	var oldDisplay = bubble.style.display;	
 	bubble.style.display = 'inline';
 	var overhang = getElementOverhang(bubble, container);
@@ -249,8 +253,6 @@ function implicitClassNames() {
 function implicitShowTarget() {	
 	$('<a class="show-target" target="glossary">Show Glossary</a>')
 		.insertBefore("#glossary");
-	$('<a class="show-target" target="references">Show References</a>')
-		.insertBefore("#references");
 }
 
 function attachHintManagers() {

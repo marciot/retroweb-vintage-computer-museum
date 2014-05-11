@@ -189,6 +189,7 @@ SPAN.bubble-tail
 	vertical-align: super;
 	font-size: smaller;
 	font-style: normal;
+	text-decoration: none;
 }
 
 P.tagline {

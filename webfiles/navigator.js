@@ -207,7 +207,7 @@ function injectWikiContent(element, url) {
 								   .replace(/\$WIKI_SOURCE/g,
 										wikiSrc.replace(/</g,'&lt;')
 											   .replace(/>/g,'&gt;'))
-					               .replace(/\$WIKI_BASE_URL/g, removeTrailingSlash(baseUrl(url)));
+					               .replace(/\$WIKI_BASE_URL/g, url.replace(/.wiki$/,''));
 				/* A bit of kludge here to handle the fact that document.write() seems to execute asynchronously.
 				 * Rather than calling finishFormatting directly, we set a global function that gets
 				 * called by the wiki template when the browser is done rendering the wiki content.

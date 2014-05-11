@@ -140,7 +140,7 @@ function links(str) {
 	str = str.replace( /\[\[([^\]|]+)\|([^\]]+)\]\]/g, '<a href="$2">$1</a>');
 	
 	// Reference
-	str = str.replace( /\[\d+\]/g, '<span class="reference">$&</span>');
+	str = str.replace( /\[\d+\]/g, '<a class="reference">$&</a>');
 	
 	// External links
 	str = str.replace( /\[(http[^\] ]+) ([^\]]+)\]/g,  '<a href="$1" target="new">$2</a>');
