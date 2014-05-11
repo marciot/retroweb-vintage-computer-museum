@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-var baseURL = "/";
+var pageURL = "/";
 var wikiTemplate;
 
 function parseUrl(url) {
@@ -67,12 +67,15 @@ function urlFile(url) {
 
 function rewriteRelativeUrl(url) {
 	var rewritten = url;
-	if (!urlIsAbsolute(url) && baseURL != "") {
+	if (url && !urlIsAbsolute(url) && pageURL) {
 		if(url.charAt(0) == '/') {
-			rewritten = (urlSite(baseURL) || "") + url;
+			rewritten = (urlSite(pageURL) || "") + url;
 		} else {
-			rewritten = baseURL + url;
+			rewritten = baseUrl(pageURL) + url;
 		}
+	}
+	if(!url) {
+		url = pageURL;
 	}
 	/* Handle ".." by stripping out all occurrences of "dirname/.." */
 	var dotdot = /[^/]+\/\.\.\//;
@@ -87,7 +90,7 @@ function removeTrailingSlash(url) {
 }
 
 function navGetBaseUrl() {
-	return baseURL;
+	return baseUrl(pageURL);
 }
 
 function navGoBack() {
@@ -95,7 +98,7 @@ function navGoBack() {
 }
 
 function navGoHome() {
-	baseURL = '/';
+	pageURL = '/';
 	navTo(emuState.getInitialDoc());
 }
 
@@ -104,6 +107,7 @@ function navInitialDoc() {
 }
 
 function navJSONtoDOM( json ) {
+	
 	if(json.hasOwnProperty("icons")) {
 		var typeToClassMap = {
 			"floppy"          : "floppy",
@@ -230,7 +234,7 @@ function navTo(url, specialBehavior) {
 	
 	u.path = u.path.replace(/ /g,'-');
 	
-	/* Figure out where we are going and adjust the baseURL */
+	/* Figure out where we are going and adjust the URL */
 	
 	if(u.path == '/') {
 		u.path = emuState.getInitialDoc();
@@ -239,11 +243,12 @@ function navTo(url, specialBehavior) {
 	if(u.path == '') {
 		u.path = window.location.pathname;
 	} else {
-		u.path  = rewriteRelativeUrl(u.path);
-		baseURL = baseUrl(u.path);
-		console.log( "New baseURL: " + baseURL + "  New document: " + u.path );
+		u.path  = rewriteRelativeUrl(u.path); 
 	}
+	pageURL = u.path;
 	url = u.path + u.search;
+	
+	console.log( "New pageURL: " + pageURL );
 	
 	if(params.emulator && params.emulator != emuState.getEmulator()) {
 		/* If an emulator is specified, and it does not match what we are currently running,
