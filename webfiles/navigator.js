@@ -107,6 +107,11 @@ function navInitialDoc() {
 }
 
 function navJSONtoDOM( json ) {
+	if(json.hasOwnProperty("emulators")) {
+		if(json.emulators.indexOf(emuState.getEmulator()) == -1) {
+			navTo("?emulator=" + json.emulators[0]);
+		}
+	}
 	
 	if(json.hasOwnProperty("icons")) {
 		var typeToClassMap = {
