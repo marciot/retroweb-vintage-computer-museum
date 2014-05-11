@@ -25,6 +25,7 @@
 					"/emulators/pce-ibmpc/pce-config-5160-early-msys-mouse.cfg",
 					"/emulators/pce-ibmpc/pce-config-5160-early-ser-mouse.cfg",
 					"/emulators/pce-ibmpc/pce-config-5160-later-ser-mouse.cfg",
+					"/emulators/pce-ibmpc/pce-config-5160-gem-1.2.cfg",
 					
 					"/roms/ibm-xt-1982-11-08.rom",
 					"/roms/ibm-basic-1.10.rom",
@@ -60,6 +61,7 @@
 			},
 			"pce-rc759" : {
 				"name" : "RC759 Piccoline",
+				"menu" : "Regnecentralen RC759 Piccoline",
 				"pre" : ["/skins/rc759.css", "/emulators/pce-rc759/glue.js" ],
 				"run" : ["/emulators/pce-rc759/pce-rc759.js"],
 				"mkdir" : [ "/roms" ],
@@ -89,6 +91,7 @@
 			},
 			"jsmess-trs80" : {
 				"name" : "TRS-80 Model 1",
+				"menu" : "Tandy/RadioShack TRS-80 Model 1",
 				"pre" : ["/skins/trs80-model1.css", "/emulators/jsmess-trs80/glue.js"],
 				"run" : ["/emulators/jsmess-trs80/jsmess-trs80.js"],
 				"mkdir" : [ "/cfg" ],
@@ -96,10 +99,45 @@
 					"/roms/trs80l2.zip"
 				]
 			},
+			"sae-amiga" : {
+				"name" : "Amiga 500",
+				"menu" : "Commodore Amiga 500",
+				"pre" : [
+					"/skins/amiga500.css",
+					"/emulators/sae-amiga/glue.js",
+					"/emulators/sae-amiga/sae/constants.js",
+					"/emulators/sae-amiga/sae/utils.js",
+					"/emulators/sae-amiga/sae/config.js",
+					"/emulators/sae-amiga/sae/memory.js",
+					"/emulators/sae-amiga/sae/expansion.js",
+					"/emulators/sae-amiga/sae/events.js",
+					"/emulators/sae-amiga/sae/input.js",
+					"/emulators/sae-amiga/sae/serial.js",
+					"/emulators/sae-amiga/sae/custom.js",
+					"/emulators/sae-amiga/sae/blitter.js",
+					"/emulators/sae-amiga/sae/copper.js",
+					"/emulators/sae-amiga/sae/playfield.js",
+					"/emulators/sae-amiga/sae/video.js",
+					"/emulators/sae-amiga/sae/audio.js",
+					"/emulators/sae-amiga/sae/cia.js",
+					"/emulators/sae-amiga/sae/disk.js",
+					"/emulators/sae-amiga/sae/rtc.js",
+					"/emulators/sae-amiga/sae/cpu.js",
+					"/emulators/sae-amiga/sae/amiga.js"
+				],
+				"run" : [
+					"/emulators/sae-amiga/sae-amiga.js"
+				],
+				"mkdir" : [ "/cfg" ],
+				"preload-files" : [
+					"/roms/amiga-kickstart-v1.3-r34.5.rom -> sae.rom"
+				]
+			},
 			"xerox-star" : {
 				"name" : "Xerox Star",
-				"pre" : ["/skins/xerox-star.css"],
-				"run" : ["/emulators/xerox-star/xerox-star.js"],
+				"menu" : "Xerox 8010 Information System (Xerox Star)",
+				"pre"  : ["/skins/xerox-star.css"],
+				"run"  : ["/emulators/xerox-star/xerox-star.js"],
 				"preload-files" : []
 			}
 		}

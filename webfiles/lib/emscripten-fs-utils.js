@@ -110,11 +110,11 @@ function EmscriptenFileManager() {
 	 * on an Emscripten FS object. It should be called during
 	 * or after Emscripten's preInit phase.
 	 */
-	this.syncEmscriptenFS = function(FS) {
+	this.syncEmscriptenFS = function() {		
 		var filesWritten = [];
 		if(typeof FS == 'undefined') {
 			this.print("Enscripten FS not defined");
-			return;
+			return filesWritten;
 		}
 		// Create subdirectories
 		for (var i = 0; i < this.dirs.length; ++i) {
@@ -248,5 +248,10 @@ function EmscriptenFileManager() {
 			callback(arg1, arg2, arg3);
 			me._decrementCounter(depName);
 		}
+	}
+	
+	this.getFileBinaryData = function(fileName) {
+		var ref = this._fileRef(fileName);
+		return ref.data;
 	}
 }
