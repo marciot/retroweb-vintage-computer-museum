@@ -138,3 +138,8 @@ DIV.icons {
 	background: url('ui-artwork/cassette.png');
 	background-size: 60px 60px;
 }
+
+.icons A.power:before {
+	background: url('ui-artwork/power.png');
+	background-size: 60px 60px;
+}
