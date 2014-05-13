@@ -17,81 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-var pageURL = "/";
+var navigatorPage = new NavigatorURL();
 var wikiTemplate;
-
-function parseUrl(url) {
-	var address, path, search;
-	
-	/* Split the url into the pathname portion and the query */
-	
-	var searchPos = url.indexOf('?');
-	if(searchPos != -1) {
-		search  = url.substr(searchPos);
-		path    = url.substr(0, searchPos);
-	} else {
-		path   = url;
-		search = '';
-	}
-	var site = urlSite(url);
-	if(site) {
-		path = path.substr(site.length);
-	}
-	return {
-		"site"   : site,
-		"path"   : path,
-		"search" : search
-	}
-}
-
-function urlIsAbsolute(url) {
-	return url.match(/^[a-z]+:\/\//);
-}
-
-function urlSite(url) {
-	var match = url.match(/^[a-z]+:\/\/[^\/?#]+/) 
-	return match ? match[0] : null;
-}
-
-function baseUrl(url) {
-	if(url.indexOf("/") != -1) {
-		return url.replace(/\/[^/]+$/, "/");
-	} else {
-		return '';
-	}
-}
-
-function urlFile(url) {
-	return url.substr(url.lastIndexOf("/")+1);
-}
-
-function rewriteRelativeUrl(url) {
-	var rewritten = url;
-	if (url && !urlIsAbsolute(url) && pageURL) {
-		if(url.charAt(0) == '/') {
-			rewritten = (urlSite(pageURL) || "") + url;
-		} else {
-			rewritten = baseUrl(pageURL) + url;
-		}
-	}
-	if(!url) {
-		url = pageURL;
-	}
-	/* Handle ".." by stripping out all occurrences of "dirname/.." */
-	var dotdot = /[^/]+\/\.\.\//;
-	while(rewritten.match(dotdot)) {
-		rewritten = rewritten.replace(dotdot,'');
-	}
-	return rewritten;
-}
-
-function removeTrailingSlash(url) {
-	return url.replace(/\/$/,'');
-}
-
-function navGetBaseUrl() {
-	return baseUrl(pageURL);
-}
 
 function navGoBack() {
 	history.back();
@@ -108,7 +35,7 @@ function navInitialDoc() {
 function navJSONtoDOM( json ) {
 	if(json.hasOwnProperty("emulators")) {
 		if(json.emulators.indexOf(emuState.getEmulator()) == -1 && !query.emulator) {
-			navTo("?emulator=" + json.emulators[0]);
+			navTo("?emulator=" + json.emulators[0], 'redirect');
 		}
 	}
 	
@@ -230,62 +157,50 @@ function injectWikiContent(element, url) {
 }
 
 function navTo(url, specialBehavior) {
-	var u      = parseUrl(url);
-	var params = u.search != '' ? parseQuery(u.search) : {};
-	console.log( "Path: " + u.path + "  Search: " + u.search );
+		
+	navigatorPage.apply(url);
 	
-	/* Figure out where we are going and adjust the URL */
+	params = navigatorPage.params;
 	
-	if(u.path == '/') {
+	if(navigatorPage.path == '/') {
 		if(params.emulator) {
-			u.path = emuState.getConfig(params.emulator)["emulator-doc"];
+			navigatorPage.apply(emuState.getConfig(params.emulator)["emulator-doc"] + navigatorPage.search);
 		} else {
-			u.path = emuState.getInitialDoc();
+			navigatorPage.apply(emuState.getInitialDoc() + navigatorPage.search);
 		}
 	}
+	url = navigatorPage.href;
 	
-	if(u.path == '') {
-		u.path = window.location.pathname;
-	} else {
-		u.path  = rewriteRelativeUrl(u.path); 
-	}
-	
-	/* Replace spaces in the path with dashes */
-	
-	u.path = u.path.replace(/ /g,'-');
-	
-	/* Transition to the new page */
-	
-	pageURL = u.path;
-	url = u.path + u.search;
-	
-	console.log( "New pageURL: " + pageURL );
+	console.log( "New url: " + url );
 	
 	if(params.emulator && params.emulator != emuState.getEmulator()) {
 		/* If an emulator is specified, and it does not match what we are currently running,
 		   then we must do a full page reload (to reset the emulator) */
-		if(emuState.isRunning()) {
-			if(!confirm("Following this link will shutdown the emulator and change the computer type.")) {
+		if(emuState.isRunning() &&
+			(!confirm("Following this link will shutdown the emulator and change the computer type."))) {
 				return false;
-			}
 		}
-		if(specialBehavior != 'popState') {
-			window.location = url;
-		}
+		specialBehavior = 'redirect';
 	} else {
 		/* Otherwise, simply update the content in place */
-		navSetContent(u.path);
+		navSetContent(navigatorPage.path);
 		console.log("Updated content: " + url + ((specialBehavior) ? " (" + specialBehavior + ")" : ''));
-		switch(specialBehavior) {
-			case 'popState':
-				/* No history manipulation */
-				break;
-			case 'initialDoc':
-				history.replaceState(null, null, url);
-				break;
-			default:
-				history.pushState(null, null, url);
-		}
+	}
+
+	/* Update the browser history accordingly */
+	
+	switch(specialBehavior) {
+		case 'popState':
+			/* No history manipulation */
+			break;
+		case 'redirect':
+			window.location.replace(url);
+			break;
+		case 'initialDoc':
+			history.replaceState(null, null, url);
+			break;
+		default:
+			history.pushState(null, null, url);
 	}
 }
 
@@ -373,7 +288,7 @@ function fetchDriveFromUrl(title, drive, url, isBootable) {
 		alert("Cannot change the boot media once the computer has already restarted. Please reload the page to reset");
 	} else {
 		gaTrackEvent("disk-mounted", title);
-		mountDriveFromUrl(drive, rewriteRelativeUrl(url), isBootable);
+		mountDriveFromUrl(drive, navigatorPage.rewriteRelativeUrl(url), isBootable);
 	}
 }
 
