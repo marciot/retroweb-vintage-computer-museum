@@ -5,7 +5,7 @@
 		"emulators" : {
 			"pce-ibmpc" : {
 				"name" : "IBM PC Model 5150",
-				"menu" : "IBM PC Model 5150 (w/ casssette interface)",
+				"menu" : "IBM PC Model 5150 (w/ cassette interface)",
 				"pre" : ["/skins/ibm5160.css", "/emulators/pce-ibmpc/glue.js"],
 				"run" : ["/emulators/pce-ibmpc/pce-ibmpc.js"],
 				"preload-files" : [
