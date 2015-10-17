@@ -74,6 +74,7 @@ DIV.icons {
 	width:  60px;
 	height: 60px;
 	display: block;
+	pointer-events:none;
 	
 	background: url('ui-artwork/floppy.png');
 	background-size: 60px 60px;
