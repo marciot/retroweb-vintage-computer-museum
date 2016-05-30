@@ -32,7 +32,7 @@ function navInitialDoc() {
 	navTo(query.doc || window.location.pathname + window.location.search, 'initialDoc');
 }
 
-function navJSONtoDOM( json ) {
+function navJSONtoDOM( doc, json ) {
 	if(json.hasOwnProperty("emulators")) {
 		if(json.emulators.indexOf(emuState.getEmulator()) == -1 && !query.emulator) {
 			navTo("?emulator=" + json.emulators[0], 'redirect');
@@ -57,12 +57,12 @@ function navJSONtoDOM( json ) {
 			"cassette"        : "cassette"
 		}
 	
-		var div = document.createElement("div");
+		var div = doc.createElement("div");
 		div.className += "icons";
 		if(json.hasOwnProperty("class")) {
 			div.className += " " + json["class"];
 		}
-		var list = document.createElement("OL");
+		var list = doc.createElement("OL");
 		div.appendChild(list);
 		for (var i = 0; i < json.icons.length; ++i) {
 			var name = json.icons[i][0];
@@ -70,15 +70,15 @@ function navJSONtoDOM( json ) {
 			var arg  = json.icons[i][2];
 			var opts = json.icons[i][3];
 			
-			var disk = document.createElement( "LI" );
-			var icon = document.createElement( "A" );
+			var disk = doc.createElement( "LI" );
+			var icon = doc.createElement( "A" );
 			disk.appendChild(icon);
 			if( opts && opts.hasOwnProperty("className") ) {
 				icon.className = opts.className;
 			} else {
 				icon.className += typeToClassMap[type];
 			}
-			icon.appendChild(document.createTextNode(name));
+			icon.appendChild(doc.createTextNode(name));
 			function getHandler(name, type, arg, opts) {
 				return function() {
 					navProcessIconClick(name, type, arg, opts);
@@ -112,7 +112,7 @@ var finishFormatting;
 function injectWikiContent(element, url) {
 	if(wikiTemplate == null) {
 		$.ajax({
-			url: "/wiki-template.html",
+			url: "/lib/navigator/wiki-template.html",
 			success: function (data) {
 				wikiTemplate = data;
 				injectWikiContent(element, url);
@@ -141,7 +141,8 @@ function injectWikiContent(element, url) {
 				finishFormatting = function() {
 					// Expand JSON elements embedded in the wiki text into DOM elements
 					for(jsonId in jsonStorage) {
-						$("#"+jsonId,element.contentWindow.document).replaceWith(navJSONtoDOM(jsonStorage[jsonId]));
+						var dom = navJSONtoDOM(element.contentWindow.document, jsonStorage[jsonId]);
+						$("#"+jsonId,element.contentWindow.document).replaceWith(dom);
 					}
 					// Attach handler to local HREFs
 					$('A[href]:not([href^="http"])',element.contentWindow.document).click(navProcessAnchorClick);
@@ -234,11 +235,11 @@ function navProcessIconClick(name, type, param, opts) {
 			break;
 		case "boot-hd":
 			processBootOptions(opts);
-			fetchDriveFromUrl(name, "hd1", param, true);
+			navFetchDriveFromUrl(name, "hd1", param, true);
 			break;
 		case "boot-floppy":
 			processBootOptions(opts);
-			fetchDriveFromUrl(name, "fd1", param, true);
+			navFetchDriveFromUrl(name, "fd1", param, true);
 			break;
 		case "boot-rom":
 			processBootOptions(opts);
@@ -247,7 +248,7 @@ function navProcessIconClick(name, type, param, opts) {
 			break;
 		case "floppy":
 			if(emuState.isRunning()) {
-				fetchDriveFromUrl(name, (opts && opts.drive) ? opts.drive : "fd1", param, false);
+				navFetchDriveFromUrl((opts && opts.drive) ? opts.drive : "fd1", param, false);
 			} else {
 				alert("Please boot the computer using a boot disk first");
 			}
@@ -283,19 +284,15 @@ function navProcessIconClick(name, type, param, opts) {
 	}
 }
 
-function fetchDriveFromUrl(title, drive, url, isBootable) {
-	if(isBootable && emuState.isRunning()) {
-		alert("Cannot change the boot media once the computer has already restarted. Please reload the page to reset");
-	} else {
-		gaTrackEvent("disk-mounted", title);
-		mountDriveFromUrl(drive, navigatorPage.rewriteRelativeUrl(url), isBootable);
-	}
-}
-
 function promptNavigatorUrl () {
 	var example = "http://example.com/index.wiki";
 	var url = window.prompt("Please enter a URL to a RetroWeb file", example);
 	if (url & url != example) {
 		navTo(url);
 	}
+}
+
+function navFetchDriveFromUrl(name, drive, url, isBootable) {
+	gaTrackEvent("disk-mounted", name);
+	mountDriveFromUrl(drive, navigatorPage.rewriteRelativeUrl(url), isBootable);
 }

@@ -27,12 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		<script type="text/javascript" src="/lib/webcomponents/webcomponents.min.js"></script>
 		
 		<link rel="stylesheet" href="/lib/ui.css" type="text/css">
-		<link rel="stylesheet" type="text/css" href="/lib/navigator/icons.css">
-		
 		<link rel="import"     href="/emulators/emulator.html">
-		<link rel="import"     href="/lib/navigator/navigator.html">
 		
-		<title>RetroWeb Browser</title>
+		<title>Mac Plus Emulator</title>
 		
 		<style>
 			body {
@@ -73,7 +70,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 			function webComponentsReady() {
 				createEmulator(document.querySelector("#main"));
-				createNavigator(document.querySelector("#sidepanel"));
 				
 				query       = parseQuery();
 				
@@ -90,37 +86,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				popups.add("popup-uploader");
 				popups.add("popup-mac-eject-disk");
 				
-				panelTm = new TransitionManager();
-				panels = new PopupManager(panelTm);
-				panels.add("navigator-panel");
-				panels.open("navigator-panel");
-				
-				navAddPopStateHandler();
-				fetchDataFromUrl("/startup.json", processStartupConfig);
-				
-				// Now that the page is loaded, it is okay to start doing
-				// animation effects.
-				setTimeout( function() {
-					panelTm.setSpeed("fast", false);
-				}, 1000);
+				var emulator = "pce-macplus";
+					fetchDataFromUrl("/startup.json", function(json) {
+					loadEmulatorConfig(json, emulator);
+				});
+			
+				setTimeout(function() {mountDriveFromUrl("hd1", "/disks/mac-marcio's-boot-1.0.qed", true);},2000);
 			}
 			
-			window.addEventListener('WebComponentsReady', webComponentsReady);
-		</script>
-		
-		<!-- The following will enable Google Analytics if the .include file exists -->
-		<!--#include virtual="private/googleAnalytics.include"-->
-		<!-- End of Google Analytics -->
-		
-		<script type="text/javascript">
-			if (typeof ga == 'function') {
-				gaTrackEvent = function (category, action, label, value) {
-					console.log("Logging event: " + category);
-					ga('send', 'event', category, action, label, value);
-				};
-			} else {
-				gaTrackEvent = function (category, action, label, value) {};
-			}
+			window.addEventListener('WebComponentsReady', webComponentsReady);		
 		</script>
 	</body>
 </html>

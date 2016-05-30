@@ -28,7 +28,7 @@ function json(str, jsonStorage) {
 			var id = 'json_' + Object.keys(jsonStorage).length;
 			try {
 				jsonStorage[id] = JSON.parse(m);
-				return '<code id="' + id + '"></code>';
+				return '<code id="' + id + '">CodeInsertionPoint</code>';
 			} catch (e) {
 				throw new Error(e.message + " (parsing " + id + ")");
 			}

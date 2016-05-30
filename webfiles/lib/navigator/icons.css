@@ -76,71 +76,71 @@ DIV.icons {
 	display: block;
 	pointer-events:none;
 	
-	background: url('ui-artwork/floppy.png');
+	background: url('/ui-artwork/floppy.png');
 	background-size: 60px 60px;
 }
 
 .icons A.floppy-dot:before {
-	background: url('ui-artwork/floppy-dot.png');
+	background: url('/ui-artwork/floppy-dot.png');
 	background-size: 60px 60px;
 }
 
 .icons A.hd-dot:before {
-	background: url('ui-artwork/hd-dot.png');
+	background: url('/ui-artwork/hd-dot.png');
 	background-size: 60px 60px;
 }
 
 .icons A.rom-dot:before {
-	background: url('ui-artwork/rom-dot.png');
+	background: url('/ui-artwork/rom-dot.png');
 	background-size: 60px 60px;
 }
 
 .icons A.document:before {
-	background: url('ui-artwork/document.png');
+	background: url('/ui-artwork/document.png');
 	background-size: 60px 60px;
 }
 
 .icons A.floppy:before {
-	background: url('ui-artwork/floppy.png');
+	background: url('/ui-artwork/floppy.png');
 	background-size: 60px 60px;
 }
 
 .icons A.folder:before {
-	background: url('ui-artwork/folder.png');
+	background: url('/ui-artwork/folder.png');
 	background-size: 60px 60px;
 }
 
 .icons A.folder-dot:before {
-	background: url('ui-artwork/folder-dot.png');
+	background: url('/ui-artwork/folder-dot.png');
 	background-size: 60px 60px;
 }
 
 .icons A.html-doc:before {
-	background: url('ui-artwork/html-doc.png');
+	background: url('/ui-artwork/html-doc.png');
 	background-size: 60px 60px;
 }
 
 .icons A.rom:before {
-	background: url('ui-artwork/rom.png');
+	background: url('/ui-artwork/rom.png');
 	background-size: 60px 60px;
 }
 
 .icons A.upload:before {
-	background: url('ui-artwork/upload.png');
+	background: url('/ui-artwork/upload.png');
 	background-size: 60px 60px;
 }
 
 .icons A.world:before {
-	background: url('ui-artwork/world.png');
+	background: url('/ui-artwork/world.png');
 	background-size: 60px 60px;
 }
 
 .icons A.cassette:before {
-	background: url('ui-artwork/cassette.png');
+	background: url('/ui-artwork/cassette.png');
 	background-size: 60px 60px;
 }
 
 .icons A.power:before {
-	background: url('ui-artwork/power.png');
+	background: url('/ui-artwork/power.png');
 	background-size: 60px 60px;
 }

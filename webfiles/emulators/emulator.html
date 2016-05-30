@@ -1,0 +1,308 @@
+<!--
+RetroWeb Browser
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+<style>
+	/* Layout of screen */
+
+	.background {
+		/* Anchor to the top-right of the document */
+		position: absolute;
+		top:      0px;
+		right:    0px;
+		
+		/* Show background below other elements */
+		background-repeat: no-repeat;
+	}
+
+	.screen {
+		position: absolute;
+	}
+
+	#screen {
+		width: 100%;
+		height: 100%;
+	}
+
+	.popup {
+		/* Allow centering of popups (see margin formula below) */
+		position: absolute;
+		top:      50%;
+		left:     50%;
+	}
+
+	.ui-buttons {
+		position: relative;
+		z-index:  10;
+	}
+
+	.sidepanel {
+		height:       100%;
+		min-width:    500px;
+	}
+
+	/* Formatting */
+
+	#screen {
+		cursor: none;
+		outline: none;
+	}
+
+	/* Popup boxes are the dark, translucent, rounded-cornered
+	 * dialog boxes that show up centered on the simulated
+	 * computer's display
+	 */
+	 
+	DIV.popup {
+		display: none;
+		border-radius: 30px;
+		background: black;
+		opacity: 0.85;
+		text-align: center;
+		color: white;
+	}
+
+	DIV.popup H1 {
+		font-size: large;
+	}
+
+	DIV.popup P {
+		text-align: left;
+	}
+
+	#popup-status {
+		padding:      20px;
+		width:       150px;
+		height:      100px;
+		margin-left: -95px; /* -0.5 * width - padding */
+		margin-top:  -70px; /* -0.5 * height - padding */
+	}
+
+	#popup-rom-missing {
+		padding:       20px;
+		width:        350px;
+		height:       150px;
+		margin-left: -195px;
+		margin-top:   -95px;
+	}
+
+	#popup-need-boot-media {
+		padding:       20px;
+		width:        350px;
+		height:       125px;
+		margin-left: -195px;
+		margin-top:   -82px;
+	}
+
+	#popup-uploader {
+		padding:       20px;
+		width:        350px;
+		height:       150px;
+		margin-left: -195px;
+		margin-top:   -95px;
+	}
+
+	#popup-mouse-center {
+		padding:      20px;
+		width:       400px;
+		height:      200px;
+		margin-left: -220px; /* -0.5 * width - padding */
+		margin-top:  -120px; /* -0.5 * height - padding */
+	}
+
+	#popup-mouse-center-target {
+		position: absolute;
+		top:         50%;
+		left:        50%;
+		width:       64px;
+		height:      64px;
+		margin-left: -32px; /* -0.5 * width - padding */
+		margin-top:  -32px; /* -0.5 * height - padding */
+	}
+
+	#popup-mac-eject-disk {
+		padding:       20px;
+		width:        350px;
+		height:       150px;
+		margin-left: -195px;
+		margin-top:   -95px;
+	}
+
+	#popup-mac-eject-disk IMG {
+		float: right;
+	}
+
+	#popup-mac-eject-disk DIV {
+		margin-right: 60px;
+	}
+
+	/* Emscripten spinner animation */
+
+	.spinner {
+		height: 50px;
+		width: 50px;
+		margin: 0px auto;
+		-webkit-animation: rotation .8s linear infinite;
+		-moz-animation: rotation .8s linear infinite;
+		-o-animation: rotation .8s linear infinite;
+		animation: rotation 0.8s linear infinite;
+		border-left: 10px solid rgb(0,0,0);
+		border-right: 10px solid rgb(0,0,0);
+		border-bottom: 10px solid rgb(0,0,0);
+		border-top: 10px solid rgb(255,255,255);
+		border-radius: 100%;
+		background-color: rgb(0,0,0);
+	}
+	@-webkit-keyframes rotation {
+		from {-webkit-transform: rotate(0deg);}
+		to {-webkit-transform: rotate(360deg);}
+	}
+	@-moz-keyframes rotation {
+		from {-moz-transform: rotate(0deg);}
+		to {-moz-transform: rotate(360deg);}
+	}
+	@-o-keyframes rotation {
+		from {-o-transform: rotate(0deg);}
+		to {-o-transform: rotate(360deg);}
+	}
+	@keyframes rotation {
+		from {transform: rotate(0deg);}
+		to {transform: rotate(360deg);}
+	}
+</style>
+
+<template id="emulatorTemplate">
+	<div class="background" id="background">
+		<!-- Main rendering canvas for emulator: -->
+		
+		<div class="screen">
+			<canvas id="screen" oncontextmenu="event.preventDefault()">
+			</canvas>
+			
+			<!-- Pop-up windows that overlay the screen area: -->
+			
+			<div id="popup-status" class="popup">
+				<div class="spinner"></div>
+				<div class="emscripten" id="status">Downloading...</div>
+				<div class="emscripten">
+					<progress value="0" max="100" id="progress" hidden=0></progress>  
+				</div>
+			</div>
+			
+			<div id="popup-need-boot-media" class="popup">
+				<img src="/ui-artwork/sunny.png" class="small-icon">
+				<h1>This computer needs a boot disk!<br>Follow the green dots!</h1>
+			</div>
+			
+			<div id="popup-rom-missing" class="popup">
+				<img src="/ui-artwork/rom.png" class="small-icon">
+				<p>This computer cannot start without a valid ROM file.</p>
+				<input type="button" value="Select ROM file..."
+					onclick="openFileUploader ('Select ROM image', doRomUpload);">
+			</div>
+			
+			<div id="popup-uploader" class="popup">
+				<h1 id="uploader-text">Select a file:</h1>
+				<form name="file-upload" onsubmit="return false">
+					<p>
+					<input type="file" id="uploader-file" chars="80"><br>
+					</p>
+					<input type="submit" value="OK" id="uploader-ok-btn">
+					<input type="button" value="Cancel" onclick="popups.close('popup-uploader');">
+				</form>
+			</div>
+			
+			<div id="popup-mouse-center" class="popup">
+				<h1>Wait for the desktop to appear then double-click the icon.</h1>
+				<img src="/ui-artwork/sunny.png" id="popup-mouse-center-target" onclick="popups.close('popup-mouse-center');">
+			</div>
+			
+			<div id="popup-mac-eject-disk" class="popup">
+				<img src="/ui-artwork/drag-to-trash.png">
+				<div>
+					<h1>Ejecting disks on the Macintosh</h1>
+					<p>
+						Before inserting a new disk on the Macintosh, you need to
+						drag the old one to the trash can.
+					</p>
+					<input type="button" value="Gotcha!" onclick="popups.close('popup-mac-eject-disk');">
+				</div>
+			</div>
+			
+		</div>
+	</div>
+		
+	<br>
+	
+	<table id="ui-buttons" class="ui-buttons">
+		<tr>
+			<td class="ui-btn">
+				<img class="btn-icon" src="/ui-artwork/document.png" onclick="panels.open('navigator-panel');"><br>
+				<span class="btn-label">Show Navigator</span>
+			</td>
+			<td class="ui-btn">
+				<img class="btn-icon" src="/ui-artwork/power.png" onclick="restartComputer()"><br>
+				<span class="btn-label">Restart Computer</span>
+			</td>
+		</tr>
+	</table>
+		
+	<div class="sidepanel" id="sidepanel">
+	</div>
+</template>
+
+<script type="text/javascript" src="/lib/emscripten-fs-utils.js"></script>
+<script type="text/javascript" src="/emulators/default-interface.js"></script>
+<script type="text/javascript" src="/emulators/emulator.js"></script>
+
+<script>
+	// The following is requires for the webcomponents polyfill
+	document._currentScript = document._currentScript || document.currentScript;
+	
+	// importDoc references this import's document
+	var emuImportDoc = document._currentScript.ownerDocument;
+		
+	/*function createEmulator(host) {
+		// Create a Shadow Root
+		var root = host.createShadowRoot();
+		var template = importDoc.querySelector('#emulatorTemplate');
+		
+		var clone = document.importNode(template.content, true);
+		root.appendChild(clone);
+	}*/
+	
+	function setupHandlers() {
+		// Add tab index to ensure the canvas retains focus			
+		$("#screen").attr("tabindex", "0").mousedown(function(){ $(this).focus(); return false; });
+		
+		// Ignore arrow keys and pageup/pagedown
+		window.addEventListener('keydown', function(e) {
+			console.log(e.keyCode);
+			if([32, 33, 34,  37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+				e.preventDefault();
+			}
+		}, false);
+	}
+	
+	function createEmulator(host) {
+		var template = emuImportDoc.querySelector('#emulatorTemplate');
+		var clone = document.importNode(template.content, true);
+		host.appendChild(clone);
+		
+		setupHandlers();
+	}
+</script>

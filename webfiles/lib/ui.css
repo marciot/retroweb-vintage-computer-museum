@@ -17,56 +17,39 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-BODY {
-	height: 100%;
+.no-select {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
-HTML {
-	height: 100%;
+.small-icon {
+	width: 64px;
+	height: 64px;
 }
 
-.main {
-	position:     relative;
-	width:        100%;
-	height:       100%;
-	
-	max-width:    1600px;
-	margin-left:  auto;
-	margin-right: auto;
+/* Interface buttons */
+
+.ui-btn {
+	font-size: small;
+	font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+
+	width: 50px;
+	text-align: center;
 }
 
-.background {
-	/* Anchor to the top-right of the document */
-	position: absolute;
-	top:      0px;
-	right:    0px;
-	
-	/* Show background below other elements */
-	background-repeat: no-repeat;
+.btn-icon {
+	width: 32px;
+	height: 32px;
 }
 
-.screen {
-	position: absolute;
+.btn-label {
+	visibility : hidden;
 }
 
-#screen {
-	width: 100%;
-	height: 100%;
-}
-
-.popup {
-	/* Allow centering of popups (see margin formula below) */
-	position: absolute;
-	top:      50%;
-	left:     50%;
-}
-
-.ui-buttons {
-	position: relative;
-	z-index:  10;
-}
-
-.sidepanel {
-	height:       100%;
-	min-width:    500px;
+.btn-icon:hover~.btn-label {
+	visibility : visible;
 }

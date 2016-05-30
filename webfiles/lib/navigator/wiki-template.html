@@ -19,16 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <html>
 	<head>
 		<base href="$WIKI_BASE_URL">
-		<link rel="stylesheet" type="text/css" href="/docs.css">
-		<link rel="stylesheet" type="text/css" href="/icons.css">
+		<link rel="stylesheet" type="text/css" href="/lib/navigator/docs.css">
+		<link rel="stylesheet" type="text/css" href="/lib/navigator/icons.css">
 	</head>
 	<body>
 		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-		<script type="text/javascript" src="/docs.js"></script>
+		<script type="text/javascript" src="/lib/navigator/docs.js"></script>
 		
 		$WIKI_CONTENT
 		
 		<script type="text/javascript">
+		    window.onerror = function(error) {
+				alert(error);
+			};
+			
 			parent.finishFormatting();
 		</script>
 	</body>
