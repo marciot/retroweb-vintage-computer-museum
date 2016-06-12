@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>RetroWeb Vintage Computer Museum - IBM PC Model 5160</title>
+</head>
+<body>
+<script type="text/javascript" src="/lib/bootstrap.js"></script>
+<link rel="stylesheet" href="/lib/nojs.css" type="text/css">
+<div id="retroweb-markup">
+
+{
+	"author" : "Marcio Teixeira",
+	"license" : "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+	"emulators" : ["pce-ibmpc-xt"]
+}
+
+= What is in the boot disk? =
+
+The boot disk is the IBM Personal Computer DOS 3.30 sample disk from the [[PCE]] downloads page.
+
+{
+	"icons" : [
+		["DOS Boot Disk",            "boot-hd",   "/disks/ibmpc-corruption8088-1.0.img"],
+		["8088 Corruption Web Page", "hyperlink", "http://www.oldskool.org/pc/8088_Corruption "]
+	]
+}
+
+It also includes the fantastic &ldquo;8088 Corruption&rdquo; demonstration by Trixter/Hornet and gODjR/iq2000 (everything works except for sound). For comparison, I include a link to the &ldquo;8088 Corruption&rdquo; web page where you can see a video of the demo running on an actual IBM PC 5160.
+
+<div class="set-class-hints">
+# Type &ldquo;demo.bat&rdquo; to run the demo. When it asks you whether you are running on a real CGA card, you may answer &ldquo;Y&rdquo;.
+# DOS is a fairly primitive operating system. Type &ldquo;cd&rdquo; and &ldquo;dir&rdquo; to get around the file system, and &ldquo;A:&rdquo; and &ldquo;B:&rdquo; to access the floppy drives, and &ldquo;C:&rdquo; to return to the boot hard disk.
+</div>
+
+== More to Explore: ==
+
+{ "icons" :
+	[
+		["GEM 1.2 Desktop",      "boot-hd", "/disks/ibmpc-gem-1.2.pimg",
+			{"emulator-args" : {"-c" : "pce-config-5160-gem-1.2.cfg"} }],
+		["VisiCalc Spreadsheet", "folder",  "VisiCalc"],
+		["Visi On",              "folder"],
+		["Microsoft Windows",    "folder"]
+	]
+}
+
+=== See also: ===
+
+* [[IBM PC Model 5150]] - The original IBM PC, with a cassette drive interface.
+
+== About the Emulator ==
+
+{
+	"icons" : [
+		["PCE Home Page",            "hyperlink",   "http://www.hampa.ch/pce"]
+	],
+	"class" : "float-right"
+}
+
+The IBM PC emulator is a JavaScript port of Hampa Hug's PCE (PC Emulator).
+The Javascript port is based on work done by James Friend[2]
+
+== References ==
+# http://www.hampa.ch/pce	
+# http://jamesfriend.com.au/pce-js/
+
+<a href="IBM-PC-Model-5150">IBM PC Model 5150</a>
+<a href="http://www.hampa.ch/pce">PCE</a>
+			
+</div>
+</body>
+</html>

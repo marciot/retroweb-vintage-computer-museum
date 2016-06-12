@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>RetroWeb Vintage Computer Museum - Commodore 64</title>
+</head>
+<body>
+<script type="text/javascript" src="/lib/bootstrap.js"></script>
+<link rel="stylesheet" href="/lib/nojs.css" type="text/css">
+<div id="retroweb-markup">
+
+= Commodore 64 =
+
+{
+"icons" : [
+		["subLOGIC Flight Simulator", "folder"],
+		["Flappy Bird", "folder"],
+		["Christmas Demo", "boot-floppy", "/disks/c64-christmas-demo.d64"]
+	]
+}
+
+<!--
+== Commodore 64 Quick Reference[1] ==
+
+|!3 Working with cassettes                                                                        |
+|! Desired action                                   |! Type                 |! What you'll see    |
+| To load a BASIC program from the cassette         | load@filename@        | LOAD"filename"      |
+| To load the first program from the cassette       | load                  | LOAD                |
+| To run the loaded program                         | run                   | RUN                 |
+
+
+|!3 Working with floppy disks                                                                     |
+|! Desired action                                   |! Type                 |! What you'll see    |
+| To list contents of the floppy disk               | load@$@,8<br>list     | LOAD"$",8           |
+| To load a BASIC program from the disk             | load@filename@,8      | LOAD"filename",8    |
+| To load a machine language program at its address | load@filename@,8,1    | LOAD"filename",8,1  |
+| To load the first program from the disk<br>(useful if you're not sure of which is the correct one to load) | load@*@,8,1    | LOAD"*",8,1  |
+| To run the loaded program                         | run                   | RUN  |-->
+
+== About the Emulator ==
+
+{
+	"icons" : [
+		["JSMESS Web Page",  "hyperlink", "http://jsmess.textfiles.com"],
+		["MESS Web Page",    "hyperlink", "http://www.mess.org"]
+	],
+	"class" : "float-right"
+}
+
+This emulator is from the JSMESS project, a JavaScript port of the MESS personal computer emulator collection.
+
+== References ==
+
+# [http://www.progettoemma.net/mess/system.php?machine=c64c]
+
+</div>
+</body>
+</html>
