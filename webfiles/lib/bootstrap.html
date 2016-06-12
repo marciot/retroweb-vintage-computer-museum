@@ -1,0 +1,108 @@
+<!--
+RetroWeb Browser
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="/lib/ui.js"></script>
+<script type="text/javascript" src="/lib/utils.js"></script>
+		
+<link rel="import"     href="/emulators/emulator.html">
+<link rel="import"     href="/lib/navigator/navigator.html">
+		
+<style>
+	body {
+		height: 100%;
+	}
+
+	html {
+		height: 100%;
+	}
+
+	/* Expand up to 1600px, then center horizontally */
+	.horizontalExpandAndCenter {
+		position:     relative;
+		width:        100%;
+		height:       100%;
+		
+		max-width:    1600px;
+		margin-left:  auto;
+		margin-right: auto;
+	}
+	
+	.no-select {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+	
+	#retroweb-markup {
+		display: none;
+	}
+</style>
+
+<template id="retrowebTemplate">
+	<div class="horizontalExpandAndCenter no-select" id="main">
+	</div>
+</template>
+
+<script>
+	// The following is requires for the webcomponents polyfill
+	document._currentScript = document._currentScript || document.currentScript;
+	
+	// importDoc references this import's document
+	var bootstrapImportDoc = document._currentScript.ownerDocument;
+		
+	// Stamp the HTML inside the body of the main page
+	var template = bootstrapImportDoc.querySelector('#retrowebTemplate');
+	var clone = document.importNode(template.content, true);
+	var host = document.getElementsByTagName("body")[0];
+	host.appendChild(clone);
+
+	/*window.onerror = function(error) {
+		alert(error);
+	};*/
+	
+	var query = parseQuery();
+
+	function webComponentsReady() {
+		createEmulator(document.querySelector("#main"));
+		createNavigator(document.querySelector("#sidepanel"));
+		
+		fetchDataFromUrl("/startup.json", processStartupConfig);
+	}
+	
+	window.addEventListener('WebComponentsReady', webComponentsReady);
+</script>
+
+<!-- The following will enable Google Analytics if the .include file exists -->
+<!--#include virtual="private/googleAnalytics.include"-->
+<!-- End of Google Analytics -->
+
+<script type="text/javascript">
+	if (typeof ga == 'function') {
+		gaTrackEvent = function (category, action, label, value) {
+			console.log("Logging event: " + category);
+			ga('send', 'event', category, action, label, value);
+		};
+	} else {
+		gaTrackEvent = function (category, action, label, value) {};
+	}
+</script>

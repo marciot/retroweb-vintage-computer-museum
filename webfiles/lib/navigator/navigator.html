@@ -115,9 +115,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	// importDoc references this import's document
 	var navImportDoc = document._currentScript.ownerDocument;
 	
+	// Navigator global variables
+	var panelTm;
+	var panels;
+	
 	function createNavigator(host) {
 		var template = navImportDoc.querySelector('#navigatorTemplate');
 		var clone = document.importNode(template.content, true);
 		host.appendChild(clone);
+		
+		// Initialize handler for dialog boxes
+		panelTm = new TransitionManager();
+		panels = new PopupManager(panelTm);
+		panels.add("navigator-panel");
+		panels.open("navigator-panel");
+		
+		// Start doing animation effects after the page loads
+		setTimeout( function() {
+			panelTm.setSpeed("fast", false);
+		}, 1000);
+		
+		navAddPopStateHandler();
 	}
 </script>

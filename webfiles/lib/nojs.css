@@ -1,0 +1,13 @@
+/* The following rules make the content semi-legible when JavaScript is turned off */
+
+#retroweb-markup {
+	/*font-family: monospace;*/
+    white-space: pre-wrap;
+}
+
+#retroweb-markup::before {
+	content:          "This website requires JavaScript";
+	background-color: red;
+	font-weight:      bold;
+	line-height:      300%;
+}

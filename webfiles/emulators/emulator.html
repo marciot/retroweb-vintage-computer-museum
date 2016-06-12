@@ -183,6 +183,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		from {transform: rotate(0deg);}
 		to {transform: rotate(360deg);}
 	}
+	
+	.small-icon {
+		width: 64px;
+		height: 64px;
+	}
+
+	/* Interface buttons */
+
+	.ui-btn {
+		font-size: small;
+		font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+
+		width: 50px;
+		text-align: center;
+	}
+
+	.btn-icon {
+		width: 32px;
+		height: 32px;
+	}
+
+	.btn-label {
+		visibility : hidden;
+	}
+
+	.btn-icon:hover~.btn-label {
+		visibility : visible;
+	}
 </style>
 
 <template id="emulatorTemplate">
@@ -298,11 +326,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		}, false);
 	}
 	
+	// Global variables for emulator
+	var Module;
+	var emuState;
+	var fileManager;
+	var popupTm, popups;
+	
 	function createEmulator(host) {
+		emuState    = new EmulatorState();
+		fileManager = new EmscriptenFileManager();
+				
 		var template = emuImportDoc.querySelector('#emulatorTemplate');
 		var clone = document.importNode(template.content, true);
 		host.appendChild(clone);
 		
 		setupHandlers();
+		
+		// Initialize handler for dialog boxes
+		popupTm = new TransitionManager();
+		popups = new PopupManager(popupTm);
+		popups.add("popup-mouse-center");
+		popups.add("popup-rom-missing");
+		popups.add("popup-need-boot-media");
+		popups.add("popup-status");
+		popups.add("popup-uploader");
+		popups.add("popup-mac-eject-disk");
 	}
 </script>
