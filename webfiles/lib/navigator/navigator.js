@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-var navigatorPage = new NavigatorURL();
 var wikiTemplate;
 
 function navGoBack() {
@@ -181,14 +180,15 @@ function renderWikiContent(element, url) {
 	}
 }
 
+function parseQueryFromUrl(url) {
+	var searchPos = url.indexOf('?');
+	return (searchPos != -1) ? parseQuery(url.substr(searchPos)) : {};
+}
+
+
 function navTo(url, specialBehavior) {
+	params = parseQueryFromUrl(url);
 		
-	//navigatorPage.apply(url);
-	
-	params = navigatorPage.params;
-	
-	//url = navigatorPage.href;
-	
 	console.log( "New url: " + url );
 	
 	if(params.emulator && params.emulator != emuState.getEmulator()) {
@@ -201,7 +201,6 @@ function navTo(url, specialBehavior) {
 		specialBehavior = 'redirect';
 	} else {
 		/* Otherwise, simply update the content in place */
-		//navSetContent(navigatorPage.path);
 		navSetContent(url);
 		console.log("Updated content: " + url + ((specialBehavior) ? " (" + specialBehavior + ")" : ''));
 	}
