@@ -28,9 +28,7 @@ function navGoHome() {
 }
 
 function navInitialDoc() {
-	//navTo(query.doc || window.location.pathname + window.location.search, 'initialDoc');
-	var element = document.getElementById("html-iframe")
-	renderWikiContent(element, window.location.pathname + window.location.search);
+	renderWikiContent(document.getElementById("html-iframe"));
 }
 
 function navJSONtoDOM( doc, json ) {
@@ -134,13 +132,13 @@ function getTextWithEmbeddedLinks(selector) {
 	return wikiText;
 }
 
-function renderWikiContent(element, url) {
+function renderWikiContent(element) {
 	if(wikiTemplate == null) {
 		$.ajax({
 			url: "/lib/navigator/wiki-template.html",
 			success: function (data) {
 				wikiTemplate = data;
-				renderWikiContent(element, url);
+				renderWikiContent(element);
 			},
 			error: function(jqXHR,textStatus) {alert("Failed to load wiki template:" + textStatus)}
 		});
@@ -151,13 +149,12 @@ function renderWikiContent(element, url) {
 		var jsonStorage = {};
 		var data = data.replace(/\$EMULATOR/g, emuState.getEmulator())
 					   .replace(/\$EMU_NAME/g, emuState.getConfig().name)
-					   .replace(/\$EMU_PAGE/g, emuState.getConfig().name.replace(/ /g,'-'));
+					   .replace(/\$EMU_PAGE/g, implicitUrlFromName(emuState.getConfig().name));
 		var wikiSrc = wikify(data, jsonStorage);
 		html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikiSrc)
 						   .replace(/\$WIKI_SOURCE/g,
 								wikiSrc.replace(/</g,'&lt;')
-									   .replace(/>/g,'&gt;'))
-						   .replace(/\$WIKI_BASE_URL/g, url.replace(/.wiki$/,''));
+									   .replace(/>/g,'&gt;'));
 		/* A bit of kludge here to handle the fact that document.write() seems to execute asynchronously.
 		 * Rather than calling finishFormatting directly, we set a global function that gets
 		 * called by the wiki template when the browser is done rendering the wiki content.
@@ -239,13 +236,18 @@ function processBootOptions(opts) {
 	}
 }
 
+/* Converts a name into an URL by converting spaces to hyphens and appending .html */
+function implicitUrlFromName(name) {
+	return name.replace(/ /g,'-')+".html";
+}
+
 function navProcessIconClick(name, type, param, opts) {
 	switch(type) {
 		case "doc":
 		case "folder":
 		case "folder-dot":
 			gaTrackEvent("document-read", name);
-			navTo(param || name);
+			navTo(param || implicitUrlFromName(name));
 			break;
 		case "boot-hd":
 			processBootOptions(opts);
