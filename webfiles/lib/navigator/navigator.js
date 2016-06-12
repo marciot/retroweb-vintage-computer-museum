@@ -264,7 +264,7 @@ function navProcessIconClick(name, type, param, opts) {
 			break;
 		case "floppy":
 			if(emuState.isRunning()) {
-				navFetchDriveFromUrl((opts && opts.drive) ? opts.drive : "fd1", param, false);
+				navFetchDriveFromUrl(name, (opts && opts.drive) ? opts.drive : "fd1", param, false);
 			} else {
 				alert("Please boot the computer using a boot disk first");
 			}
