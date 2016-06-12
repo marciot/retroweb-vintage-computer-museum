@@ -1,0 +1,36 @@
+{
+	"author" : "Marcio Teixeira",
+	"license" : "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+	"emulators" : ["pce-macplus"]
+}
+
+= Forethought PowerPoint =
+
+In April of 1987, a startup called Forethought released a presentation program for the Macintosh called &ldquo;PowerPoint&rdquo;[1]. Three months later, this product was acquired by Microsoft. Interestingly, it took two full years before Microsoft released a version of PowerPoint for their own operating system!
+
+|!2      Early History of PowerPoint[1]         |
+| 1987, April  | PowerPoint 1.0 (Mac)           |
+| 1987, July   | Microsoft acquires Forethought |
+| 1988, May    | PowerPoint 2.0 (Mac)           |
+| 1990, May    | PowerPoint 2.0 (Windows)       |
+			
+You can read much more about the early days of PowerPoint from the personal home page of [http://www.robertgaskins.com/#powerpoint-history Robert Gaskins], the creator of PowerPoint or from his book, <cite>Sweating Bullets: Notes about Inventing PowerPoint,</cite> available from [http://www.vinlandbooks.com Vinland Books]
+
+<div class="set-class-trivia">
+* Originally, PowerPoint was called Presenter, but it was renamed to Forethought PowerPoint for trademark reasons[2]
+* Microsoft acquired Forethought for $14 million. The original PowerPoint team joined Microsoft to form Microsoft's new Graphics Business Unit[2].
+</div>
+
+== Explore further: ==
+
+{
+"icons" : [
+		["Boot Disk", "boot-hd", "/disks/mac-marcio's-boot-1.0.qed"],
+		["Forethought PowerPoint V1.0",  "floppy", "/disks/mac-powerpoint-1.0.image"],
+		["Robert Gaskins' Home Page",    "doc",    "http://www.robertgaskins.com"]
+	]
+}
+
+== References ==
+# http://www.robertgaskins.com/#powerpoint-history
+# http://en.wikipedia.org/wiki/Powerpoint

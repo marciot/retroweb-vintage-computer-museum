@@ -1,0 +1,34 @@
+{
+	"author" : "Marcio Teixeira",
+	"license" : "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+	"emulators" : ["pce-atarist"]
+}
+
+= What is in this demonstration? =
+
+This demonstration boots into the TOS 1.04 ROM and includes two floppy disk drives and a 20 MiB hard disk.
+The boot images are from the [http://www.hampa.ch/pce PCE] downloads page.
+
+{
+	"icons" : [
+		["Atari Boot Disk",      "boot-hd",   "/disks/atarist-hd1.pimg"],
+		["Atari Floppy Disk",    "floppy",    "/disks/atarist-fd1.st"],
+		["Compute! April 1986",  "hyperlink", "http://www.atarimagazines.com/compute/issue71/electronics_show.php"]
+	]
+}
+
+== About the Emulator ==
+
+{
+	"icons" : [
+		["PCE Home Page",            "hyperlink",   "http://www.hampa.ch/pce"]
+	],
+	"class" : "float-right"
+}
+
+The Atari 1040ST emulator is a JavaScript port of Hampa Hug's PCE (PC Emulator).
+The Javascript port is based on work done by James Friend[1]
+
+== References ==
+# http://jamesfriend.com.au/pce-js/
+

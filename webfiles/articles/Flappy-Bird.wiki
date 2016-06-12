@@ -1,0 +1,34 @@
+{
+	"author" : "Marcio Teixeira",
+	"license" : "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+	"emulators" : ["jsmess-c64"]
+}
+
+= Flappy Bird on a Commodore 64 =
+
+Sos has done an excellent [http://sos.gd/flappy64/ port of Flappy Bird] to the Commodore 64. Here, you can use a port of the C64 to JavaScript to play the port of Flappy Bird to the C64 in your web browser.
+
+Why would you wish to do this? I have no idea.
+
+{
+"icons" : [
+		["Flappy Bird for the C64",  "boot-floppy", "/disks/c64-flappy-bird.prg"],
+		["Sos' Home Page",           "hyperlink",   "http://sos.gd/flappy64/"]
+	]
+}
+
+Click the disk, and then at the "READY." prompt type "run" (in lowercase), followed by ENTER. The screen will flash in colors and you'll make it to the start screen. This game only has one control key: PageDown
+
+I make no guarantees this game is playable. Actually, I'm fairly sure it is not playable. Don't even try.
+
+== About the Emulator ==
+
+{
+	"icons" : [
+		["JSMESS Web Page",  "hyperlink", "http://jsmess.textfiles.com"],
+		["MESS Web Page",    "hyperlink", "http://www.mess.org"]
+	],
+	"class" : "float-right"
+}
+
+This emulator is from the JSMESS project, a JavaScript port of the MESS personal computer emulator collection.
