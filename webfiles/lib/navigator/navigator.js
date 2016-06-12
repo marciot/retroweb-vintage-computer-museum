@@ -286,23 +286,12 @@ function navProcessIconClick(name, type, param, opts) {
 		case "cassette":
 			cassetteAction(param);
 			break;
-		case "enter-url":
-			promptNavigatorUrl();
-			break;
 		case "hyperlink":
 			window.open(param);
 			break;
 		default:
 			alert("Action " + type + " is unknown");
 			break;
-	}
-}
-
-function promptNavigatorUrl () {
-	var example = "http://example.com/index.wiki";
-	var url = window.prompt("Please enter a URL to a RetroWeb file", example);
-	if (url & url != example) {
-		navTo(url);
 	}
 }
 
