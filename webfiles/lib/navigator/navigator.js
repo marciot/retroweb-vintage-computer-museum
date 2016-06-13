@@ -106,31 +106,43 @@ function navSetContent(url) {
 	} );
 }
 
-var finishFormatting;
-
-function getTextWithEmbeddedLinks(selector) {
-	var links    = $(selector + " a").detach();
-	var wikiText = $(selector).html();
-	/* Here we do two passes through the text to avoid doing substitutions within the inserted links.
-       First target links get replaced with LINK_nn_, then they are replaced with the anchor tag. */
-	var count = 0;
-	links.each(function(i) {
-		var count = 0;
-		var text  = $( this ).html();
-		var href  = $( this ).attr("href");
-		wikiText = wikiText.replace(new RegExp('\\[\\[' + text + '\\]\\]', 'ig'), function() {count++; return 'LINK_'+i+'_'});
-		if(!count) {
-			wikiText +=  'LINK_'+i+'_';
-		}
-	});
-	links.each(function(i) {
-		var text = $( this ).html();
-		var href = $( this ).attr("href");
-		wikiText = wikiText.replace(new RegExp('LINK_'+i+'_', 'ig'), '<a href="' + href + '">' + text + '</a>');
-	});
+/* The wiki content is optionally followed by one or more A HREF tags. These are back-substituted into the
+   text whenever the [[text]] notation is encountered
+ */
+class TrailingLinks {
 	
-	return wikiText;
+	/* At construction, we remove the A HREF tags from the specified element */
+	
+	constructor(selector) {
+		this.links = $(selector + " a").detach();
+	}
+	
+	/* Looks up a HREF by content */
+	lookup(content) {
+		var found;
+		this.links.each(function(i) {
+			if(content == $( this ).html()) {
+				found = $( this ).attr("href");;
+			}
+		});
+		return found;
+	}
+	
+	/* Substitute all occurances of [[text]] with the corresponding A HREF */
+	substitute(wikiText) {
+		var that = this;
+		return wikiText.replace(
+			new RegExp('\\[\\[([^\\]]*)\\]\\]', 'ig'),
+			function(m, p) {
+				var subs = that.lookup(p);
+				return subs ? ('<a href="' + subs + '">' + p + '</a>') : m;
+			}
+		);
+	}
 }
+
+var finishFormatting;
+var trailingLinks;
 
 function renderWikiContent(element) {
 	if(wikiTemplate == null) {
@@ -143,7 +155,9 @@ function renderWikiContent(element) {
 			error: function(jqXHR,textStatus) {alert("Failed to load wiki template:" + textStatus)}
 		});
 	} else {
-		var data = getTextWithEmbeddedLinks("#retroweb-markup");
+		trailingLinks = new TrailingLinks("#retroweb-markup");
+		
+		var data = trailingLinks.substitute($("#retroweb-markup").html());
 		
 		$(element.contentWindow.document).empty();
 		var jsonStorage = {};
@@ -247,7 +261,7 @@ function navProcessIconClick(name, type, param, opts) {
 		case "folder":
 		case "folder-dot":
 			gaTrackEvent("document-read", name);
-			navTo(param || implicitUrlFromName(name));
+			navTo(param || trailingLinks.lookup(name) || implicitUrlFromName(name));
 			break;
 		case "boot-hd":
 			processBootOptions(opts);
