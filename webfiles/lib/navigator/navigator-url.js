@@ -79,8 +79,8 @@ function NavigatorURL() {
 				rewritten = baseUrl(this.baseURL) + url;
 			}
 		}
-		if(!url) {
-			url = this.baseURL;
+		if(!rewritten) {
+			rewritten = this.baseURL;
 		}
 		/* Handle ".." by stripping out all occurrences of "dirname/.." */
 		var dotdot = /[^/]+\/\.\.\//;
