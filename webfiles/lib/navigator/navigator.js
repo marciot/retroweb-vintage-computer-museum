@@ -17,8 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-var wikiTemplate;
-
 function navGoBack() {
 	history.back();
 }
@@ -145,50 +143,40 @@ var finishFormatting;
 var trailingLinks;
 
 function renderWikiContent(element) {
-	if(wikiTemplate == null) {
-		$.ajax({
-			url: "/lib/navigator/wiki-template.html",
-			success: function (data) {
-				wikiTemplate = data;
-				renderWikiContent(element);
-			},
-			error: function(jqXHR,textStatus) {alert("Failed to load wiki template:" + textStatus)}
-		});
-	} else {
-		trailingLinks = new TrailingLinks("#retroweb-markup");
-		
-		var data = trailingLinks.substitute($("#retroweb-markup").html());
-		
-		$(element.contentWindow.document).empty();
-		var jsonStorage = {};
-		var data = data.replace(/\$EMULATOR/g, emuState.getEmulator())
-					   .replace(/\$EMU_NAME/g, emuState.getConfig().name)
-					   .replace(/\$EMU_PAGE/g, implicitUrlFromName(emuState.getConfig().name));
-		var wikiSrc = wikify(data, jsonStorage);
-		html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikiSrc)
-						   .replace(/\$WIKI_SOURCE/g,
-								wikiSrc.replace(/</g,'&lt;')
-									   .replace(/>/g,'&gt;'));
-		/* A bit of kludge here to handle the fact that document.write() seems to execute asynchronously.
-		 * Rather than calling finishFormatting directly, we set a global function that gets
-		 * called by the wiki template when the browser is done rendering the wiki content.
-		 */
-		finishFormatting = function() {
-			// Expand JSON elements embedded in the wiki text into DOM elements
-			for(jsonId in jsonStorage) {
-				var dom = navJSONtoDOM(element.contentWindow.document, jsonStorage[jsonId]);
-				$("#"+jsonId,element.contentWindow.document).replaceWith(dom);
-			}
-			// Attach handler to local HREFs
-			$('A[href]:not([href^="http"])', element.contentWindow.document).click(navProcessAnchorClick);
-			// Set target for external links so a new page gets opened
-			$('A[href^="http"]', element.contentWindow.document).attr("target", "_blank");
-			element.contentWindow.applyDynamicFormatting(emuState.getEmulator());
+	var wikiTemplate = navImportDoc.getElementById("wikiTemplate").innerHTML;
+	trailingLinks = new TrailingLinks("#retroweb-markup");
+	
+	var data = trailingLinks.substitute($("#retroweb-markup").html());
+	
+	$(element.contentWindow.document).empty();
+	var jsonStorage = {};
+	var data = data.replace(/\$EMULATOR/g, emuState.getEmulator())
+				   .replace(/\$EMU_NAME/g, emuState.getConfig().name)
+				   .replace(/\$EMU_PAGE/g, implicitUrlFromName(emuState.getConfig().name));
+	var wikiSrc = wikify(data, jsonStorage);
+	html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikiSrc)
+					   .replace(/\$WIKI_SOURCE/g,
+							wikiSrc.replace(/</g,'&lt;')
+								   .replace(/>/g,'&gt;'));
+	/* A bit of kludge here to handle the fact that document.write() seems to execute asynchronously.
+	 * Rather than calling finishFormatting directly, we set a global function that gets
+	 * called by the wiki template when the browser is done rendering the wiki content.
+	 */
+	finishFormatting = function() {
+		// Expand JSON elements embedded in the wiki text into DOM elements
+		for(jsonId in jsonStorage) {
+			var dom = navJSONtoDOM(element.contentWindow.document, jsonStorage[jsonId]);
+			$("#"+jsonId,element.contentWindow.document).replaceWith(dom);
 		}
-		element.contentWindow.document.open();
-		element.contentWindow.document.write(html);
-		element.contentWindow.document.close();
+		// Attach handler to local HREFs
+		$('A[href]:not([href^="http"])', element.contentWindow.document).click(navProcessAnchorClick);
+		// Set target for external links so a new page gets opened
+		$('A[href^="http"]', element.contentWindow.document).attr("target", "_blank");
+		element.contentWindow.applyDynamicFormatting(emuState.getEmulator());
 	}
+	element.contentWindow.document.open();
+	element.contentWindow.document.write(html);
+	element.contentWindow.document.close();
 }
 
 function parseQueryFromUrl(url) {
@@ -196,10 +184,9 @@ function parseQueryFromUrl(url) {
 	return (searchPos != -1) ? parseQuery(url.substr(searchPos)) : {};
 }
 
-
 function navTo(url, specialBehavior) {
-	params = parseQueryFromUrl(url);
-		
+	var params = parseQueryFromUrl(url);
+	
 	console.log( "New url: " + url );
 	
 	if(params.emulator && params.emulator != emuState.getEmulator()) {
