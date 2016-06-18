@@ -104,6 +104,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	</div>
 </template>
 
+<template id="wikiTemplate">
+       <html>
+               <head>
+                       <link rel="stylesheet" type="text/css" href="/lib/navigator/docs.css">
+                       <link rel="stylesheet" type="text/css" href="/lib/navigator/icons.css">
+               </head>
+               <body>
+                       <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+                       <script type="text/javascript" src="/lib/navigator/docs.js"></script>
+
+                       $WIKI_CONTENT
+
+                       <script type="text/javascript">
+                               window.onerror = function(error) {
+                                       alert(error);
+                               };
+
+                               parent.finishFormatting();
+                       </script>
+               </body>
+       </html>
+</template>
+
 <script type="text/javascript" src="/lib/wikify.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator-url.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator.js"></script>

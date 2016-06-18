@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 var navigatorPage = new NavigatorURL();
-var wikiTemplate;
 
 function navGoBack() {
 	history.back();
@@ -110,51 +109,41 @@ function navSetContent(url) {
 var finishFormatting;
 
 function injectWikiContent(element, url) {
-	if(wikiTemplate == null) {
-		$.ajax({
-			url: "/lib/navigator/wiki-template.html",
-			success: function (data) {
-				wikiTemplate = data;
-				injectWikiContent(element, url);
-			},
-			error: function(jqXHR,textStatus) {alert("Failed to load wiki template:" + textStatus)}
-		});
-	} else {
-		$.ajax({
-			url: url,
-			success: function (data) {
-				$(element.contentWindow.document).empty();
-				var jsonStorage = {};
-				var data = data.replace(/\$EMULATOR/g, emuState.getEmulator())
-				               .replace(/\$EMU_NAME/g, emuState.getConfig().name)
-							   .replace(/\$EMU_PAGE/g, emuState.getConfig().name.replace(/ /g,'-'));
-				var wikiSrc = wikify(data, jsonStorage);
-				html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikiSrc)
-								   .replace(/\$WIKI_SOURCE/g,
-										wikiSrc.replace(/</g,'&lt;')
-											   .replace(/>/g,'&gt;'))
-					               .replace(/\$WIKI_BASE_URL/g, url.replace(/.wiki$/,''));
-				/* A bit of kludge here to handle the fact that document.write() seems to execute asynchronously.
-				 * Rather than calling finishFormatting directly, we set a global function that gets
-				 * called by the wiki template when the browser is done rendering the wiki content.
-				 */
-				finishFormatting = function() {
-					// Expand JSON elements embedded in the wiki text into DOM elements
-					for(jsonId in jsonStorage) {
-						var dom = navJSONtoDOM(element.contentWindow.document, jsonStorage[jsonId]);
-						$("#"+jsonId,element.contentWindow.document).replaceWith(dom);
-					}
-					// Attach handler to local HREFs
-					$('A[href]:not([href^="http"])',element.contentWindow.document).click(navProcessAnchorClick);
-					element.contentWindow.applyDynamicFormatting(emuState.getEmulator());
+	var wikiTemplate = navImportDoc.getElementById("wikiTemplate").innerHTML;
+	$.ajax({
+		url: url,
+		success: function (data) {
+			$(element.contentWindow.document).empty();
+			var jsonStorage = {};
+			var data = data.replace(/\$EMULATOR/g, emuState.getEmulator())
+			               .replace(/\$EMU_NAME/g, emuState.getConfig().name)
+						   .replace(/\$EMU_PAGE/g, emuState.getConfig().name.replace(/ /g,'-'));
+			var wikiSrc = wikify(data, jsonStorage);
+			html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikiSrc)
+							   .replace(/\$WIKI_SOURCE/g,
+									wikiSrc.replace(/</g,'&lt;')
+										   .replace(/>/g,'&gt;'))
+				               .replace(/\$WIKI_BASE_URL/g, url.replace(/.wiki$/,''));
+			/* A bit of kludge here to handle the fact that document.write() seems to execute asynchronously.
+			 * Rather than calling finishFormatting directly, we set a global function that gets
+			 * called by the wiki template when the browser is done rendering the wiki content.
+			 */
+			finishFormatting = function() {
+				// Expand JSON elements embedded in the wiki text into DOM elements
+				for(jsonId in jsonStorage) {
+					var dom = navJSONtoDOM(element.contentWindow.document, jsonStorage[jsonId]);
+					$("#"+jsonId,element.contentWindow.document).replaceWith(dom);
 				}
-				element.contentWindow.document.open();
-				element.contentWindow.document.write(html);
-				element.contentWindow.document.close();
-			},
-			error: function(jqXHR,textStatus) {alert("Failed to load URL: " + textStatus)}
-		});
-	}
+				// Attach handler to local HREFs
+				$('A[href]:not([href^="http"])',element.contentWindow.document).click(navProcessAnchorClick);
+				element.contentWindow.applyDynamicFormatting(emuState.getEmulator());
+			}
+			element.contentWindow.document.open();
+			element.contentWindow.document.write(html);
+			element.contentWindow.document.close();
+		},
+		error: function(jqXHR,textStatus) {alert("Failed to load URL: " + textStatus)}
+	});
 }
 
 function navTo(url, specialBehavior) {
