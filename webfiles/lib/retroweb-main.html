@@ -20,10 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="/lib/ui.js"></script>
 <script type="text/javascript" src="/lib/utils.js"></script>
-		
-<link rel="import"     href="/emulators/emulator.html">
-<link rel="import"     href="/lib/navigator/navigator.html">
-		
+
 <style>
 	body {
 		height: 100%;
@@ -38,12 +35,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		position:     relative;
 		width:        100%;
 		height:       100%;
-		
+
 		max-width:    1600px;
 		margin-left:  auto;
 		margin-right: auto;
 	}
-	
+
 	.no-select {
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
@@ -52,7 +49,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		-ms-user-select: none;
 		user-select: none;
 	}
-	
+
 	#retroweb-markup {
 		display: none;
 	}
@@ -64,36 +61,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-	// The following is requires for the webcomponents polyfill
-	document._currentScript = document._currentScript || document.currentScript;
-	
-	// importDoc references this import's document
-	var bootstrapImportDoc = document._currentScript.ownerDocument;
-		
-	// Stamp the HTML inside the body of the main page
-	var template = bootstrapImportDoc.querySelector('#retrowebTemplate');
-	var clone = document.importNode(template.content, true);
-	var host = document.getElementsByTagName("body")[0];
-	host.appendChild(clone);
-
-	/*window.onerror = function(error) {
-		alert(error);
-	};*/
-	
-	var query = parseQuery();
-
-	function webComponentsReady() {
-		createEmulator(document.querySelector("#main"));
-		createNavigator(document.querySelector("#sidepanel"));
-		
-		fetchDataFromUrl("/startup.json", processStartupConfig);
+	/* There is no longer a way to show the developer console on iOS devices, so make
+	 * it so errors become alerts.
+	 *
+	 * Detection code from:
+	 *   http://stackoverflow.com/questions/9038625/detect-if-device-is-ios
+	 */
+	if(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+		window.onerror = function(error) {
+			alert(error);
+		};
 	}
-	
-	window.addEventListener('WebComponentsReady', webComponentsReady);
+
+	(function(namespace){
+		// The following is requires for the webcomponents polyfill
+		document._currentScript = document._currentScript || document.currentScript;
+
+		// importDoc references this import's document
+		var importDoc = document._currentScript.ownerDocument;
+
+		function webComponentsReady() {
+			// Stamp the HTML inside the body of the main page
+			var template = importDoc.getElementById('retrowebTemplate');
+			var clone = document.importNode(template.content, true);
+			var host = document.getElementsByTagName("body")[0];
+			host.appendChild(clone);
+
+			createEmulator(document.querySelector("#main"));
+			createNavigator(document.querySelector("#sidepanel"));
+
+			fetchDataFromUrl("/startup.json", processStartupConfig);
+		}
+
+		window.addEventListener('WebComponentsReady', webComponentsReady);
+	})(window.RetroWeb = window.RetroWeb || {});
 </script>
 
 <!-- The following will enable Google Analytics if the .include file exists -->
-<!--#include virtual="private/googleAnalytics.include"-->
+<!--#include virtual="../private/googleAnalytics.include"-->
 <!-- End of Google Analytics -->
 
 <script type="text/javascript">

@@ -17,22 +17,36 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* This script injects the following two tags into the HEAD of a document:
+/* This script uses document.write to inject boilerplate code that is needed
+ * to start the RetroWeb interface. This keeps the pages for individual articles
+ * as minimal as possible.
  *
- *   <link rel="import" href="/lib/bootstrap.html">
- *   <script type="text/javascript" src="/lib/webcomponents/webcomponents.min.js">
- *
- * This is sufficient to initialize the RetroWeb Browser UI on an otherwise blank
- * HTML page */
+ * Loading the webcomponents polyfill (for compatibility with iOS browsers)
+ * followed by HTML imports ensures proper sequence of code execution. While
+ * it is tempting to nest HTML imports inside HTML imports, I have found that
+ * this leads to race conditions when using webcomponents and it is preferable
+ * to do all HTML imports here. CSS imports do not have this limitation and
+ * can be imported where most convenient.
+ */
+ 
+ (function(namespace){
+	/* Decode the query variable */
+	function parseQuery(url) {
+		var vars = (url || window.location.search).substring(1).split("&");
+		var query = {};
+		for (var i=0;i<vars.length;i++) {
+			var pair = vars[i].split("=");
+			query[pair[0]] = pair[1];
+		}
+		return query;
+	}
+	
+	namespace.query = parseQuery();
+})(window.RetroWeb = window.RetroWeb || {});
 
-/* Create a link to import the bootstrap file */
-var fileref = document.createElement('link')
-fileref.setAttribute("rel","import")
-fileref.setAttribute("href", "/lib/bootstrap.html")
-document.getElementsByTagName("head")[0].appendChild(fileref)
-
-/* Load the webcomponents library */
-var fileref = document.createElement('script')
-fileref.setAttribute("type","text/javascript")
-fileref.setAttribute("src", "/lib/webcomponents/webcomponents.min.js")
-document.getElementsByTagName("head")[0].appendChild(fileref)
+if(!(RetroWeb.query.debug == "raw")) {
+	document.write('<script type="text/javascript" src="/lib/webcomponents/webcomponents.min.js"></script>');
+	document.write('<link rel="import" href="/emulators/emulator.html"></link>');
+	document.write('<link rel="import" href="/lib/navigator/navigator.html"></link>');
+	document.write('<link rel="import" href="/lib/retroweb-main.html"></link>');
+}

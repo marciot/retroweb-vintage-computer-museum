@@ -307,7 +307,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	/*function createEmulator(host) {
 		// Create a Shadow Root
 		var root = host.createShadowRoot();
-		var template = importDoc.querySelector('#emulatorTemplate');
+		var template = importDoc.getElementById('emulatorTemplate');
 		
 		var clone = document.importNode(template.content, true);
 		root.appendChild(clone);
@@ -336,7 +336,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		emuState    = new EmulatorState();
 		fileManager = new EmscriptenFileManager();
 				
-		var template = emuImportDoc.querySelector('#emulatorTemplate');
+		var template = emuImportDoc.getElementById('emulatorTemplate');
 		var clone = document.importNode(template.content, true);
 		host.appendChild(clone);
 		

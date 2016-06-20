@@ -26,93 +26,56 @@ function navGoHome() {
 }
 
 function navInitialDoc() {
-	renderWikiContent(document.getElementById("html-iframe"));
+	renderWikiContent();
 }
 
-function navJSONtoDOM( doc, json ) {
-	if(json.hasOwnProperty("emulators")) {
-		if(json.emulators.indexOf(emuState.getEmulator()) == -1 && !query.emulator) {
-			navTo("?emulator=" + json.emulators[0], 'redirect');
-		}
-	}
-	
-	if(json.hasOwnProperty("icons")) {
-		var typeToClassMap = {
-			"floppy"          : "floppy",
-			"boot-hd"         : "hd-dot",
-			"boot-floppy"     : "floppy-dot",
-			"boot-rom"        : "rom-dot",
-			"folder"          : "folder",
-			"folder-dot"      : "folder-dot",
-			"doc"             : "document",
-			"upload-floppy"   : "upload",
-			"download-floppy" : "upload",
-			"download-file"   : "upload",
-			"upload-file"     : "upload",
-			"enter-url"       : "world",
-			"hyperlink"       : "html-doc",
-			"cassette"        : "cassette"
-		}
-	
-		var div = doc.createElement("div");
-		div.className += "icons";
-		if(json.hasOwnProperty("class")) {
-			div.className += " " + json["class"];
-		}
-		var list = doc.createElement("OL");
-		div.appendChild(list);
-		for (var i = 0; i < json.icons.length; ++i) {
-			var name = json.icons[i][0];
-			var type = json.icons[i][1];
-			var arg  = json.icons[i][2];
-			var opts = json.icons[i][3];
-			
-			var disk = doc.createElement( "LI" );
-			var icon = doc.createElement( "A" );
-			disk.appendChild(icon);
-			if( opts && opts.hasOwnProperty("className") ) {
-				icon.className = opts.className;
-			} else {
-				icon.className += typeToClassMap[type];
-			}
-			icon.appendChild(doc.createTextNode(name));
-			function getHandler(name, type, arg, opts) {
-				return function() {
-					navProcessIconClick(name, type, arg, opts);
-				}
-			}
-			icon.onclick = getHandler(name, type, arg, opts);
-			list.appendChild(disk);
-		}
-	}
-	return div;
-}
-
-function navSetContent(url) {
-	var iframe = document.getElementById("html-iframe");
-	console.log("navSetContent:" + url );
-	panels.open("navigator-panel");
+/* This fetches a new page via XHR and substitutes the content of the #retroweb-markup
+ * element with the #retroweb-markup element from the new page. This function does not
+ * render the content.
+ */
+function fetchAndReplaceWikiContent(url, callback) {
+	console.log("fetchAndReplaceWikiContent:" + url );
 	$("#retroweb-markup").load( url + " #retroweb-markup", function(response, status, xhr) {
 		if ( status == "error" ) {
 			var msg = "Sorry but there was an error: ";
 			$("#retroweb-markup").html(msg + xhr.status + " " + xhr.statusText);
 		} else {
 			$("#retroweb-markup").children().first().unwrap();
-			renderWikiContent(iframe, url);
-			$("html,body", iframe.contentWindow.document).scrollTop(0);
+			callback();
 		}
-	} );
+	});
 }
 
 /* The wiki content is optionally followed by one or more A HREF tags. These are back-substituted into the
    text whenever the [[text]] notation is encountered
  */
 class TrailingLinks {
-	
 	/* At construction, we remove the A HREF tags from the specified element */
 	
-	constructor(selector) {
-		this.links = $(selector + " a").detach();
+	constructor(el) {
+		this.links = $(this.findTrailingAnchors(el));
+		this.links.detach();
+	}
+	
+	findTrailingAnchors(el) {
+		var anchors = [];
+		var node = el.lastChild;
+		while(node) {
+			if(node.nodeType == 3 && !/^\s+$/.test(node.nodeValue)) {
+				// Found text node that isn't whitespace
+				break;
+			}
+			if(node.nodeType == 1) {
+				if(node.tagName == "A") {
+					anchors.push(node);
+				} else  {
+					// Found an element of another type
+					break;
+				}
+			}
+			node = node.previousSibling;
+		}
+		return anchors;
 	}
 	
 	/* Looks up a HREF by content */
@@ -126,57 +89,54 @@ class TrailingLinks {
 		return found;
 	}
 	
-	/* Substitute all occurances of [[text]] with the corresponding A HREF */
-	substitute(wikiText) {
+	substitute(el) {
 		var that = this;
-		return wikiText.replace(
-			new RegExp('\\[\\[([^\\]]*)\\]\\]', 'ig'),
-			function(m, p) {
-				var subs = that.lookup(p);
-				return subs ? ('<a href="' + subs + '">' + p + '</a>') : m;
+		$("A:not([href])",el).each(function(i,e){
+			var href = that.lookup(e.innerHTML);
+			if(href) {
+				e.setAttribute("href", href);
 			}
-		);
+		});
 	}
 }
 
 var finishFormatting;
 var trailingLinks;
 
-function renderWikiContent(element) {
+function renderWikiContent() {
+	var el = document.getElementById("retroweb-markup");
+	trailingLinks = new TrailingLinks(el);
+	el.innerHTML = wikify(el.innerHTML)
+		.replace(/\$EMULATOR/g, emuState.getEmulator())
+		.replace(/\$EMU_NAME/g, emuState.getConfig().name)
+		.replace(/\$EMU_PAGE/g, implicitUrlFromName(emuState.getConfig().name));;
+	trailingLinks.substitute(el);
+	
 	var wikiTemplate = navImportDoc.getElementById("wikiTemplate").innerHTML;
-	trailingLinks = new TrailingLinks("#retroweb-markup");
+	var html = wikiTemplate.replace(/\$WIKI_CONTENT/g, el.innerHTML);
 	
-	var data = trailingLinks.substitute($("#retroweb-markup").html());
+	if(RetroWeb.query.debug == "html") {
+		// If ?debug=html is present in the query, then show the transformed wiki source
+		html = '<pre>' + html.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</pre>';
+	}
 	
-	$(element.contentWindow.document).empty();
-	var jsonStorage = {};
-	var data = data.replace(/\$EMULATOR/g, emuState.getEmulator())
-				   .replace(/\$EMU_NAME/g, emuState.getConfig().name)
-				   .replace(/\$EMU_PAGE/g, implicitUrlFromName(emuState.getConfig().name));
-	var wikiSrc = wikify(data, jsonStorage);
-	html = wikiTemplate.replace(/\$WIKI_CONTENT/g, wikiSrc)
-					   .replace(/\$WIKI_SOURCE/g,
-							wikiSrc.replace(/</g,'&lt;')
-								   .replace(/>/g,'&gt;'));
+	var element = document.getElementById("html-iframe");
 	/* A bit of kludge here to handle the fact that document.write() seems to execute asynchronously.
 	 * Rather than calling finishFormatting directly, we set a global function that gets
 	 * called by the wiki template when the browser is done rendering the wiki content.
 	 */
 	finishFormatting = function() {
-		// Expand JSON elements embedded in the wiki text into DOM elements
-		for(jsonId in jsonStorage) {
-			var dom = navJSONtoDOM(element.contentWindow.document, jsonStorage[jsonId]);
-			$("#"+jsonId,element.contentWindow.document).replaceWith(dom);
-		}
-		// Attach handler to local HREFs
-		$('A[href]:not([href^="http"])', element.contentWindow.document).click(navProcessAnchorClick);
-		// Set target for external links so a new page gets opened
-		$('A[href^="http"]', element.contentWindow.document).attr("target", "_blank");
+		processJSONContent(element.contentWindow.document, element.contentWindow.document.body);
+		expandRetrowebIcons(element.contentWindow.document);
+		navAttachHandlersToAnchors(element.contentWindow.document);
 		element.contentWindow.applyDynamicFormatting(emuState.getEmulator());
 	}
+	
+	$(element.contentWindow.document).empty();
 	element.contentWindow.document.open();
-	element.contentWindow.document.write(html);
+	element.contentWindow.document.write('<html><body>'+html+'</html></body>');
 	element.contentWindow.document.close();
+	$("html,body", element.contentWindow.document).scrollTop(0);
 }
 
 function parseQueryFromUrl(url) {
@@ -199,7 +159,8 @@ function navTo(url, specialBehavior) {
 		specialBehavior = 'redirect';
 	} else {
 		/* Otherwise, simply update the content in place */
-		navSetContent(url);
+		panels.open("navigator-panel");
+		fetchAndReplaceWikiContent(url, renderWikiContent);
 		console.log("Updated content: " + url + ((specialBehavior) ? " (" + specialBehavior + ")" : ''));
 	}
 
@@ -224,81 +185,22 @@ function navAddPopStateHandler() {
 	});
 }
 
-function navProcessAnchorClick(href) {
-	navTo($(this).attr('href'));
-}
-
-function processBootOptions(opts) {
-	if(opts && "emulator-args" in opts) {
-		var args = opts["emulator-args"];
-		for(var arg in args) {
-			emuState.getEmulatorInterface().setArgument(arg, args[arg]);
-		}
+function navAttachHandlersToAnchors(element) {
+	
+	function clickHandler(href) {
+		return navProcessIconClick(
+			this.innerHTML,
+			this.getAttribute("data-type"),
+			this.getAttribute("href"),
+			this.getAttribute("data-cfg")
+		);
 	}
+	
+	// Attach handler to anything not having an HREF
+	$('A:not([href])', element).click(clickHandler);
+	// Attach handler to local HREFs
+	$('A[href]:not([href^="http"])', element).click(clickHandler);
+	// Set target for external links so a new page gets opened
+	$('A[href^="http"]', element).attr("target", "_blank");
 }
 
-/* Converts a name into an URL by converting spaces to hyphens and appending .html */
-function implicitUrlFromName(name) {
-	return name.replace(/ /g,'-')+".html";
-}
-
-function navProcessIconClick(name, type, param, opts) {
-	switch(type) {
-		case "doc":
-		case "folder":
-		case "folder-dot":
-			gaTrackEvent("document-read", name);
-			navTo(param || trailingLinks.lookup(name) || implicitUrlFromName(name));
-			break;
-		case "boot-hd":
-			processBootOptions(opts);
-			navFetchDriveFromUrl(name, "hd1", param, true);
-			break;
-		case "boot-floppy":
-			processBootOptions(opts);
-			navFetchDriveFromUrl(name, "fd1", param, true);
-			break;
-		case "boot-rom":
-			processBootOptions(opts);
-			gaTrackEvent("disk-mounted", name);
-			emuState.getEmulatorInterface().bootFromRom();
-			break;
-		case "floppy":
-			if(emuState.isRunning()) {
-				navFetchDriveFromUrl(name, (opts && opts.drive) ? opts.drive : "fd1", param, false);
-			} else {
-				alert("Please boot the computer using a boot disk first");
-			}
-			break;
-		case "upload-floppy":
-			gaTrackEvent("disk-mounted", "local-floppy");
-			uploadFloppy("fd1", true);
-			break;
-		case "download-floppy":
-			downloadFloppy("fd1");
-			break;
-		case "download-file":
-			downloadFile(param);
-			break;
-		case "upload-file":
-			uploadFile(param, "cassette file (.cas)");
-			break;
-		case "get-file":
-			getFileFromUrl(param, opts.saveAs);
-			break;
-		case "cassette":
-			cassetteAction(param);
-			break;
-		case "hyperlink":
-			window.open(param);
-			break;
-		default:
-			alert("Action " + type + " is unknown");
-			break;
-	}
-}
-
-function navFetchDriveFromUrl(name, drive, url, isBootable) {
-	gaTrackEvent("disk-mounted", name);
-	mountDriveFromUrl(drive, url, isBootable);
-}

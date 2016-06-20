@@ -105,30 +105,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <template id="wikiTemplate">
-	<html>
-		<head>
-			<link rel="stylesheet" type="text/css" href="/lib/navigator/docs.css">
-			<link rel="stylesheet" type="text/css" href="/lib/navigator/icons.css">
-		</head>
-		<body>
-			<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-			<script type="text/javascript" src="/lib/navigator/docs.js"></script>
-			
-			$WIKI_CONTENT
-			
-			<script type="text/javascript">
-				window.onerror = function(error) {
-					alert(error);
-				};
-				
-				parent.finishFormatting();
-			</script>
-		</body>
-	</html>
+	<link rel="stylesheet" type="text/css" href="/lib/navigator/docs.css">
+	<link rel="stylesheet" type="text/css" href="/lib/navigator/icons.css">
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="/lib/navigator/docs.js"></script>
+	$WIKI_CONTENT
+	<script type="text/javascript">
+		parent.finishFormatting();
+	</script>
 </template>
 
 <script type="text/javascript" src="/lib/wikify.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator.js"></script>
+<script type="text/javascript" src="/lib/navigator/navigator_json.js"></script>
+<script type="text/javascript" src="/lib/navigator/navigator_icons.js"></script>
 
 <script>
 	// The following is requires for the webcomponents polyfill
@@ -142,7 +132,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	var panels;
 	
 	function createNavigator(host) {
-		var template = navImportDoc.querySelector('#navigatorTemplate');
+		var template = navImportDoc.getElementById('navigatorTemplate');
 		var clone = document.importNode(template.content, true);
 		host.appendChild(clone);
 		
