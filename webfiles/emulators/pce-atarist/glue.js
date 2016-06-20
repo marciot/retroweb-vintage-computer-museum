@@ -37,7 +37,7 @@ ifce.preRun = function() {
 ifce.mountDisk = function(diskFile) {
 	console.log("Mounting " + diskFile);
 	var driveId = diskFile.match(/fd(\d)+/)[1];
-	rcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
+	stSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
 }
 
 ifce.reset = function() {
