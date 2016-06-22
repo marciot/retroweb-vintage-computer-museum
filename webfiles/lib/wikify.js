@@ -17,23 +17,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* Removes embedded JSON content from the wiki markup. If a jsonStorage object
- * is provided, all JSON content will be parsed and placed in the object as
- * a property; a "code" HTML tag whose id corresponds to the property in the
- * jsonStorage object will serve as a placeholder.
+/* Removes embedded JSON content from the wiki markup. Since JSON content
+ * may span multiple lines and can interfere with subsequent substitutions,
+ * all JSON content is replaced with a marker and the JSON content is pushed
+ * into the jsonStorage array.
  */
-function json(str, jsonStorage) {
+function un_json(str, jsonStorage) {
 	str = str.replace( /^{\s*"[\w-]+"\s*:\s*(?:.|\n)+?^}/gm, function(m) {
-		if(jsonStorage) {
-			var id = 'json_' + Object.keys(jsonStorage).length;
-			try {
-				jsonStorage[id] = JSON.parse(m);
-				return '<code id="' + id + '">CodeInsertionPoint</code>';
-			} catch (e) {
-				throw new Error(e.message + " (parsing " + id + ")");
-			}
-		}
-		return '';
+		jsonStorage.push(m);
+		return '{json_' + (jsonStorage.length-1) + '}';
+	});
+	return str;
+}
+
+/* Replaces the JSON markers with the contents of jsonStorage. The JSON will
+ * be wrapped in a SCRIPT tag with type of "application/json"
+ */
+function re_json(str, jsonStorage) {
+	str = str.replace( /\{json_([0-9]*)\}/gm, function(m,p) {
+		return '<script type="application/json">\n' + jsonStorage[parseInt(p, 10)] + '\n</script>\n';
 	});
 	return str;
 }
@@ -71,15 +73,16 @@ function preformatted(str) {
 
 function table_row(m,p) {
 	var a = p.split('|');
-	var modifierRegex = /^(!?)([>^]?)(\d*)(,?\d*)(.*)$/;
+	var modifierRegex = /^(!?)(&gt;|[\>^]?)(\d*)(,?\d*)(.*)$/;
 	var s = "";
 	for(i=0; i<a.length; i++) {	
 		var args = a[i].match(modifierRegex);
 		var attr = "";
+		console.log(args);
 		if(args[2] == '^') {
 			attr += ' class="align-center"';
 		}
-		if(args[2] == '>') {
+		if(args[2] == '>' || args[2] == '&gt;') {
 			attr += ' class="align-right"';
 		}
 		if(args[3] != '') {
@@ -136,7 +139,7 @@ function figs(str) {
 
 function links(str) {	
 	// Internal links
-	str = str.replace( /\[\[([^\]|]+)\]\]/g, '<a href="$1">$1</a>');
+	str = str.replace( /\[\[([^\]|]+)\]\]/g, '<a>$1</a>');
 	str = str.replace( /\[\[([^\]|]+)\|([^\]]+)\]\]/g, '<a href="$2">$1</a>');
 	
 	// Reference
@@ -155,7 +158,8 @@ function paragraphs(str) {
 	return str;
 }
 
-function wikify (str, jsonStorage) {
-	str = formatting(tables(links(figs(headers(def_lists(preformatted(lists(lists(lists(lists(lists(paragraphs(json(str,jsonStorage))))))))))))));
+function wikify (str) {
+	var jsonStorage = [];
+	str = re_json(formatting(tables(links(figs(headers(def_lists(preformatted(lists(lists(lists(lists(lists(paragraphs(un_json(str,jsonStorage)))))))))))))),jsonStorage);
 	return str;
 }

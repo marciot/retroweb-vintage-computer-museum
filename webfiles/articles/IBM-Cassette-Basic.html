@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>RetroWeb Vintage Computer Museum</title>
+</head>
+<body>
+<script type="text/javascript" src="/lib/bootstrap.js"></script>
+<link rel="stylesheet" href="/lib/nojs.css" type="text/css">
+<div id="retroweb-markup">
+
+{
+	"author" : "Marcio Teixeira",
+	"license" : "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+	"emulators" : ["pce-ibmpc"]
+}
+
+= What is IBM Cassette Basic? =
+
+{
+"icons" : [
+		["Boot Cassette Basic", "boot-rom"]
+	],
+"class" : "float-left"
+}
+
+The original IBM PC included a version of Basic that would start if you booted the computer without a valid operating system disk.
+
+To boot the machine into IBM Cassette Basic, click the ROM microchip, then hit "F1" at the boot error message.
+
+== IBM Fractal Graphics ==
+
+[[figure-float-left:/artwork/dragon.jpg The Dragon Sweep]]
+
+'''COMPUTE! ISSUE 70/ MARCH 1986'''
+ 
+''By Paul W. Carlson''
+
+One of the hottest topics in mathematics these days is fractals—fractional dimensions. Fractals are being used for everything from simulating random plant growth to generating realistic planetary landscapes for science-fiction films and arcade games.
+
+This article[1], adapted from "Apple Fractals" in the September 1985 issue of COMPUTE!, introduces the fascinating world of fractals with three programs that work on any IBM PCjr or PC with color/graphics adapter.
+
+<hr class="clear-both">
+
+Read through the article for complete information and program listings. For your convenience, I have included the first program ("The Dragon Sweep") in this program cassette so that you can run it without having to type it in. Simply click the cassette and type LOAD"DRAGON" at the BASIC prompt.
+ 
+
+{
+"icons" : [
+		["COMPUTE! Issue 70",     "hyperlink",     "http://archive.org/stream/1986-03-compute-magazine/Compute_Issue_070_1986_Mar#page/n80/mode/2up"],
+		["Program Cassette",      "get-file",      "/cassettes/dragon.cas", {"saveAs" : "cas1.cas", "className" : "cassette"}]
+	]
+}
+
+== Make your own virtual cassette tapes! ==
+
+The instructions below allow you to control a virtual cassette recorder as if you were working with a real IBM Model 5150 PC. You can load and save programs to cassette tapes, and then download your cassette tapes as files to your own computer for safe-keeping.
+
+=== Loading and saving programs to your cassette tape ===
+
+To save your program ''at the end of a cassette'', click the "Prepare to SAVE" button, then type the SAVE command inside the PC.
+
+To ''overwrite'' your cassette from the beginning, click "Prepare to SAVE", then click "Rewind tape", then type the SAVE command inside PC Basic.
+
+{
+"icons" : [
+		["Prepare to LOAD",           "cassette",      "playback"],
+		["Prepare to SAVE",           "cassette",      "record"],
+		["Rewind tape",               "cassette",      "rewind"],
+		["Skip to end",               "cassette",      "append"]
+	]
+}
+
+To load a program, click the "Prepare to LOAD" icon, then type the LOAD command inside PC Basic.
+
+=== Storing cassette tapes on your own PC ===
+
+'''Programs that are saved to the virtual cassette recorder will be lost when you leave this web page UNLESS you download your cassette tapes to your local computer for safe-keeping!'''
+
+Click the "Download..." icon to save your cassette tape to your local computer as a ".cas" file. 
+
+{
+"icons" : [
+		["Download...",      "download-file", "cas1.cas", {"className" : "cassette"}],
+		["Upload...",        "upload-file",   "cas1.cas", {"className" : "cassette"}]
+	]
+}
+
+You can use the "Upload..." icon to upload a cassette file from your local computer. Once you do this, you can follow the instructions in the previous section to read your programs from the cassette.
+
+== Additional Resources ==
+
+If you wish to dwelve deeper into IBM Basic, I recommend the scanned copy of the [[IBM Basic Reference]] from the Internet Archive.
+
+You can also find a complete set of IBM PC manuals at [[The Retrocomputing Archive]].
+
+== References ==
+
+# http://www.atarimagazines.com/compute/issue70/084_1_IBM_Fractal_Graphics.php
+		
+<!--<div class="typedCommand" onclick="sendTypeText(event.target.innerHTML);">10 PRINT "HELLO WORLD"
+20 GOTO 10</div>-->
+
+<a href="https://archive.org/details/bitsavers_ibmpclanguerence3.0May84_10498434">IBM Basic Reference</a>
+<a href="http://www.retroarchive.org">The Retrocomputing Archive</a>
+
+</div>
+</body>
+</html>

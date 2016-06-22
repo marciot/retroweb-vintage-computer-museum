@@ -41,6 +41,7 @@ function fetchDataFromUrl (url, callback) {
 				callback(data);
 			} catch (e) {
 				alert ("Error processing response from " + url + ": " + e.message );
+				throw e;
 			}
 		},
 		error: function(jqXHR,textStatus) {
@@ -75,7 +76,7 @@ function loadEmulatorChoices(json) {
 		addEmulator(emulators[i].key, emulators[i].menu);
 	}
 	
-	return query.platform || query.emulator || emulators[Math.floor((Math.random()*emulators.length))].key;
+	return RetroWeb.query.platform || RetroWeb.query.emulator || emulators[Math.floor((Math.random()*emulators.length))].key;
 }
 
 function loadEmulatorConfig(json, emulator) {

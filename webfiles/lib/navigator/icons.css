@@ -80,22 +80,22 @@ DIV.icons {
 	background-size: 60px 60px;
 }
 
-.icons A.floppy-dot:before {
+.icons A.boot-floppy:before {
 	background: url('/ui-artwork/floppy-dot.png');
 	background-size: 60px 60px;
 }
 
-.icons A.hd-dot:before {
+.icons A.boot-hd:before {
 	background: url('/ui-artwork/hd-dot.png');
 	background-size: 60px 60px;
 }
 
-.icons A.rom-dot:before {
+.icons A.boot-rom:before {
 	background: url('/ui-artwork/rom-dot.png');
 	background-size: 60px 60px;
 }
 
-.icons A.document:before {
+.icons A.doc:before {
 	background: url('/ui-artwork/document.png');
 	background-size: 60px 60px;
 }
@@ -115,7 +115,7 @@ DIV.icons {
 	background-size: 60px 60px;
 }
 
-.icons A.html-doc:before {
+.icons A.hyperlink:before {
 	background: url('/ui-artwork/html-doc.png');
 	background-size: 60px 60px;
 }
@@ -125,12 +125,15 @@ DIV.icons {
 	background-size: 60px 60px;
 }
 
-.icons A.upload:before {
+.icons A.upload-floppy:before,
+.icons A.download-floppy:before,
+.icons A.download-file:before,
+.icons A.upload-file:before {
 	background: url('/ui-artwork/upload.png');
 	background-size: 60px 60px;
 }
 
-.icons A.world:before {
+.icons A.enter-url:before {
 	background: url('/ui-artwork/world.png');
 	background-size: 60px 60px;
 }

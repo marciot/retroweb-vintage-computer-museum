@@ -56,7 +56,7 @@ RewriteEngine on
 # a .gz appended, then rewrite the request to the .gz file
 RewriteCond %{HTTP:Accept-Encoding} gzip
 RewriteCond %{REQUEST_FILENAME}.gz -f
-RewriteRule (.*\.(css|js|image|img|pimg|qed|pfdc|st|dsk|prg|psi|adf|cas))$ $1\.gz [L]
+RewriteRule (.*\.(css|js|image|img|pimg|qed|pfdc|st|dsk|raw|prg|psi|adf|cas))$ $1\.gz [L]
 
 #Set content type to JavaScript and the encoding to gzip
 <FilesMatch ".*\.js\.gz$">
@@ -89,9 +89,12 @@ AddHandler server-parsed .html
 AddType application/json .json
 
 ###############################################################
-# Redirect access to /articles/* to the main page, except when
-# a .wiki extension is used
+# Add .html extensions to files if no extension is present
+# and the file does not exist on the server (this is to ease
+# migration from the old style site which did not use extensions)
 ###############################################################
 RewriteEngine On
-RewriteCond %{REQUEST_URI} !^/(articles|docs)/.*\.wiki
-RewriteRule ^(articles|docs)/ index.html [L]
+RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]{2,4}$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(articles|docs)/(.*)$ $2.html [L,R=301]

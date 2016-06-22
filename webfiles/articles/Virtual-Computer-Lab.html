@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>RetroWeb Vintage Computer Museum</title>
+</head>
+<body>
+<script type="text/javascript" src="/lib/bootstrap.js"></script>
+<link rel="stylesheet" href="/lib/nojs.css" type="text/css">
+<div id="retroweb-markup">
+			
+= The Virtual Computer Lab =
+
+{
+	"icons" : [
+		["The Exchanging Disk Dream", "hyperlink", "https://github.com/jsmess/jsmess/wiki/The-Exchanging-Disk-Dream"]
+	]
+}
+
+In his essay <cite>The Exchanging Disk Dream</cite>, Jason Scott lays out his dream for a virtual computer lab on the web, using JavaScript emulation technology.
+
+This page demonstrates how the JMESS and PCE emulators, along with my RetroWeb Browser framework, can implement this vision&mdash;today!
+
+== Boot Disks &amp; Software ==
+
+<div class="pce-macplus hidden">
+{
+	"icons" : [
+		["System 6.0 Boot",        "boot-hd",          "/disks/mac-marcio's-boot-1.0.qed"],
+		["Mac Programming Tools",  "floppy",           "/disks/mac-programming.image"],
+		["PowerPoint V1.0",        "floppy",           "/disks/mac-powerpoint-1.0.image"],
+		["Blank Floppy",           "floppy",           "/disks/mac-blank-800k.img"],
+		["Upload Floppy",          "upload-floppy"],
+		["Save Floppy",            "download-floppy"]
+	]
+}
+</div>
+
+<div class="jsmess-apple2e hidden">
+{
+	"icons" : [
+		["Upload Floppy",           "upload-floppy"],
+		["Download Floppy",         "download-floppy"],
+		["VisiCalc", "boot-floppy", "/disks/apple2-visicalc.dsk.gz"]
+	]
+}
+</div>
+
+<div class="pce-ibmpc-xt hidden">
+{
+	"icons" : [
+		["Upload Floppy",           "upload-floppy"],
+		["Download Floppy",         "download-floppy"],
+		["Windows 1.01 Boot Disk",     "boot-hd",   "/disks/ibmpc-win101-hd.img",
+			{"emulator-args" : {"-c" : "pce-config-5160-ser-mouse.cfg", "-g" : "vga"} } ],
+		["VisiCalc Program Disk",  "floppy",     "/disks/ibmpc-visicalc.raw.gz"]
+	]
+}
+</div>
+
+<div class="jsmess-c64 hidden">
+There is no productivity software available for this machine.
+{
+	"icons" : [
+		["C64 Flight Sim 2",        "boot-floppy", "/disks/c64-fs2.prg"],
+		["Upload Floppy",           "upload-floppy"],
+		["Download Floppy",         "download-floppy"]
+	]
+}
+</div>
+
+<div class="jsmess-trs80 hidden">
+There is no productivity software available for this machine.
+
+{
+	"icons" : [
+		["TRS-80 Flight Sim",       "boot-floppy", "/disks/trs80-fs1.dsk"],
+		["Upload Floppy",           "upload-floppy"],
+		["Download Floppy",         "download-floppy"]
+	]
+}
+</div>
+
+<div class="pce-atarist hidden">
+There is no productivity software available for this machine.
+
+{
+	"icons" : [
+		["Atari Boot Disk",      "boot-hd",   "/disks/atarist-hampa-hd1.pimg"],
+		["Upload Floppy",           "upload-floppy"],
+		["Download Floppy",         "download-floppy"]
+	]
+}
+</div>
+
+<div class="pce-rc759 hidden">
+There is no productivity software available for this machine.
+
+{
+	"icons" : [
+		["RC759 Boot Disk",         "boot-floppy", "/disks/rc759-boot-floppy.pfdc"],
+		["Upload Floppy",           "upload-floppy"],
+		["Download Floppy",         "download-floppy"]
+	]
+}
+</div>
+
+=== Other vintage computers: ===
+
+|! Computer              |! Disk insertion<br>(after boot) |! Save disks |! Productivity Software                     |
+| [[IBM PC Model 5160]]  | Yes             | No             | Windows 1.0, VisiCalc                                   |
+| [[Apple Macintosh]]    | Yes             | No             | MacWrite, TeachText, PowerPoint, Macintosh Pascal, Microsoft Basic, Hypercard  |
+| [[Atari 1040ST]]       | Yes             | No             | None                                                    |
+| [[Apple IIe]]          | No              | Yes            | VisiCalc                                                |
+| [[Commodore 64]]       | No              | Yes            | None                                                    |
+| [[RadioShack TRS-80]]  | No              | Yes            | None                                                    |
+| [[RC759 Piccoline]]    | Yes             | No             | None                                                    |
+
+
+* The PCE-based emulators support insertion of one or more floppy disks once running, but currently my interface limits this to the first floppy disk drive.
+* Saving disks from PCE seems to only result in a blank disk being saved.
+* JSMESS saves disks okay, but does not support changing disks after boot.
+
+<a href="IBM-PC-Model-5160.html">IBM PC Model 5160</a>
+<a href="Apple-Macintosh.html">Apple Macintosh</a>
+<a href="Atari-1040ST.html">Atari 1040ST</a>
+<a href="Apple-IIe.html">Apple IIe</a>
+<a href="Commodore-64.html">Commodore 64</a>
+<a href="RadioShack-TRS-80.html">RadioShack TRS-80</a>
+<a href="RC759-Piccoline.html">RC759 Piccoline</a>
+
+</div>
+</body>
+</html>

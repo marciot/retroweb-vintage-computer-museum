@@ -1,126 +1,43 @@
-<!--
-RetroWeb Browser
-Copyright (C) 2014 Marcio Teixeira
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>RetroWeb Vintage Computer Museum</title>
+</head>
+<body>
+<script type="text/javascript" src="/lib/bootstrap.js"></script>
+<link rel="stylesheet" href="/lib/nojs.css" type="text/css">
+<div id="retroweb-markup">
+= RetroWeb Vintage Computer Museum =
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+Welcome to the <cite>RetroWeb Vintage Computer Museum</cite>, a web exhibit where you get to interact with and learn about personal computers and software from the early to late-eighties.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+{ "icons" :
+	[
+		["Get Started!", "folder-dot"]
+	]
+}
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
--->
-<!DOCTYPE html>
-<html>
-	<head>
-		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-		<script type="text/javascript" src="/lib/ui.js"></script>
-		<script type="text/javascript" src="/lib/utils.js"></script>
-		
-		<!-- The following enables HTML imports on iOS 7 -->
-		<script type="text/javascript" src="/lib/webcomponents/webcomponents.min.js"></script>
-		
-		<link rel="stylesheet" href="/lib/ui.css" type="text/css">
-		<link rel="stylesheet" type="text/css" href="/lib/navigator/icons.css">
-		
-		<link rel="import"     href="/emulators/emulator.html">
-		<link rel="import"     href="/lib/navigator/navigator.html">
-		
-		<title>RetroWeb Browser</title>
-		
-		<style>
-			body {
-				height: 100%;
-			}
+This website makes use of emulators. An emulator allows your computer to simulate the operation of computers that are now obsolete, all inside your web browser!
 
-			html {
-				height: 100%;
-			}
+Click the &ldquo;Get Started!&rdquo; icon to begin, read [[technical information]] or look through the site [[credits]].
 
-			/* Expand up to 1600px, then center horizontally */
-			.horizontalExpandAndCenter {
-				position:     relative;
-				width:        100%;
-				height:       100%;
-				
-				max-width:    1600px;
-				margin-left:  auto;
-				margin-right: auto;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="horizontalExpandAndCenter no-select" id="main">
-		</div>
-		
-		<script type="text/javascript">
-			var query;
-			var Module;
-			var emuState;
-			var fileManager;
-			var popupTm, panelTm;
-			var popups, panel;
-			
-		    window.onerror = function(error) {
-				alert(error);
-			};
+== Legal Matters ==
 
-			function webComponentsReady() {
-				createEmulator(document.querySelector("#main"));
-				createNavigator(document.querySelector("#sidepanel"));
-				
-				query       = parseQuery();
-				
-				Module;
-				emuState    = new EmulatorState();
-				fileManager = new EmscriptenFileManager();
-				
-				popupTm = new TransitionManager();
-				popups = new PopupManager(popupTm);
-				popups.add("popup-mouse-center");
-				popups.add("popup-rom-missing");
-				popups.add("popup-need-boot-media");
-				popups.add("popup-status");
-				popups.add("popup-uploader");
-				popups.add("popup-mac-eject-disk");
-				
-				panelTm = new TransitionManager();
-				panels = new PopupManager(panelTm);
-				panels.add("navigator-panel");
-				panels.open("navigator-panel");
-				
-				navAddPopStateHandler();
-				fetchDataFromUrl("/startup.json", processStartupConfig);
-				
-				// Now that the page is loaded, it is okay to start doing
-				// animation effects.
-				setTimeout( function() {
-					panelTm.setSpeed("fast", false);
-				}, 1000);
-			}
-			
-			window.addEventListener('WebComponentsReady', webComponentsReady);
-		</script>
-		
-		<!-- The following will enable Google Analytics if the .include file exists -->
-		<!--#include virtual="private/googleAnalytics.include"-->
-		<!-- End of Google Analytics -->
-		
-		<script type="text/javascript">
-			if (typeof ga == 'function') {
-				gaTrackEvent = function (category, action, label, value) {
-					console.log("Logging event: " + category);
-					ga('send', 'event', category, action, label, value);
-				};
-			} else {
-				gaTrackEvent = function (category, action, label, value) {};
-			}
-		</script>
-	</body>
+This web page makes use of computer code and software which is copyrighted by their respective owners.
+
+It is the maintainer's belief that this website, in its present form, constitutes fair use under the U.S. Copyright Law. See [[Copyrights &amp; Fair Use]] for the reasons.
+
+== Feedback ==
+
+For comments or reports of bugs and/or historical inaccuracies, write ''mlt4356-github@yahoo.com''
+
+<a href="/articles/Exhibits.html">Get Started!</a>
+<a href="/docs/copyrights.html">Copyrights &amp; Fair Use</a>
+<a href="/docs/more.html">technical information</a>
+<a href="/docs/credits.html">credits</a>
+
+</div>
+</body>
 </html>

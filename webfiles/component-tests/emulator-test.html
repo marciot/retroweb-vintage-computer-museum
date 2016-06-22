@@ -50,6 +50,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				margin-left:  auto;
 				margin-right: auto;
 			}
+			
+			.no-select {
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
 		</style>
 	</head>
 	<body>
@@ -57,34 +66,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		</div>
 		
 		<script type="text/javascript">
-			var query;
-			var Module;
-			var emuState;
-			var fileManager;
-			var popupTm, panelTm;
-			var popups, panel;
-			
-		    window.onerror = function(error) {
-				alert(error);
-			};
-
 			function webComponentsReady() {
 				createEmulator(document.querySelector("#main"));
-				
-				query       = parseQuery();
-				
-				Module;
-				emuState    = new EmulatorState();
-				fileManager = new EmscriptenFileManager();
-				
-				popupTm = new TransitionManager();
-				popups = new PopupManager(popupTm);
-				popups.add("popup-mouse-center");
-				popups.add("popup-rom-missing");
-				popups.add("popup-need-boot-media");
-				popups.add("popup-status");
-				popups.add("popup-uploader");
-				popups.add("popup-mac-eject-disk");
 				
 				var emulator = "pce-macplus";
 					fetchDataFromUrl("/startup.json", function(json) {
