@@ -78,7 +78,6 @@ function table_row(m,p) {
 	for(i=0; i<a.length; i++) {	
 		var args = a[i].match(modifierRegex);
 		var attr = "";
-		console.log(args);
 		if(args[2] == '^') {
 			attr += ' class="align-center"';
 		}
