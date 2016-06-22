@@ -42,6 +42,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	}
 	
 	namespace.query = parseQuery();
+	
+	/* The following hides the retroweb-markup. The reason we do this from JavaScript
+	   is that we want the content to be visible if the user has disabled JavaScript. */
+	var style = document.createElement("style");
+	style.appendChild(document.createTextNode(""));
+	document.head.appendChild(style);
+	style.sheet.insertRule("#retroweb-markup { display: none }", 0);
 })(window.RetroWeb = window.RetroWeb || {});
 
 if(!(RetroWeb.query.debug == "raw")) {

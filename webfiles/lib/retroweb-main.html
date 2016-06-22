@@ -32,9 +32,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	/* Expand up to 1600px, then center horizontally */
 	.horizontalExpandAndCenter {
-		position:     relative;
+		position:     absolute;
+		top:          5px;
+		left:         5px;
+		
 		width:        100%;
 		height:       100%;
+		background:   white;
 
 		max-width:    1600px;
 		margin-left:  auto;
@@ -49,11 +53,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		-ms-user-select: none;
 		user-select: none;
 	}
-
-	#retroweb-markup {
-		display: none;
-	}
 </style>
+
 
 <template id="retrowebTemplate">
 	<div class="horizontalExpandAndCenter no-select" id="main">
