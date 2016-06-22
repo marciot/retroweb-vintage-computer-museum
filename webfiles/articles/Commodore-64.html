@@ -3,25 +3,47 @@
 <html lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<title>RetroWeb Vintage Computer Museum - Commodore 64</title>
+<title>RetroWeb Vintage Computer Museum</title>
 </head>
 <body>
 <script type="text/javascript" src="/lib/bootstrap.js"></script>
 <link rel="stylesheet" href="/lib/nojs.css" type="text/css">
 <div id="retroweb-markup">
 
+{
+	"author" : "Marcio Teixeira",
+	"license" : "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+	"emulators" : ["jsmess-c64"]
+}
+
 = Commodore 64 =
 
 {
 "icons" : [
-		["subLOGIC Flight Simulator", "folder"],
-		["Flappy Bird", "folder"],
+		["subLOGIC Flight Simulator", "folder-dot"],
+		["Flappy Bird", "folder-dot"]
+	]
+}
+
+The Commodore 64 emulator is sluggish. The Flight Simulator and the Flappy bird demos run reasonably well.
+
+== Christmas Demo ==
+
+{
+"icons" : [
 		["Christmas Demo", "boot-floppy", "/disks/c64-christmas-demo.d64"]
 	]
 }
 
-<!--
-== Commodore 64 Quick Reference[1] ==
+The Christmas Demo looks very cool, but is rather difficult to get running because the emulated computer runs so slowly. If you wish to try running it, you will need some patience:
+
+* Click the "Christmas Demo" icon
+* At the READY prompt, type "load@christmas album@,8,1" very slowly. Wait for the system to echo each character before going to the next, as characters are often missed and you cannot go back if you make a mistake.
+* Wait a '''really''' long time for it to load.
+
+== Commodore 64 Quick Reference ==
+
+This handy reference[1] is for advanced users only
 
 |!3 Working with cassettes                                                                        |
 |! Desired action                                   |! Type                 |! What you'll see    |
@@ -36,7 +58,7 @@
 | To load a BASIC program from the disk             | load@filename@,8      | LOAD"filename",8    |
 | To load a machine language program at its address | load@filename@,8,1    | LOAD"filename",8,1  |
 | To load the first program from the disk<br>(useful if you're not sure of which is the correct one to load) | load@*@,8,1    | LOAD"*",8,1  |
-| To run the loaded program                         | run                   | RUN  |-->
+| To run the loaded program                         | run                   | RUN  |
 
 == About the Emulator ==
 
@@ -44,8 +66,7 @@
 	"icons" : [
 		["JSMESS Web Page",  "hyperlink", "http://jsmess.textfiles.com"],
 		["MESS Web Page",    "hyperlink", "http://www.mess.org"]
-	],
-	"class" : "float-right"
+	]
 }
 
 This emulator is from the JSMESS project, a JavaScript port of the MESS personal computer emulator collection.
@@ -53,6 +74,9 @@ This emulator is from the JSMESS project, a JavaScript port of the MESS personal
 == References ==
 
 # [http://www.progettoemma.net/mess/system.php?machine=c64c]
+
+<a href="subLOGIC-Flight-Simulator.html">subLOGIC Flight Simulator</a>
+<a href="Flappy-Bird.html">Flappy Bird</a>
 
 </div>
 </body>

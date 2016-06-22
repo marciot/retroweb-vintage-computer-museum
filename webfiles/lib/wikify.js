@@ -73,15 +73,16 @@ function preformatted(str) {
 
 function table_row(m,p) {
 	var a = p.split('|');
-	var modifierRegex = /^(!?)([>^]?)(\d*)(,?\d*)(.*)$/;
+	var modifierRegex = /^(!?)(&gt;|[\>^]?)(\d*)(,?\d*)(.*)$/;
 	var s = "";
 	for(i=0; i<a.length; i++) {	
 		var args = a[i].match(modifierRegex);
 		var attr = "";
+		console.log(args);
 		if(args[2] == '^') {
 			attr += ' class="align-center"';
 		}
-		if(args[2] == '>') {
+		if(args[2] == '>' || args[2] == '&gt;') {
 			attr += ' class="align-right"';
 		}
 		if(args[3] != '') {

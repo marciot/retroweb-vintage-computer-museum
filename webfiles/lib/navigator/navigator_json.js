@@ -68,6 +68,12 @@ function processJSONIcons( doc, json ) {
 	var icons = doc.createElement("x-icons");
 	if(json.hasOwnProperty("class")) {
 		icons.className = json["class"];
+	} else {
+		// If there are no className specified, automatically float right
+		// when there are one or two icons.
+		if(json.icons.length < 3) {
+			icons.className = "float-right";
+		}
 	}
 	expandJSONIconArrayToAnchors(doc, json.icons, icons);
 	return icons;

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<title>RetroWeb Vintage Computer Museum - subLOGIC Flight Simulator</title>
+<title>RetroWeb Vintage Computer Museum</title>
 </head>
 <body>
 <script type="text/javascript" src="/lib/bootstrap.js"></script>
@@ -38,7 +38,6 @@ The subLOGIC Flight Simulator was later licensed to Microsoft for sales on the I
 
 {
 	"icons" : [
-		["Old Flight Simulator History", "hyperlink",   "http://fshistory.simflight.com/"],
 		["Apple IIe Flight Sim 1",       "boot-floppy", "/disks/apple2-fs1.dsk"],
 		["Apple IIe Flight Sim II",      "boot-floppy", "/disks/apple2-fs2.dsk"]
 	]
@@ -50,12 +49,20 @@ The subLOGIC Flight Simulator was later licensed to Microsoft for sales on the I
 
 {
 	"icons" : [
-		["Old Flight Simulator History", "hyperlink",   "http://fshistory.simflight.com/"],
 		["C64 Flight Sim 2",             "boot-floppy", "/disks/c64-fs2.prg"]
 	]
 }
 
+To run subLOGIC Flight Simulator on the Commodore 64:
+
+* Click the "C64 Flight Sim 2" disk
 * At the "READY" prompt, type "run" (all lowercase).
+* Type ENTER
+
+<div class="set-class-hints">
+# Type '''slowly''' and '''delibrately''', waiting for each character to appear before going to the next. The emulator may occasionally miss keys, so you may need to press a key again.
+</div>
+
 </div>
 
 <div class="jsmess-trs80 hidden">
@@ -63,10 +70,24 @@ The subLOGIC Flight Simulator was later licensed to Microsoft for sales on the I
 
 {
 	"icons" : [
-		["Old Flight Simulator History", "hyperlink",   "http://fshistory.simflight.com/"],
 		["TRS-80 Flight Sim 1",          "boot-floppy", "/disks/trs80-fs1.dsk"]
 	]
 }
+
+A rea; TRS-80 has a physical switch to enable the use of floppy disks. Since we are running an emulator, we have to use a special sequence of keystrokes in order to access this switch. Please follow these directions:
+
+* Click the "TRS-80 Flight Sim 1" disk
+* Wait for the "MEMORY SIZE?" prompt
+* Click on the computer's screen
+* Hit ESC to bring up the emulator menu
+* Press TAB to bring up another menu
+* Hit the down arrow twice to select "Driver Configuration"
+* Press the right arrow to turn on Floppy Disk Drives
+* Press TAB
+* Press F3 to restart the computer (you will see a DOS screen shortly)
+* Press ESC
+
+You will be able to start the simulator. The controls do not seem to operate.
 </div>
 
 <div class="pce-ibmpc hidden">
@@ -76,7 +97,6 @@ This does not work
 
 {
 	"icons" : [
-		["Old Flight Simulator History", "hyperlink",   "http://fshistory.simflight.com/"],
 		["DOS Boot Disk",                "boot-hd",     "/disks/ibmpc-corruption8088-1.0.img"],
 		["IBM PC Flight Sim 1.00",       "floppy",      "/disks/ibmpc-fs100.img"],
 		["IBM PC Flight Sim 1.05",       "floppy",      "/disks/ibmpc-fs105.img"]
@@ -89,7 +109,6 @@ This does not work
 
 {
 	"icons" : [
-		["Old Flight Simulator History", "hyperlink",   "http://fshistory.simflight.com/"],
 		["Macintosh Flight Sim 1.05",    "boot-floppy", "/disks/mac-fs102.img"]
 	]
 }
@@ -109,13 +128,23 @@ The first Apple II demo disk contains an excellent flight manual. You should rea
 
 === Also available for: ===
 
+{
+	"icons" : [
+		["Old Flight Simulator History", "hyperlink",   "http://fshistory.simflight.com/"]
+	]
+}
+
 * [[Apple IIe]]
 * [[Commodore 64]]
 * [[Macintosh]]
-<!--* [[TRS-80|subLOGIC Flight Simulator?emulator=jsmess-trs80]]
-* [[IBM PC|subLOGIC Flight Simulator?emulator=pce-ibmpc-xt]] - Broken-->
+* [[TRS-80]]
+<!--* [[IBM PC|subLOGIC Flight Simulator?emulator=pce-ibmpc-xt]] - Broken-->
 
-== References ==
+=== See also: ===
+
+* [[Historic Software]]
+
+=== References ===
 
 # http://en.wikipedia.org/wiki/SubLOGIC_Flight_Simulator
 # http://fshistory.simflight.com/fsh/timeline.htm
@@ -123,6 +152,8 @@ The first Apple II demo disk contains an excellent flight manual. You should rea
 <a href="subLOGIC-Flight-Simulator.html?emulator=jsmess-apple2e">Apple IIe</a>
 <a href="subLOGIC-Flight-Simulator.html?emulator=jsmess-c64">Commodore 64</a>
 <a href="subLOGIC-Flight-Simulator.html?emulator=pce-macplus">Macintosh</a>
+<a href="subLOGIC-Flight-Simulator.html?emulator=jsmess-trs80">TRS-80</a>
+<a href="Historic-Software.html">Historic Software</a>
 
 </div>
 </body>
