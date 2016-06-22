@@ -30,6 +30,7 @@ ifce.setArgument("-resolution", "1024x768");
 ifce.setArgument("-nokeepaspect", "");
 ifce.setArgument("-autoframeskip", "");
 ifce.setArgument("-nosound", "");
+ifce.setArgument("-uimodekey", "ESC");
 
 ifce.createModule = function(module) {
 	EmulatorInterface.prototype.configModule.call(this, module); /* Call the superclass */
