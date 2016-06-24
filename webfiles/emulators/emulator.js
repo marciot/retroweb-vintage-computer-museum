@@ -17,38 +17,40 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-function EmulatorState() {
-	this.emuName = null;
-	this.emuConfig = null;
-	this.emuIfce = null;
+class EmulatorState {
+	constructor() {
+		this.emuName = null;
+		this.emuConfig = null;
+		this.emuIfce = null;
+		
+		this.loaded = false;
+		this.running = false;
+		this.gotRoms = false;
+		this.gotBootMedia = false;
+		this.floppyDrives = new Array();
+	}
 	
-	this.loaded = false;
-	this.running = false;
-	this.gotRoms = false;
-	this.gotBootMedia = false;
-	this.floppyDrives = new Array();
-	
-	this.setEmulator = function (emulator) {
+	setEmulator(emulator) {
 		this.emuName = emulator;
 	}
 
-	this.getEmulator = function() {
+	getEmulator() {
 		return this.emuName;
 	}
 	
-	this.setEmulatorInterface = function(ifce) {
+	setEmulatorInterface(ifce) {
 		this.emuIfce = ifce;
 	}
 	
-	this.getEmulatorInterface = function() {
+	getEmulatorInterface() {
 		return this.emuIfce;
 	}
 	
-	this.getConfig = function (emulator) {
+	getConfig(emulator) {
 		return this.emuConfig;
 	}
 	
-	this.waitForMedia = function(fileName, isBootable) {
+	waitForMedia(fileName, isBootable) {
 		showStatus("Loading...");
 		var me = this;
 		var waitFunc = function(remaining, depName) {
@@ -67,7 +69,7 @@ function EmulatorState() {
 		fileManager.setFileReadyCallback(waitFunc);
 	}
 	
-	this.configLoaded = function(config) {
+	configLoaded(config) {
 		this.emuConfig = config;
 		loadEmulatorResources();
 		if(!this.gotRoms) {
@@ -75,7 +77,7 @@ function EmulatorState() {
 		}
 	}
 	
-	this.syncEmscriptenFS = function(doMount) {
+	syncEmscriptenFS(doMount) {
 		var filesWritten = fileManager.syncEmscriptenFS();
 		console.log("Preparing disks...");
 		for(var i = 0; i < filesWritten.length; i++) {
@@ -86,26 +88,28 @@ function EmulatorState() {
 		}
 	}
 	
-	this.emscriptenPreInit = function() {
+	emscriptenPreInit() {
 		popups.close("popup-status");
 		this.syncEmscriptenFS(false);
 	}
 	
-	this.emscriptenPreRun = function() {
+	emscriptenPreRun() {
 		emuState.getEmulatorInterface().preRun();
 		this.running = true;
 	}
 	
-	this.romsLoaded = function() {
+	romsLoaded() {
 		this.gotRoms = true;
 		popups.close("popup-rom-missing");
 		popups.open("popup-need-boot-media");
 	}
-	this.bootMediaLoaded = function() {
+	
+	bootMediaLoaded() {
 		this.gotBootMedia = true;
 		popups.close("popup-need-boot-media");
 	}
-	this.requestRestart = function() {
+	
+	requestRestart() {
 		if (!this.gotRoms || !this.gotBootMedia) {
 			return;
 		}
@@ -118,16 +122,19 @@ function EmulatorState() {
 			emuState.getEmulatorInterface().reset();
 		}
 	}
-	this.isRunning = function() {
+	
+	isRunning() {
 		return this.running;
 	}
-	this.floppyMounted = function(fname) {
+	
+	floppyMounted(fname) {
 		if( !(fname in this.floppyDrives)) {
 			this.floppyDrives[fname] = {};
 		}
 		this.floppyDrives[fname].mounted = true;
 	}
-	this.isFloppyMounted = function(fname) {
+	
+	isFloppyMounted(fname) {
 		return this.floppyDrives.hasOwnProperty(fname) ? this.floppyDrives[fname].mounted : false;
 	}
 }
