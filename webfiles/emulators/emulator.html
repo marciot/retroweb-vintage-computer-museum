@@ -303,15 +303,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
 	// importDoc references this import's document
 	var emuImportDoc = document._currentScript.ownerDocument;
-		
-	/*function createEmulator(host) {
-		// Create a Shadow Root
-		var root = host.createShadowRoot();
-		var template = importDoc.getElementById('emulatorTemplate');
-		
-		var clone = document.importNode(template.content, true);
-		root.appendChild(clone);
-	}*/
 	
 	function setupHandlers() {
 		// Add tab index to ensure the canvas retains focus			
