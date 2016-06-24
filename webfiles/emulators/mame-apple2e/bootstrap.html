@@ -55,31 +55,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
 	/* Interface to RetroWeb Browser */
 
-	var ifce = createDefaultEmulatorInterface();
+	new class extends EmulatorInterface {
+		constructor() {
+			super();
+			this.setArgument("apple2ee", "");
+			this.setArgument("-verbose", "");
+			this.setArgument("-rompath", ".");
+			this.setArgument("-flop1", "fd1.DSK");
+			this.setArgument("-window", "");
+			this.setArgument("-resolution", "560x192");
+			this.setArgument("-nokeepaspect", "");
+			this.setArgument("-autoframeskip", "");
+			this.setArgument("-nosound", "");
+		}
 
-	ifce.setArgument("apple2ee", "");
-	ifce.setArgument("-verbose", "");
-	ifce.setArgument("-rompath", ".");
-	ifce.setArgument("-flop1", "fd1.DSK");
-	ifce.setArgument("-window", "");
-	ifce.setArgument("-resolution", "560x192");
-	ifce.setArgument("-nokeepaspect", "");
-	ifce.setArgument("-autoframeskip", "");
-	ifce.setArgument("-nosound", "");
-
-	ifce.configModule = function(module) {
-		EmulatorInterface.prototype.configModule.call(this, module); /* Call the superclass */
+		configModule(module) {
+			super.configModule(module)
 		
-		module.SDL_numSimultaneouslyQueuedBuffers = 5;
-		module.screenIsReadOnly = true;
-		module.canvas.width  = 280;
-		module.canvas.height = 192;
-	}
+			module.SDL_numSimultaneouslyQueuedBuffers = 5;
+			module.screenIsReadOnly = true;
+			module.canvas.width  = 280;
+			module.canvas.height = 192;
+		}
 
-	ifce.getDrives = function() {
-		return {
-			"hd1" : null,
-			"fd1" : "fd1.DSK"
+		getDrives() {
+			return {
+				"hd1" : null,
+				"fd1" : "fd1.DSK"
+			}
 		}
 	}
 

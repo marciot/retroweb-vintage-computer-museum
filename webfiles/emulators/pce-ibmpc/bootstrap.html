@@ -57,47 +57,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	/* Interface to RetroWeb Browser */
 
-	var ifce = createDefaultEmulatorInterface();
-	ifce.setArgument("-c", "pce-config.cfg");
-	ifce.setArgument("-g", "cga");
-	ifce.setArgument("-r", "");
-
-	ifce.getDrives = function() {
-		return {
-			"hd1" : "hd1.img",
-			"fd1" : "fd1.disk",
-			"fd2" : "fd2.disk"
+	new class extends EmulatorInterface {
+		constructor() {
+			super();
+			this.setArgument("-c", "pce-config.cfg");
+			this.setArgument("-g", "cga");
+			this.setArgument("-r", "");
 		}
-	}
 
-	ifce.mountDisk = function(diskFile) {
-		console.log("Mounting " + diskFile);
-		var driveId = diskFile.match(/fd(\d)+/);
-		if(driveId) {
-			pcSetMessage ("emu.disk.insert", (driveId[1] - 1) + ":" + diskFile);
+		getDrives() {
+			return {
+				"hd1" : "hd1.img",
+				"fd1" : "fd1.disk",
+				"fd2" : "fd2.disk"
+			}
 		}
-	}
 
-	ifce.reset = function() {
-		pcSetMessage ("emu.reset", "");
-	}
+		mountDisk(diskFile) {
+			console.log("Mounting " + diskFile);
+			var driveId = diskFile.match(/fd(\d)+/);
+			if(driveId) {
+				pcSetMessage ("emu.disk.insert", (driveId[1] - 1) + ":" + diskFile);
+			}
+		}
 
-	ifce.cassetteAction = function(action) {
-		switch(action) {
-			case "record":
-				pcSetMessage ("emu.tape.save", "end");
-				break;
-			case "playback":
-				pcSetMessage ("emu.tape.load", "0");
-				break;
-			case "rewind":
-				pcSetMessage ("emu.tape.rewind", "");
-				break;
-			case "append":
-				pcSetMessage ("emu.tape.append", "");
-				break;
-			default:
-				alert("Unknown action: " + action);
+		reset() {
+			pcSetMessage ("emu.reset", "");
+		}
+
+		cassetteAction(action) {
+			switch(action) {
+				case "record":
+					pcSetMessage ("emu.tape.save", "end");
+					break;
+				case "playback":
+					pcSetMessage ("emu.tape.load", "0");
+					break;
+				case "rewind":
+					pcSetMessage ("emu.tape.rewind", "");
+					break;
+				case "append":
+					pcSetMessage ("emu.tape.append", "");
+					break;
+				default:
+					alert("Unknown action: " + action);
+			}
 		}
 	}
 

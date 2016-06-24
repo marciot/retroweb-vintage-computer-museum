@@ -76,6 +76,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	);
 	
 	/* Interface to RetroWeb Browser */
+	
+	new class extends EmulatorInterface {
+		constructor() {
+			super();
+		}
+
+		getDrives() {
+			return {
+				"hd1" : "hd1.img",
+				"fd1" : "fd1.disk",
+				"fd2" : "fd2.disk"
+			}
+		}
+
+		mountDisk(diskFile) {
+			console.log("Mounting " + diskFile);
+			var data = fileManager.getFileBinaryData(diskFile);
+			var driveId = diskFile.match(/fd(\d)+/);
+			insertDisk(data, parseInt(driveId[1])-1);
+		}
+
+		reset() {
+			pcSetMessage ("emu.reset", "");
+		}
+	}
+	
+	/* Helper functions */
 
 	function insertDisk(data, n) {
 		console.log("Got Disk:" + data.byteLength );
@@ -87,26 +114,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			cmd:'insert',
 			unit:n
 		});				
-	}
-
-	var ifce = createDefaultEmulatorInterface();
-
-	ifce.getDrives = function() {
-		return {
-			"hd1" : "hd1.img",
-			"fd1" : "fd1.disk",
-			"fd2" : "fd2.disk"
-		}
-	}
-
-	ifce.mountDisk = function(diskFile) {
-		console.log("Mounting " + diskFile);
-		var data = fileManager.getFileBinaryData(diskFile);
-		var driveId = diskFile.match(/fd(\d)+/);
-		insertDisk(data, parseInt(driveId[1])-1);
-	}
-
-	ifce.reset = function() {
-		pcSetMessage ("emu.reset", "");
 	}
 </script>

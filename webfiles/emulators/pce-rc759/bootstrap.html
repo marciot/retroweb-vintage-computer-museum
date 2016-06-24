@@ -60,26 +60,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
 	/* Interface to RetroWeb Browser */
 
-	var ifce = createDefaultEmulatorInterface();
-	ifce.setArgument("-c", "pce-config.cfg");
-	ifce.setArgument("-r", "");
-
-	ifce.getDrives = function() {
-		return {
-			"hd1" : "h1.img",
-			"fd1" : "fd1.disk",
-			"fd2" : "fd2.disk"		
+	new class extends EmulatorInterface {
+		constructor() {
+			super();
+			this.setArgument("-c", "pce-config.cfg");
+			this.setArgument("-r", "");
 		}
-	}
 
-	ifce.mountDisk = function(diskFile) {
-		console.log("Mounting " + diskFile);
-		var driveId = diskFile.match(/fd(\d)+/)[1];
-		rcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
-	}
+		getDrives() {
+			return {
+				"hd1" : "h1.img",
+				"fd1" : "fd1.disk",
+				"fd2" : "fd2.disk"		
+			}
+		}
 
-	ifce.reset = function() {
-		rcSetMessage ("emu.reset", "");
+		mountDisk(diskFile) {
+			console.log("Mounting " + diskFile);
+			var driveId = diskFile.match(/fd(\d)+/)[1];
+			rcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
+		}
+
+		reset() {
+			rcSetMessage ("emu.reset", "");
+		}
 	}
 
 	/* Helper functions */
