@@ -205,12 +205,13 @@ function showStatus(text) {
 
 function mountDriveFromUrl(drive, url, isBootable) {
 	if(isBootable && emuState.isRunning()) {
-		alert("Cannot change the boot media once the computer has already restarted. Please reload the page to reset");
-	} else {
-		var dstName = emuState.getEmulatorInterface().getFileNameForDrive(drive, url);
-		fileManager.writeFileFromUrl(dstName, url, isBootable);
-		emuState.waitForMedia(dstName, isBootable);
+		alert("This disk will be inserted, but if you want to boot from it you will need to reload the web page to reset the computer.");
+		isBootable = false;
 	}
+
+	var dstName = emuState.getEmulatorInterface().getFileNameForDrive(drive, url);
+	fileManager.writeFileFromUrl(dstName, url);
+	emuState.waitForMedia(dstName, isBootable);
 }
 
 function getFileFromUrl(url, file) {
@@ -227,10 +228,10 @@ function uploadFloppy(drive, isBootable) {
 	document.getElementById('uploader-text').innerHTML = "Select floppy disk image";
 	document.getElementById('uploader-ok-btn').onclick = function(evt) {
 		popups.close("popup-uploader");
-		
+
 		var file = document.getElementById('uploader-file').files[0];
 		var dstName = emuState.getEmulatorInterface().getFileNameForDrive(drive, file.name);
-		
+
 		fileManager.writeFileFromFile(dstName, file);
 		emuState.waitForMedia(dstName, isBootable);
 		return false;
