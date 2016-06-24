@@ -17,6 +17,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+/* Experimental code for detecting serial port data */
+function registerFileObserver(file) {
+	var lastSize;
+
+	function pollFile() {
+		var stat = FS.stat(file);
+		if(lastSize != stat.size) {
+			console.log("Size of " + file + " changed. New size:" , stat.size);
+			lastSize = stat.size;
+		}
+	}
+
+	setInterval(pollFile, 3000);
+}
+
 /* Interface to RetroWeb Browser */
 
 var ifce = createDefaultEmulatorInterface();
@@ -37,13 +52,19 @@ ifce.prepareDisk = function(disk) {
 	fixVMacDisks(disk);
 }
 
+ifce.preRun = function() {
+	// Poll for changes to the serial port files
+	registerFileObserver("ser_a.out");
+	registerFileObserver("ser_b.out");
+}
+
 ifce.mountDisk = function(diskFile) {
 	console.log("Mounting " + diskFile);
 	var driveId = diskFile.match(/fd(\d)+/)[1];
 	this.prepareDisk(diskFile);
-	if(emuState.isFloppyMounted("fd" + driveId) && showEjectWarning) {
-		showEjectWarning = false;
-		popups.open("popup-mac-eject-disk");		
+	if(emuState.isFloppyMounted("fd" + driveId) && ifce.showEjectWarning) {
+		ifce.showEjectWarning = false;
+		popups.open("popup-mac-eject-disk");
 	}
 	if(emuState.isRunning()) {
 		emuState.floppyMounted("fd" + driveId);
