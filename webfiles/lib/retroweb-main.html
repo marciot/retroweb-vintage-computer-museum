@@ -90,6 +90,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 			createEmulator(document.querySelector("#main"));
 			createNavigator(document.querySelector("#sidepanel"));
+			populateEmulatorList();
 
 			fetchDataFromUrl("/startup.json", processStartupConfig);
 		}

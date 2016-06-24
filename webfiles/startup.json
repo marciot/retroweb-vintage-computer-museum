@@ -1,11 +1,9 @@
 {
 	"startup-config" : {
 		"version"     : 1.0,
-		"initial-doc" : "/articles/Introduction",
 		"emulators" : {
 			"pce-ibmpc" : {
 				"name" : "IBM PC Model 5150",
-				"menu" : "IBM PC Model 5150 (w/ cassette interface)",
 				"pre" : ["/skins/ibm5160.css", "/emulators/pce-ibmpc/glue.js"],
 				"run" : ["/emulators/pce-ibmpc/pce-ibmpc.js"],
 				"preload-files" : [
@@ -17,7 +15,6 @@
 			},
 			"pce-ibmpc-xt" : {
 				"name" : "IBM PC Model 5160",
-				"menu" : "IBM PC Model 5160 (IBM PC XT)",
 				"pre" : ["/skins/ibm5160.css", "/emulators/pce-ibmpc/glue.js"],
 				"run" : ["/emulators/pce-ibmpc/pce-ibmpc.js"],
 				"preload-files" : [
@@ -61,7 +58,6 @@
 			},
 			"pce-rc759" : {
 				"name" : "RC759 Piccoline",
-				"menu" : "Regnecentralen RC759 Piccoline",
 				"pre" : ["/skins/rc759.css", "/emulators/pce-rc759/glue.js" ],
 				"run" : ["/emulators/pce-rc759/pce-rc759.js"],
 				"mkdir" : [ "/roms" ],
@@ -91,7 +87,6 @@
 			},
 			"jsmess-trs80" : {
 				"name" : "TRS-80 Model 1",
-				"menu" : "Tandy/RadioShack TRS-80 Model 1",
 				"pre" : ["/skins/trs80-model1.css", "/emulators/jsmess-trs80/glue.js"],
 				"run" : ["/emulators/jsmess-trs80/jsmess-trs80.js"],
 				"mkdir" : [ "/cfg" ],
@@ -101,7 +96,6 @@
 			},
 			"sae-amiga" : {
 				"name" : "Amiga 500",
-				"menu" : "Commodore Amiga 500",
 				"pre" : [
 					"/skins/amiga500.css",
 					"/emulators/sae-amiga/glue.js",
@@ -135,7 +129,6 @@
 			},
 			"xerox-star" : {
 				"name" : "Xerox Star",
-				"menu" : "Xerox 8010 Information System (Xerox Star)",
 				"pre"  : ["/skins/xerox-star.css"],
 				"run"  : ["/emulators/xerox-star/xerox-star.js"],
 				"preload-files" : []

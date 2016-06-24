@@ -17,16 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-
-/* Emulator drop-down menu */
-function addEmulator(emulator, title) {
-	var label  = document.createTextNode(title);
-	var option = document.createElement("option");
-	option.appendChild(label);
-	option.value = emulator;
-	document.getElementById("emulator-select").appendChild(option);
-}
-
 /* onChange handler for the emulator drop-down menu */
 function onEmulatorChange() {
 	var emulatorMenu = document.getElementById('emulator-select');
@@ -55,28 +45,8 @@ function LoadException(message) {
    this.name = "LoadException";
 }
 
-function loadEmulatorChoices(json) {
-	var startupConfig = json["startup-config"];
-	var emulators = [];
-	for(e in startupConfig.emulators) {
-		var emu = startupConfig.emulators[e];
-		emu.key = e;
-		if(!emu.hasOwnProperty("menu")) {
-			emu.menu = emu.name;
-		} else if(!emu.hasOwnProperty("name")) {
-			emu.name = emu.menu;
-		}
-		if(!emu.hasOwnProperty("emulator-doc")) {
-			emu["emulator-doc"] = "/articles/" + emu.name;
-		}
-		emulators.push(emu);
-	}
-	emulators.sort(function(a,b){return a.menu.localeCompare(b.menu);});
-	for(var i = 0; i < emulators.length; ++i) {
-		addEmulator(emulators[i].key, emulators[i].menu);
-	}
-	
-	return RetroWeb.query.platform || RetroWeb.query.emulator || emulators[Math.floor((Math.random()*emulators.length))].key;
+function loadEmulatorChoices(json) {	
+	return ;
 }
 
 function loadEmulatorConfig(json, emulator) {
@@ -122,9 +92,9 @@ function processStartupConfig(json) {
 		throw new LoadException ("Index fails startup-config JSON format validation");
 	}
 	
-	var emulator = loadEmulatorChoices(json);
+	var chosenEmulator = RetroWeb.query.platform || RetroWeb.query.emulator || chooseEmulator();
 	
-	loadEmulatorConfig(json, emulator);
+	loadEmulatorConfig(json, chosenEmulator);
 	
 	navInitialDoc();
 }
