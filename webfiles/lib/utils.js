@@ -53,6 +53,11 @@ function loadResource(filename, async){
 		fileref.setAttribute("rel", "stylesheet")
 		fileref.setAttribute("type", "text/css")
 		fileref.setAttribute("href", filename)
+	} else if (endsWith(filename, ".html") || endsWith(filename, ".html.gz")) {
+		//if filename is an external HTML file
+		var fileref = document.createElement("link")
+		fileref.setAttribute("rel", "import")
+		fileref.setAttribute("href", filename)
 	}
 	if (typeof fileref != "undefined") {
 		document.getElementsByTagName("head")[0].appendChild(fileref)

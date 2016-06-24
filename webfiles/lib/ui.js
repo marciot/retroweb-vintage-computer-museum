@@ -45,60 +45,6 @@ function LoadException(message) {
    this.name = "LoadException";
 }
 
-function loadEmulatorChoices(json) {	
-	return ;
-}
-
-function loadEmulatorConfig(json, emulator) {
-	var startupConfig = json["startup-config"];
-	emuState.setEmulator(emulator);
-	emulatorConfig = startupConfig.emulators[emulator];
-	
-	if (emulatorConfig == undefined) {
-		throw new LoadException ("The startup.json file does not contain a stanza corresponding to this emulator");
-	}
-		
-	var dirsToMake = emulatorConfig["mkdir"];
-	if(dirsToMake) {
-		for (var i = 0; i < dirsToMake.length; ++i) {
-			var path = dirsToMake[i];
-			fileManager.makeDir(path);
-		}
-	}
-	
-	function filePart(path) {
-		return path.substr(path.lastIndexOf("/")+1);
-	}
-		
-	var filesToMount = emulatorConfig["preload-files"];
-	for (var i = 0; i < filesToMount.length; ++i) {
-		if (filesToMount[i].charAt(0) == '#') continue;
-		var parts = filesToMount[i].split(/\s+->\s+/);
-		var url = parts[0];
-		var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
-		fileManager.writeFileFromUrl('/' + name, url);
-	}
-	emuState.romsLoaded();
-	emuState.configLoaded(startupConfig);
-}
-
-function processStartupConfig(json) {
-	var startupConfig = json["startup-config"];
-	if (
-		typeof startupConfig == 'undefined' ||
-		typeof startupConfig.version == 'undefined' ||
-		typeof startupConfig.emulators == 'undefined'
-	) {
-		throw new LoadException ("Index fails startup-config JSON format validation");
-	}
-	
-	var chosenEmulator = RetroWeb.query.platform || RetroWeb.query.emulator || chooseEmulator();
-	
-	loadEmulatorConfig(json, chosenEmulator);
-	
-	navInitialDoc();
-}
-
 /* This object handles visibility transitions from one object to the next
  */
 function TransitionManager() {

@@ -85,7 +85,7 @@ function processJSONIcons( doc, json ) {
  *	{"emulators" : ["sae-amiga"]}
  */
 function processJSONEmulators( docs, json ) {
-	if(json.emulators.indexOf(emuState.getEmulator()) == -1 && !RetroWeb.query.emulator) {
+	if(json.emulators.indexOf(emuState.getEmulator()) == -1) {
 		navTo("?emulator=" + json.emulators[0], 'redirect');
 	}
 }

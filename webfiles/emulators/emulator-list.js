@@ -8,8 +8,7 @@ function addEmulator(emulator, title) {
 	option.appendChild(label);
 	option.value = emulator;
 	document.getElementById("emulator-select").appendChild(option);
-	console.log("addEmulator: ", emulator, title);
-	
+
 	emulatorsChoices.push(emulator);
 }
 

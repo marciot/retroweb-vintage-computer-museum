@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 function EmulatorState() {
 	this.emuName = null;
-	this.startupConfig = null;
+	this.emuConfig = null;
 	this.emuIfce = null;
 	
 	this.loaded = false;
@@ -44,12 +44,8 @@ function EmulatorState() {
 		return this.emuIfce;
 	}
 	
-	this.getInitialDoc = function () {
-		return this.startupConfig["initial-doc"];
-	}
-	
 	this.getConfig = function (emulator) {
-		return this.startupConfig.emulators[emulator || this.emuName];
+		return this.emuConfig;
 	}
 	
 	this.waitForMedia = function(fileName, isBootable) {
@@ -72,7 +68,7 @@ function EmulatorState() {
 	}
 	
 	this.configLoaded = function(config) {
-		this.startupConfig = config;
+		this.emuConfig = config;
 		loadEmulatorResources();
 		if(!this.gotRoms) {
 			popups.open("popup-rom-missing");
@@ -168,6 +164,32 @@ function createEmscriptenModule() {
 	return module;
 }
 
+function processEmulatorConfig(emulatorConfig) {
+	var dirsToMake = emulatorConfig["mkdir"];
+	if(dirsToMake) {
+		for (var i = 0; i < dirsToMake.length; ++i) {
+			var path = dirsToMake[i];
+			fileManager.makeDir(path);
+		}
+	}
+	
+	function filePart(path) {
+		return path.substr(path.lastIndexOf("/")+1);
+	}
+		
+	var filesToMount = emulatorConfig["preload-files"];
+	for (var i = 0; i < filesToMount.length; ++i) {
+		if (filesToMount[i].charAt(0) == '#') continue;
+		var parts = filesToMount[i].split(/\s+->\s+/);
+		var url = parts[0];
+		var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
+		fileManager.writeFileFromUrl('/' + name, url);
+	}
+	emuState.romsLoaded();
+	emuState.configLoaded(emulatorConfig);
+	navInitialDoc();
+}
+
 function loadEmulatorResources() {
 	console.log("Loading emulator resources");
 	var config = emuState.getConfig();
@@ -189,7 +211,6 @@ function loadEmulator() {
 function restartComputer() {
 	emuState.requestRestart();
 }
-
 
 function showStatus(text) {
 	var statusElement = document.getElementById('status');

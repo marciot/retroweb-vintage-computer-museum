@@ -17,8 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <style>
-	/* Layout of screen */
-
 	.background {
 		/* Anchor to the top-right of the document */
 		position: absolute;
@@ -215,10 +213,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 <template id="emulatorTemplate">
 	<div class="background" id="background">
-		<!-- Main rendering canvas for emulator: -->
-		
 		<div class="screen">
 			<canvas id="screen" oncontextmenu="event.preventDefault()">
+				<!-- Main rendering canvas for emulator: -->
 			</canvas>
 			
 			<!-- Pop-up windows that overlay the screen area: -->
@@ -273,24 +270,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			
 		</div>
 	</div>
-		
-	<br>
-	
-	<table id="ui-buttons" class="ui-buttons">
-		<tr>
-			<td class="ui-btn">
-				<img class="btn-icon" src="/ui-artwork/document.png" onclick="panels.open('navigator-panel');"><br>
-				<span class="btn-label">Show Navigator</span>
-			</td>
-			<td class="ui-btn">
-				<img class="btn-icon" src="/ui-artwork/power.png" onclick="restartComputer()"><br>
-				<span class="btn-label">Restart Computer</span>
-			</td>
-		</tr>
-	</table>
-		
-	<div class="sidepanel" id="sidepanel">
-	</div>
 </template>
 
 <script type="text/javascript" src="/lib/emscripten-fs-utils.js"></script>
@@ -324,7 +303,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	var fileManager;
 	var popupTm, popups;
 	
-	function createEmulator(host) {
+	function createEmulator(host, emulator) {
 		emuState    = new EmulatorState();
 		fileManager = new EmscriptenFileManager();
 				
@@ -343,5 +322,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		popups.add("popup-status");
 		popups.add("popup-uploader");
 		popups.add("popup-mac-eject-disk");
+		
+		// Bootstrap the emulator
+		emuState.setEmulator(emulator);		
+		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
 	}
 </script>

@@ -1,0 +1,115 @@
+<!--
+RetroWeb Browser
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+
+<style>
+	.background {
+		width:    1003px;
+		height:   1101px;
+		background:url(/emulators/skins/apple2e.jpg);
+		background-repeat:no-repeat;
+		background-size:100%;
+		margin-right: -150px;
+	}
+
+	.screen {
+		left:      265px;
+		top:       150px;
+		width:     420px;
+		height:    288px;
+	}
+
+	.sidepanel {
+		margin:       0;
+		margin-right: 700px;
+	}
+</style>
+
+<script type="text/javascript">
+	processEmulatorConfig(
+		{
+			"name" : "Apple IIe",
+			"pre" : [],
+			"run" : ["/emulators/mame-apple2e/jsmess-apple2e.js"],
+			"preload-files" : [
+				"/roms/a2diskii.zip",
+				"/roms/apple2ee.zip"
+			]
+		}
+	);
+	
+	/* Interface to RetroWeb Browser */
+
+	var ifce = createDefaultEmulatorInterface();
+
+	ifce.setArgument("apple2ee", "");
+	ifce.setArgument("-verbose", "");
+	ifce.setArgument("-rompath", ".");
+	ifce.setArgument("-flop1", "fd1.DSK");
+	ifce.setArgument("-window", "");
+	ifce.setArgument("-resolution", "560x192");
+	ifce.setArgument("-nokeepaspect", "");
+	ifce.setArgument("-autoframeskip", "");
+	ifce.setArgument("-nosound", "");
+
+	ifce.configModule = function(module) {
+		EmulatorInterface.prototype.configModule.call(this, module); /* Call the superclass */
+		
+		module.SDL_numSimultaneouslyQueuedBuffers = 5;
+		module.screenIsReadOnly = true;
+		module.canvas.width  = 280;
+		module.canvas.height = 192;
+	}
+
+	ifce.getDrives = function() {
+		return {
+			"hd1" : null,
+			"fd1" : "fd1.DSK"
+		}
+	}
+
+	/* JSMESS specific glue code (not sure what this does) */
+
+	var JSMESS = JSMESS || {};
+
+	JSMESS._readySet = false;
+	JSMESS._readyList = [];
+	JSMESS._runReadies = function() {
+		if (JSMESS._readyList) {
+			for (var r=0; r < JSMESS._readyList.length; r++) {
+				JSMESS._readyList[r].call(window, []);
+			};
+			JSMESS._readyList = [];
+		};
+	};
+	JSMESS._readyCheck = function() {
+		if (JSMESS.running) {
+			JSMESS._runReadies();
+		} else {
+			JSMESS._readySet = setTimeout(JSMESS._readyCheck, 10);
+		};
+	};
+	JSMESS.ready = function(r) {
+		if (JSMESS.running) {
+			r.call(window, []);
+		} else {
+			JSMESS._readyList.push(function() { return r.call(window, []); } );
+			if (!(JSMESS._readySet)) JSMESS._readyCheck();
+		};
+	};
+</script>
