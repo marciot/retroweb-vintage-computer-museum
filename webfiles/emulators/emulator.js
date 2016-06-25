@@ -19,14 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class EmulatorState {
 	constructor() {
-		this.emuName = null;
-		this.emuConfig = null;
-		this.emuIfce = null;
+		this.emuName      = null;
+		this.emuConfig    = null;
+		this.emuIfce      = null;
 		
-		this.loaded = false;
-		this.running = false;
-		this.gotRoms = false;
+		this.loaded       = false;
+		this.running      = false;
+		this.gotRoms      = false;
 		this.gotBootMedia = false;
+		this.downloading  = false;
 		this.floppyDrives = new Array();
 	}
 	
@@ -40,6 +41,7 @@ class EmulatorState {
 	
 	setEmulatorInterface(ifce) {
 		this.emuIfce = ifce;
+		this.stateChanged();
 	}
 	
 	getEmulatorInterface() {
@@ -49,9 +51,34 @@ class EmulatorState {
 	getConfig(emulator) {
 		return this.emuConfig;
 	}
+
+	setStatus(text) {
+		document.getElementById("status-text").innerHTML = text;
+	}
+	
+	stateChanged() {
+		console.log("State transition:");
+		console.log("  gotRoms: ",             this.gotRoms);
+		console.log("  gotConfig: ",           this.emuConfig != false);
+		console.log("  gotBootMedia: ",        this.gotBootMedia);
+		console.log("  downloading: ",         this.downloading);
+		
+		popups.toggle("popup-rom-missing",     !this.gotRoms);
+		popups.toggle("popup-need-boot-media", !this.gotBootMedia);
+		popups.toggle("popup-status",          this.downloading);
+		popups.apply();
+		
+		if(this.gotRoms && this.emuConfig && this.emuIfce) {
+			var callback = emulatorCallbacks.onEmulatorLoaded;
+			emulatorCallbacks.onEmulatorLoaded = null;
+			if(callback) callback();
+		}
+	}
 	
 	waitForMedia(fileName, isBootable) {
-		showStatus("Loading...");
+		this.setStatus("Downloading...");
+		this.downloading = true;
+		this.stateChanged();
 		var me = this;
 		var waitFunc = function(remaining, depName) {
 			if(isBootable && depName == fileName) {
@@ -63,7 +90,8 @@ class EmulatorState {
 				} else if(me.gotBootMedia) {
 					me.requestRestart();
 				}
-				showStatus(false);
+				me.downloading = false;
+				me.stateChanged();
 			}
 		}
 		fileManager.setFileReadyCallback(waitFunc);
@@ -72,9 +100,7 @@ class EmulatorState {
 	configLoaded(config) {
 		this.emuConfig = config;
 		loadEmulatorResources();
-		if(!this.gotRoms) {
-			popups.open("popup-rom-missing");
-		}
+		this.stateChanged();
 	}
 	
 	syncEmscriptenFS(doMount) {
@@ -89,7 +115,6 @@ class EmulatorState {
 	}
 	
 	emscriptenPreInit() {
-		popups.close("popup-status");
 		this.syncEmscriptenFS(false);
 	}
 	
@@ -98,15 +123,26 @@ class EmulatorState {
 		this.running = true;
 	}
 	
+	emscriptenDependencies(remaining) {
+		/*alert("Emscripten dependencies");
+		if(remaining > 0) {
+			popups.open("popup-status");
+		} else {
+			popups.close("popup-status");
+		}*/
+	}
+	
+	emscriptenStatus(status) {
+	}
+	
 	romsLoaded() {
 		this.gotRoms = true;
-		popups.close("popup-rom-missing");
-		popups.open("popup-need-boot-media");
+		this.stateChanged();
 	}
 	
 	bootMediaLoaded() {
 		this.gotBootMedia = true;
-		popups.close("popup-need-boot-media");
+		this.stateChanged();
 	}
 	
 	requestRestart() {
@@ -114,10 +150,10 @@ class EmulatorState {
 			return;
 		}
 		if (!this.loaded) {
-			showStatus("Starting emulator...");
-			// Need to delay a bit otherwise the status will not update
-			setTimeout(loadEmulator, 100);
+			loadEmulator();
 			this.loaded = true;
+			this.stateChanged();
+			this.setStatus("Starting emulator...");
 		} else if(this.running) {
 			emuState.getEmulatorInterface().reset();
 		}
@@ -140,12 +176,9 @@ class EmulatorState {
 }
 
 function createEmscriptenModule() {
-	var statusElement = document.getElementById('status');
-	var progressElement = document.getElementById('progress');
-	var macStatus = document.getElementById('popup-status');
 	var module = {
 		preRun: [function () {emuState.emscriptenPreRun();}],
-		postRun: [],
+		postRun: [emulatorCallbacks.onEmulatorRunning],
 		preInit: [function () {emuState.emscriptenPreInit();}],
 		arguments: [],
 		noInitialRun: false,
@@ -158,16 +191,12 @@ function createEmscriptenModule() {
 			console.log(text);
 		},
 		canvas: document.getElementById('screen'),
-		setStatus: function(text) {console.log("Emscripten Status Update: " + text);},
+		setStatus: function(status) {emuState.emscriptenStatus(status);},
 		totalDependencies: 0,
-		monitorRunDependencies: function(left) {
-			if(left > 0) {
-				popups.open("popup-status");
-			} else {
-				popups.close("popup-status");
-			}
-		}
+		monitorRunDependencies: function(left) {emuState.emscriptenDependencies(left);}
 	};
+	// Give the emulator a chance to modify the Emscripten module
+	emuState.getEmulatorInterface().configModule(module);
 	return module;
 }
 
@@ -194,7 +223,6 @@ function processEmulatorConfig(emulatorConfig) {
 	}
 	emuState.romsLoaded();
 	emuState.configLoaded(emulatorConfig);
-	navInitialDoc();
 }
 
 function loadEmulatorResources() {
@@ -207,9 +235,8 @@ function loadEmulatorResources() {
 
 function loadEmulator() {
 	console.log("Loading emulator scripts");
-	var config = emuState.getConfig();
 	Module = createEmscriptenModule();
-	emuState.getEmulatorInterface().configModule(Module);
+	var config = emuState.getConfig();
 	for(var i = 0; i < config.run.length; i++) {
 		loadResource(config.run[i], true);
 	}
@@ -217,16 +244,6 @@ function loadEmulator() {
 
 function restartComputer() {
 	emuState.requestRestart();
-}
-
-function showStatus(text) {
-	var statusElement = document.getElementById('status');
-	if (!text) {
-		popups.close("popup-status");
-	} else {
-		statusElement.innerHTML = text;
-		popups.open("popup-status");
-	}
 }
 
 /* File management - Most of the heavy-lifting is done by the EmscriptenFileManager object */

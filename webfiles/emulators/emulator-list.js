@@ -12,6 +12,12 @@ function addEmulator(emulator, title) {
 	emulatorsChoices.push(emulator);
 }
 
+/* onChange handler for the emulator drop-down menu */
+function onEmulatorChange() {
+	var emulatorMenu = document.getElementById('emulator-select');
+	navTo("/?emulator=" + emulatorMenu.options[emulatorMenu.selectedIndex].value);
+}
+
 function chooseEmulator() {
 	return emulatorsChoices[Math.floor((Math.random()*emulatorsChoices.length))];
 }

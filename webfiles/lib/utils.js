@@ -166,3 +166,70 @@ function simulateKeyAction(type, keyCode, charCode, shifted) {
 	var evt = window.crossBrowser_initKeyboardEvent(type, {"key": keyCode, "char": charCode, "shiftKey" : shifted});
     document.dispatchEvent(evt);
 }
+
+/* This object manages popup dialog boxes. Since our pop-up boxes are translucent,
+ * this object ensures that only the topmost popup box is visible at once.
+ */
+class PopupManager {
+	constructor() {
+		this.visibleElement = null;
+		this.speed          = "fast";
+		this.popupBoxes     = [];
+	}
+	
+	_hide(el) {
+		//$(el).stop(true, true).fadeOut(this.speed);
+		$(el).hide();
+	}
+
+	_show(el) {
+		//$(el).stop(true, true).fadeIn(this.speed);
+		$(el).show();
+	}
+	
+	setVisibleElement(el) {
+		if(this.visibleElement != el) {
+			if(this.visibleElement) {
+				this._hide(this.visibleElement);
+			}
+			if(el) {
+				this._show(el);
+			}
+			this.visibleElement = el;
+		}
+	}
+	
+	add(id) {
+		this.popupBoxes.push({"id" : id, "open" : false});
+	}
+	
+	setSpeed(speed) {
+		this.speed = speed;
+	}
+
+	apply() {
+		var topmost = null;
+		for (var i = 0; i < this.popupBoxes.length; ++i) {
+			if (this.popupBoxes[i].open) {
+				topmost = this.popupBoxes[i].id;
+			}
+		}
+		this.setVisibleElement(document.getElementById(topmost));
+	}
+	
+	toggle(id, state) {
+		for (var i = 0; i < this.popupBoxes.length; ++i) {
+			if (id == this.popupBoxes[i].id) {
+				this.popupBoxes[i].open = state;
+			}
+		}
+	}
+	
+	open(id) {
+		this.toggle(id, true);
+	}
+	
+	close(id) {
+		this.toggle(id, false);
+	}
+}

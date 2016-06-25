@@ -128,7 +128,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	var navImportDoc = document._currentScript.ownerDocument;
 	
 	// Navigator global variables
-	var panelTm;
 	var panels;
 	
 	function createNavigator(host) {
@@ -137,14 +136,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		host.appendChild(clone);
 		
 		// Initialize handler for dialog boxes
-		panelTm = new TransitionManager();
-		panels = new PopupManager(panelTm);
+		panels = new PopupManager();
 		panels.add("navigator-panel");
 		panels.open("navigator-panel");
+		panels.apply();
 		
 		// Start doing animation effects after the page loads
 		setTimeout( function() {
-			panelTm.setSpeed("fast", false);
+			panels.setSpeed("fast");
 		}, 1000);
 		
 		navAddPopStateHandler();

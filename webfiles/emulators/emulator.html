@@ -222,7 +222,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			
 			<div id="popup-status" class="popup">
 				<div class="spinner"></div>
-				<div class="emscripten" id="status">Downloading...</div>
+				<div class="emscripten" id="status-text">Downloading...</div>
 				<div class="emscripten">
 					<progress value="0" max="100" id="progress" hidden=0></progress>  
 				</div>
@@ -301,30 +301,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	var Module;
 	var emuState;
 	var fileManager;
-	var popupTm, popups;
+	var popups;
+	var emulatorCallbacks = {
+		onEmulatorLoaded:  function() {},
+		onEmulatorRunning: function() {},
+	};
 	
 	function createEmulator(host, emulator) {
 		emuState    = new EmulatorState();
 		fileManager = new EmscriptenFileManager();
-				
+
 		var template = emuImportDoc.getElementById('emulatorTemplate');
 		var clone = document.importNode(template.content, true);
 		host.appendChild(clone);
-		
+
 		setupHandlers();
-		
+
 		// Initialize handler for dialog boxes
-		popupTm = new TransitionManager();
-		popups = new PopupManager(popupTm);
+		popups = new PopupManager();
 		popups.add("popup-mouse-center");
 		popups.add("popup-rom-missing");
 		popups.add("popup-need-boot-media");
 		popups.add("popup-status");
 		popups.add("popup-uploader");
 		popups.add("popup-mac-eject-disk");
-		
+
 		// Bootstrap the emulator
 		emuState.setEmulator(emulator);		
 		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
+
+		return emulatorCallbacks;
 	}
 </script>
