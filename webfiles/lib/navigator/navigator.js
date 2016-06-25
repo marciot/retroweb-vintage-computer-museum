@@ -126,8 +126,9 @@ function renderWikiContent() {
 	 * called by the wiki template when the browser is done rendering the wiki content.
 	 */
 	finishFormatting = function() {
-		processJSONContent(element.contentWindow.document, element.contentWindow.document.body);
-		expandRetrowebIcons(element.contentWindow.document);
+		var doc = element.contentWindow.document;
+		processJSONContent(doc, doc.body);
+		expandRetrowebIcons(doc, doc);
 		navAttachHandlersToAnchors(element.contentWindow.document);
 		element.contentWindow.applyDynamicFormatting(emuState.getEmulator());
 	}
@@ -137,6 +138,7 @@ function renderWikiContent() {
 	element.contentWindow.document.write('<html><body>'+html+'</html></body>');
 	element.contentWindow.document.close();
 	$("html,body", element.contentWindow.document).scrollTop(0);
+	RetroWeb.addIOSErrorHandler(element.contentWindow);
 }
 
 function parseQueryFromUrl(url) {

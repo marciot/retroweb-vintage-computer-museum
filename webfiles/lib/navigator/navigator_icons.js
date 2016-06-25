@@ -49,15 +49,15 @@ function setDefaultIconClass(e) {
  * </div>
  *
  */
-function expandRetrowebIcons(element) {
+function expandRetrowebIcons(doc, element) {
 	// Wrap A with LI tags
 	$("x-icons>A",element).each(function(i,e) {
 		setDefaultIconClass(e);
-		$(e).replaceWith($('<li>'+e.outerHTML+'</li>'));
+		$(e).replaceWith($('<li>'+e.outerHTML+'</li>',doc));
 	});
 	// Replace the x-icons with DIV, OL
 	$("x-icons",element).each(function(i,e) {
-		$(e).replaceWith('<div class="icons ' + e.className + '"><ol>'+e.innerHTML+'</ol></div>');
+		$(e).replaceWith($('<div class="icons ' + e.className + '"><ol>'+e.innerHTML+'</ol></div>',doc));
 	});
 }
 
