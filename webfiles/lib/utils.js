@@ -64,22 +64,6 @@ function loadResource(filename, async){
 	}
 }
 
-/* Shows/hide an element. When hidden it does not take any
- * space in the layout.
- */
-function toggleElementDisplay (id, showIt) {
-	var element = document.getElementById(id);
-	if(!element) {
-		throw new Exception("toggleElementDisplay: No element " + id);
-		return;
-	}
-	if(showIt) {
-		element.style.display = 'block';
-	} else {
-		element.style.display = 'none';
-	}
-}
-
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -173,63 +157,35 @@ function simulateKeyAction(type, keyCode, charCode, shifted) {
 class PopupManager {
 	constructor() {
 		this.visibleElement = null;
-		this.speed          = "fast";
 		this.popupBoxes     = [];
 	}
-	
-	_hide(el) {
-		//$(el).stop(true, true).fadeOut(this.speed);
-		$(el).hide();
-	}
 
-	_show(el) {
-		//$(el).stop(true, true).fadeIn(this.speed);
-		$(el).show();
-	}
-	
 	setVisibleElement(el) {
 		if(this.visibleElement != el) {
 			if(this.visibleElement) {
-				this._hide(this.visibleElement);
+				$(this.visibleElement).hide();
 			}
 			if(el) {
-				this._show(el);
+				$(el).show();
 			}
 			this.visibleElement = el;
 		}
 	}
-	
+
 	add(id) {
 		this.popupBoxes.push({"id" : id, "open" : false});
 	}
-	
-	setSpeed(speed) {
-		this.speed = speed;
-	}
 
-	apply() {
+	setVisibility(id, state) {
 		var topmost = null;
 		for (var i = 0; i < this.popupBoxes.length; ++i) {
+			if (id == this.popupBoxes[i].id) {
+				this.popupBoxes[i].open = state;
+			}
 			if (this.popupBoxes[i].open) {
 				topmost = this.popupBoxes[i].id;
 			}
 		}
 		this.setVisibleElement(document.getElementById(topmost));
-	}
-	
-	toggle(id, state) {
-		for (var i = 0; i < this.popupBoxes.length; ++i) {
-			if (id == this.popupBoxes[i].id) {
-				this.popupBoxes[i].open = state;
-			}
-		}
-	}
-	
-	open(id) {
-		this.toggle(id, true);
-	}
-	
-	close(id) {
-		this.toggle(id, false);
 	}
 }

@@ -117,7 +117,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<select id="emulator-select" onchange="onEmulatorChange()">
 				<option>Change computer type...</option>
 			</select>
-			<img src="/ui-artwork/appbar.close.svg"      onclick="panels.close('navigator-panel');">
+			<img src="/ui-artwork/appbar.close.svg"      onclick="panels.setVisibility('navigator-panel', false);">
 			<img src="/ui-artwork/appbar.arrow.left.svg" onclick="navGoBack()">
 			<img src="/ui-artwork/appbar.home.svg"       onclick="navGoHome()">
 		</div>
@@ -145,7 +145,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	</script>
 </template>
 
-<script type="text/javascript" src="/lib/utils.js"></script>
+<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script type="text/javascript" src="/lib/wikify.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator_json.js"></script>
@@ -169,13 +169,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		// Initialize handler for dialog boxes
 		panels = new PopupManager();
 		panels.add("navigator-panel");
-		panels.open("navigator-panel");
-		panels.apply();
-
-		// Start doing animation effects after the page loads
-		setTimeout( function() {
-			panels.setSpeed("fast");
-		}, 1000);
+		panels.setVisibility("navigator-panel", true);
 
 		navAddPopStateHandler();
 

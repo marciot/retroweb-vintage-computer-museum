@@ -303,8 +303,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	var fileManager;
 	var popups;
 	var emulatorCallbacks = {
-		onEmulatorLoaded:  function() {},
-		onEmulatorRunning: function() {},
+		onEmulatorConfigured: function() {},
+		onEmulatorLoaded:     function() {},
+		onEmulatorRunning:    function() {}
 	};
 	
 	function createEmulator(host, emulator) {

@@ -56,22 +56,30 @@ class EmulatorState {
 		document.getElementById("status-text").innerHTML = text;
 	}
 	
+	// Calls a callback and clears the callback so it won't be called multiple times.
+	callCallback(name) {
+		var callback = emulatorCallbacks[name];
+		emulatorCallbacks[name] = null;
+		if(callback) callback();
+	}
+
 	stateChanged() {
-		console.log("State transition:");
+		/*console.log("State transition:");
 		console.log("  gotRoms: ",             this.gotRoms);
 		console.log("  gotConfig: ",           this.emuConfig != false);
 		console.log("  gotBootMedia: ",        this.gotBootMedia);
-		console.log("  downloading: ",         this.downloading);
+		console.log("  downloading: ",         this.downloading);*/
 		
-		popups.toggle("popup-rom-missing",     !this.gotRoms);
-		popups.toggle("popup-need-boot-media", !this.gotBootMedia);
-		popups.toggle("popup-status",          this.downloading);
-		popups.apply();
-		
+		popups.setVisibility("popup-rom-missing",     !this.gotRoms);
+		popups.setVisibility("popup-need-boot-media", !this.gotBootMedia);
+		popups.setVisibility("popup-status",          this.downloading);
+
+		if(this.emuConfig) {
+			this.callCallback("onEmulatorConfigured");
+		}
+
 		if(this.gotRoms && this.emuConfig && this.emuIfce) {
-			var callback = emulatorCallbacks.onEmulatorLoaded;
-			emulatorCallbacks.onEmulatorLoaded = null;
-			if(callback) callback();
+			this.callCallback("onEmulatorLoaded");
 		}
 	}
 	
@@ -272,7 +280,7 @@ function uploadFloppy(drive, isBootable) {
 	}
 	document.getElementById('uploader-text').innerHTML = "Select floppy disk image";
 	document.getElementById('uploader-ok-btn').onclick = function(evt) {
-		popups.close("popup-uploader");
+		popups.setVisibility("popup-uploader", false);
 
 		var file = document.getElementById('uploader-file').files[0];
 		var dstName = emuState.getEmulatorInterface().getFileNameForDrive(drive, file.name);
@@ -281,7 +289,7 @@ function uploadFloppy(drive, isBootable) {
 		emuState.waitForMedia(dstName, isBootable);
 		return false;
 	}
-	popups.open("popup-uploader");
+	popups.setVisibility("popup-uploader", true);
 }
 
 function uploadFile(dstName, what, isBootable) {
@@ -292,13 +300,13 @@ function uploadFile(dstName, what, isBootable) {
 	}
 	document.getElementById('uploader-text').innerHTML = "Please select a " + what;
 	document.getElementById('uploader-ok-btn').onclick = function(evt) {
-		popups.close("popup-uploader");
+		popups.setVisibility("popup-uploader", false);
 		var file = document.getElementById('uploader-file').files[0];
 		fileManager.writeFileFromFile(dstName, file);
 		emuState.waitForMedia(dstName, isBootable);
 		return false;
 	}
-	popups.open("popup-uploader");
+	popups.setVisibility("popup-uploader", true);
 }
 
 function downloadFloppy(drive) {
