@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<!--<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>-->
+<script src="/lib/jquery-1.12.4.min.js">
 <script type="text/javascript" src="/lib/utils.js"></script>
 
 <style>
@@ -81,24 +82,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-	/* There is no longer a way to show the developer console on iOS devices, so make
-	 * it so errors become alerts.
-	 *
-	 * Detection code from:
-	 *   http://stackoverflow.com/questions/9038625/detect-if-device-is-ios
-	 */
-	if(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-		window.onerror = function(error) {
-			alert(error);
-		};
-	}
-
 	(function(namespace){
 		// The following is requires for the webcomponents polyfill
 		document._currentScript = document._currentScript || document.currentScript;
 
 		// importDoc references this import's document
 		var importDoc = document._currentScript.ownerDocument;
+
+		/* There is no longer a way to show the developer console on iOS devices, so make
+		 * it so errors become alerts.
+		 *
+		 * Detection code from:
+		 *   http://stackoverflow.com/questions/9038625/detect-if-device-is-ios
+		 */
+		namespace.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+		namespace.addIOSErrorHandler = function (where) {
+			if(namespace.isIOS) {
+				where.onerror = function(error) {
+					alert(error);
+				};
+			}
+		}
 
 		function webComponentsReady() {
 			// Stamp the HTML inside the body of the main page
@@ -126,6 +130,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		}
 
 		window.addEventListener('WebComponentsReady', webComponentsReady);
+
+		namespace.addIOSErrorHandler(window);
 	})(window.RetroWeb = window.RetroWeb || {});
 </script>
 

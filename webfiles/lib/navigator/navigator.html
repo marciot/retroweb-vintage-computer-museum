@@ -16,90 +16,120 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
-<style>
-	#emulator-select {
-		float: right;
-		background: transparent;
-		padding: 5px;
-	}
-
-	.navigator-panel {
-		display: none;
-	}
-
-	.title-bar {
-		padding: 5px;
-	}
-
-	.title-bar IMG {
-		vertical-align: middle;
-		width:  40px;
-		height: 40px;
-		opacity: 0.5;
-	}
-
-	.sidepanel-window {
-		border-radius: 10px;
-		opacity: 0.95;
-		border-width: 1px;
-		border-style: solid;
-		border-color: #777;
-		display: none;
-		padding: 2px;
-		background-color: #eef;
-		box-shadow: 5px 5px 10px rgba(0,0,0,0.35);
-	}
-
-	.navigator {
-		height: 80%;
-	}
-
-	#html-iframe {
-		width: 100%;
-		height: 100%;
-	}
-
-	/* Fancy fade effect for HTML viewer iframe */
-
-	.fade-effect {
-		position: relative;
-		height: 90%;
-	}
-
-	.fade-effect-top {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 15px;
-		height: 25px;
-		background: linear-gradient(#eef, rgba(255,255,255,0));
-	}
-
-	.fade-effect-bottom {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 15px;
-		height: 50px;
-		background: linear-gradient(rgba(255,255,255,0),#eef);
-	}
-</style>
 
 <template id="navigatorTemplate">
+	<style>
+		.sidepanel-window {
+			border-radius:   10px;
+			opacity:          0.95;
+			border-width:     1px;
+			border-style:     solid;
+			border-color:     #777;
+			display:          none;
+			padding:          2px;
+			background-color: #eef;
+			box-shadow:       5px 5px 10px rgba(0,0,0,0.35);
+		}
+
+		.navigator {
+			position:   relative;
+			height:     80%;
+			top:        0px;
+			overflow:   hidden;
+		}
+
+		.navigator-panel {
+			display: none;
+		}
+
+		.title-bar {
+			padding:        5px;
+			min-height:     40px;
+		}
+
+		.title-bar IMG {
+			vertical-align: middle;
+			width:          40px;
+			height:         40px;
+			opacity:        0.5;
+		}
+
+		#emulator-select {
+			float:      right;
+			background: transparent;
+			padding:    5px;
+		}
+
+		#navigator-content {
+			height:         90%;
+		}
+
+		#html-iframe {
+			max-width:  100%;
+			width:      100%;
+			height:     100%;
+		}
+
+		/* Fix for iOS bug where the iframe resizes to the size of the content.
+		 * For iOS only, we make the parent DIV scrollable.
+		 * http://stackoverflow.com/questions/16937070/iframe-size-with-css-on-ios
+		 */
+		#scroll-for-iOS {
+			width:      100%;
+			height:     100%;
+		}
+
+		.iOSHack #scroll-for-iOS {
+			overflow:                   auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		/* Fancy fade-out decoration for HTML viewer iframe. This works
+		 * by superimposing a gradient above and below DIV.fade-effect
+		*/
+
+		.fade-effect {
+			position:   relative;
+			width:      100%;
+			height:     100%;
+		}
+
+		.fade-effect-top {
+			position: absolute;
+			top:        0;
+			left:       0;
+			right:      15px;
+			height:     25px;
+			background: linear-gradient(#eef, rgba(255,255,255,0));
+		}
+
+		.fade-effect-bottom {
+			position:   absolute;
+			bottom:     0;
+			left:       0;
+			right:      15px;
+			height:     50px;
+			background: linear-gradient(rgba(255,255,255,0),#eef);
+		}
+	</style>
 	<div id="navigator-panel" class="navigator sidepanel-window">
 		<div class="title-bar">
 			<select id="emulator-select" onchange="onEmulatorChange()">
 				<option>Change computer type...</option>
 			</select>
-			<img class="btn-icon" src="/ui-artwork/appbar.close.svg" onclick="panels.close('navigator-panel');">
-			<img class="btn-icon" src="/ui-artwork/appbar.arrow.left.svg" onclick="navGoBack()">
-			<img class="btn-icon" src="/ui-artwork/appbar.home.svg" onclick="navGoHome()">
+			<img src="/ui-artwork/appbar.close.svg"      onclick="panels.close('navigator-panel');">
+			<img src="/ui-artwork/appbar.arrow.left.svg" onclick="navGoBack()">
+			<img src="/ui-artwork/appbar.home.svg"       onclick="navGoHome()">
 		</div>
-		<div class="fade-effect">
-			<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="auto" src="about:blank">
-			</iframe>
-			<div class="fade-effect-top"></div>
-			<div class="fade-effect-bottom"></div>
+		<div id="navigator-content">
+			<div class="fade-effect">
+				<div id="scroll-for-iOS">
+					<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="yes" src="about:blank">
+					</iframe>
+				</div>
+				<div class="fade-effect-top"></div>
+				<div class="fade-effect-bottom"></div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -107,7 +137,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <template id="wikiTemplate">
 	<link rel="stylesheet" type="text/css" href="/lib/navigator/docs.css">
 	<link rel="stylesheet" type="text/css" href="/lib/navigator/icons.css">
-	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script type="text/javascript" src="/lib/navigator/docs.js"></script>
 	$WIKI_CONTENT
 	<script type="text/javascript">
@@ -115,6 +145,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	</script>
 </template>
 
+<script type="text/javascript" src="/lib/utils.js"></script>
 <script type="text/javascript" src="/lib/wikify.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator_json.js"></script>
@@ -123,29 +154,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <script>
 	// The following is requires for the webcomponents polyfill
 	document._currentScript = document._currentScript || document.currentScript;
-	
+
 	// importDoc references this import's document
 	var navImportDoc = document._currentScript.ownerDocument;
-	
+
 	// Navigator global variables
 	var panels;
-	
+
 	function createNavigator(host) {
 		var template = navImportDoc.getElementById('navigatorTemplate');
 		var clone = document.importNode(template.content, true);
 		host.appendChild(clone);
-		
+
 		// Initialize handler for dialog boxes
 		panels = new PopupManager();
 		panels.add("navigator-panel");
 		panels.open("navigator-panel");
 		panels.apply();
-		
+
 		// Start doing animation effects after the page loads
 		setTimeout( function() {
 			panels.setSpeed("fast");
 		}, 1000);
-		
+
 		navAddPopStateHandler();
+
+		if(RetroWeb.isIOS) {
+			$("#navigator-panel").addClass("iOSHack");
+		}
 	}
 </script>
