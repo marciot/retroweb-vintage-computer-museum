@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+var processEmulatorConfig = null;
+
 class EmulatorState {
 	constructor(emulator) {
 		this.emulator     = emulator;
@@ -198,9 +200,43 @@ class Emulator {
 		this.state       = emuState    = new EmulatorState(this);
 		this.fileManager = fileManager = new EmscriptenFileManager();
 
-		// Bootstrap the emulator
+		/* Bootstrap the emulator by loading "bootstrap.html". This file will call
+		 * the global function processEmulatorConfig. We create this function here
+		 * and bind it to this object.
+		 */
+		function createGlobalCallback(emulator) {
+			processEmulatorConfig = function(config) {
+				emulator.processConfig(config);
+			};
+		}
+		createGlobalCallback(this);
 		this.state.setEmulator(emulator);
 		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
+	}
+
+	processConfig(config) {
+		var dirsToMake = config["mkdir"];
+		if(dirsToMake) {
+			for (var i = 0; i < dirsToMake.length; ++i) {
+				var path = dirsToMake[i];
+				this.fileManager.makeDir(path);
+			}
+		}
+
+		function filePart(path) {
+			return path.substr(path.lastIndexOf("/")+1);
+		}
+
+		var filesToMount = config["preload-files"];
+		for (var i = 0; i < filesToMount.length; ++i) {
+			if (filesToMount[i].charAt(0) == '#') continue;
+			var parts = filesToMount[i].split(/\s+->\s+/);
+			var url = parts[0];
+			var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
+			this.fileManager.writeFileFromUrl('/' + name, url);
+		}
+		this.state.romsLoaded();
+		this.state.configLoaded(config);
 	}
 
 	preloadResources() {
@@ -224,109 +260,103 @@ class Emulator {
 	restart() {
 		this.state.requestRestart();
 	}
-}
 
-function processEmulatorConfig(emulatorConfig) {
-	var dirsToMake = emulatorConfig["mkdir"];
-	if(dirsToMake) {
-		for (var i = 0; i < dirsToMake.length; ++i) {
-			var path = dirsToMake[i];
-			fileManager.makeDir(path);
+	/* The cassette actions allow you to play, record, rewind or append to the tape */
+
+	cassetteAction(action) {
+		if(!this.state.isRunning()) {
+			alert("The emulator must be running before you use this action.");
+			return;
 		}
+		this.state.getEmulatorInterface().cassetteAction(action);
 	}
+
+	/* This function lets you mount a file into the emulator from an URL */
 	
-	function filePart(path) {
-		return path.substr(path.lastIndexOf("/")+1);
-	}
-		
-	var filesToMount = emulatorConfig["preload-files"];
-	for (var i = 0; i < filesToMount.length; ++i) {
-		if (filesToMount[i].charAt(0) == '#') continue;
-		var parts = filesToMount[i].split(/\s+->\s+/);
-		var url = parts[0];
-		var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
-		fileManager.writeFileFromUrl('/' + name, url);
-	}
-	emuState.romsLoaded();
-	emuState.configLoaded(emulatorConfig);
-}
+	mountDriveFromUrl(drive, url, isBootable) {
+		if(isBootable && this.state.isRunning()) {
+			alert("This disk will be inserted, but if you want to boot from it you will need to reload the web page to reset the computer.");
+			isBootable = false;
+		}
 
-/* File management - Most of the heavy-lifting is done by the EmscriptenFileManager object */
-
-function mountDriveFromUrl(drive, url, isBootable) {
-	if(isBootable && emuState.isRunning()) {
-		alert("This disk will be inserted, but if you want to boot from it you will need to reload the web page to reset the computer.");
-		isBootable = false;
+		var dstName = this.state.getEmulatorInterface().getFileNameForDrive(drive, url);
+		this.fileManager.writeFileFromUrl(dstName, url);
+		this.state.waitForMedia(dstName, isBootable);
 	}
 
-	var dstName = emuState.getEmulatorInterface().getFileNameForDrive(drive, url);
-	fileManager.writeFileFromUrl(dstName, url);
-	emuState.waitForMedia(dstName, isBootable);
-}
+	/* This function lets you load a file into the emulator from an URL */
 
-function getFileFromUrl(url, file) {
-	fileManager.writeFileFromUrl(file, url);
-	emuState.waitForMedia(file);
-}
-
-function uploadFloppy(drive, isBootable) {
-	if(!window.FileReader) {
-		// Browser is not compatible
-		alert("Your web browser does not support this feature");
-		return;
+	getFileFromUrl(url, file) {
+		this.fileManager.writeFileFromUrl(file, url);
+		this.state.waitForMedia(file);
 	}
-	document.getElementById('uploader-text').innerHTML = "Select floppy disk image";
-	document.getElementById('uploader-ok-btn').onclick = function(evt) {
-		popups.setVisibility("popup-uploader", false);
 
-		var file = document.getElementById('uploader-file').files[0];
-		var dstName = emuState.getEmulatorInterface().getFileNameForDrive(drive, file.name);
+	/* The upload actions allow you to upload modified files from your local computer into
+	 * the Emscripten FS. When these methods are called, a dialog box will allow the user
+	 * to select a file or floppy to upload. */
 
-		fileManager.writeFileFromFile(dstName, file);
-		emuState.waitForMedia(dstName, isBootable);
-		return false;
+	uploadFloppy(drive, isBootable) {
+		if(!window.FileReader) {
+			// Browser is not compatible
+			alert("Your web browser does not support this feature");
+			return;
+		}
+		document.getElementById('uploader-text').innerHTML = "Select floppy disk image";
+		document.getElementById('uploader-ok-btn').onclick = function(evt) {
+			popups.setVisibility("popup-uploader", false);
+
+			var file = document.getElementById('uploader-file').files[0];
+			var dstName = this.state.getEmulatorInterface().getFileNameForDrive(drive, file.name);
+
+			this.fileManager.writeFileFromFile(dstName, file);
+			this.state.waitForMedia(dstName, isBootable);
+			return false;
+		}
+		popups.setVisibility("popup-uploader", true);
 	}
-	popups.setVisibility("popup-uploader", true);
-}
 
-function uploadFile(dstName, what, isBootable) {
-	if(!window.FileReader) {
-		// Browser is not compatible
-		alert("Your web browser does not support this feature");
-		return;
+	uploadFile(dstName, what, isBootable) {
+		if(!window.FileReader) {
+			// Browser is not compatible
+			alert("Your web browser does not support this feature");
+			return;
+		}
+		document.getElementById('uploader-text').innerHTML = "Please select a " + what;
+		document.getElementById('uploader-ok-btn').onclick = function(evt) {
+			popups.setVisibility("popup-uploader", false);
+			var file = document.getElementById('uploader-file').files[0];
+			this.fileManager.writeFileFromFile(dstName, file);
+			this.state.waitForMedia(dstName, isBootable);
+			return false;
+		}
+		popups.setVisibility("popup-uploader", true);
 	}
-	document.getElementById('uploader-text').innerHTML = "Please select a " + what;
-	document.getElementById('uploader-ok-btn').onclick = function(evt) {
-		popups.setVisibility("popup-uploader", false);
-		var file = document.getElementById('uploader-file').files[0];
-		fileManager.writeFileFromFile(dstName, file);
-		emuState.waitForMedia(dstName, isBootable);
-		return false;
+
+	/* The download actions allow you to download modified files from the Emscripten FS to
+	 * your local computer. */
+
+	downloadFloppy(drive) {
+		var fileName = this.state.getEmulatorInterface().getFileNameForDrive(drive, null);
+		if(typeof FS == 'undefined') {
+			alert("The emulator must be initialized");
+			return;
+		}
+		saveEmscriptenFile(FS, fileName);
 	}
-	popups.setVisibility("popup-uploader", true);
-}
 
-function downloadFloppy(drive) {
-	var fileName = emuState.getEmulatorInterface().getFileNameForDrive(drive, null);
-	if(typeof FS == 'undefined') {
-		alert("The emulator must be initialized");
-		return;
-	}	
-	saveEmscriptenFile(FS, fileName);
-}
-
-function downloadFile(file) {
-	if(typeof FS == 'undefined') {
-		alert("The emulator must be initialized");
-		return;
-	}	
-	saveEmscriptenFile(FS, file);
-}
-
-function cassetteAction(action) {
-	if(!emuState.isRunning()) {
-		alert("The emulator must be running before you use this action.");
-		return;
+	downloadFile(file) {
+		if(typeof FS == 'undefined') {
+			alert("The emulator must be initialized");
+			return;
+		}
+		saveEmscriptenFile(FS, file);
 	}
-	emuState.getEmulatorInterface().cassetteAction(action);
 }
+
+
+
+
+
+
+
+

@@ -75,14 +75,15 @@ function implicitUrlFromName(name) {
 	return name.replace(/ /g,'-')+".html";
 }
 
-function navFetchDriveFromUrl(name, drive, url, isBootable) {
-	gaTrackEvent("disk-mounted", name);
-	mountDriveFromUrl(drive, url, isBootable);
-}
-
 function navProcessIconClick(name, type, param, opts) {
 	opts = opts ? JSON.parse(opts) : {};
 	type = type ? type : "folder";
+
+	function mountDriveFromUrl(name, drive, url, isBootable) {
+		gaTrackEvent("disk-mounted", name);
+		emulator.mountDriveFromUrl(drive, url, isBootable);
+	}
+
 	switch(type) {
 		case "doc":
 		case "folder":
@@ -92,11 +93,11 @@ function navProcessIconClick(name, type, param, opts) {
 			break;
 		case "boot-hd":
 			processBootOptions(opts);
-			navFetchDriveFromUrl(name, "hd1", param, true);
+			mountDriveFromUrl(name, "hd1", param, true);
 			break;
 		case "boot-floppy":
 			processBootOptions(opts);
-			navFetchDriveFromUrl(name, "fd1", param, true);
+			mountDriveFromUrl(name, "fd1", param, true);
 			break;
 		case "boot-rom":
 		case "power":
@@ -106,29 +107,29 @@ function navProcessIconClick(name, type, param, opts) {
 			break;
 		case "floppy":
 			if(emuState.isRunning()) {
-				navFetchDriveFromUrl(name, (opts && opts.drive) ? opts.drive : "fd1", param, false);
+				mountDriveFromUrl(name, (opts && opts.drive) ? opts.drive : "fd1", param, false);
 			} else {
 				alert("Please boot the computer using a boot disk first");
 			}
 			break;
 		case "upload-floppy":
 			gaTrackEvent("disk-mounted", "local-floppy");
-			uploadFloppy("fd1", true);
+			emulator.uploadFloppy("fd1", true);
 			break;
 		case "download-floppy":
-			downloadFloppy("fd1");
+			emulator.downloadFloppy("fd1");
 			break;
 		case "download-file":
-			downloadFile(param);
+			emulator.downloadFile(param);
 			break;
 		case "upload-file":
-			uploadFile(param, "cassette file (.cas)");
+			emulator.uploadFile(param, "cassette file (.cas)");
 			break;
 		case "get-file":
-			getFileFromUrl(param, opts.saveAs);
+			emulator.getFileFromUrl(param, opts.saveAs);
 			break;
 		case "cassette":
-			cassetteAction(param);
+			emulator.cassetteAction(param);
 			break;
 		case "hyperlink":
 			window.open(param);
