@@ -56,11 +56,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 <template id="retrowebTemplate">
 	<div class="horizontalExpandAndCenter no-select">
-	
 		<div id="emulator">
 			<!-- The emulator gets inserted here -->
 		</div>
-		
 		<table id="ui-buttons" class="ui-buttons">
 			<tr>
 				<td class="ui-btn">
@@ -68,12 +66,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					<span class="btn-label">Show Navigator</span>
 				</td>
 				<td class="ui-btn">
-					<img class="btn-icon" src="/ui-artwork/power.png" onclick="restartComputer()"><br>
+					<img class="btn-icon" src="/ui-artwork/power.png" onclick="emulator.restart()"><br>
 					<span class="btn-label">Restart Computer</span>
 				</td>
 			</tr>
 		</table>
-			
 		<div class="sidepanel" id="sidepanel">
 			<!-- The navigator gets inserted here -->
 		</div>
@@ -81,6 +78,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
+	// Global variables for RetroWeb
+
+	var emulator = null;
+
 	(function(namespace){
 		// The following is requires for the webcomponents polyfill
 		document._currentScript = document._currentScript || document.currentScript;
@@ -112,17 +113,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 			createNavigator(document.getElementById("sidepanel"));
 			populateEmulatorList();
-			
+
 			var whichEmulator = RetroWeb.query.emulator || chooseEmulator();
-			
+
 			// jsmess has been renamed to mame
 			whichEmulator = whichEmulator.replace("jsmess", "mame");
 
-			var emulator = createEmulator(
+			emulator = createEmulator(
 				document.getElementById("emulator"),
 				whichEmulator
 			);
-			
+
 			emulator.onEmulatorConfigured = function() {
 				navInitialDoc();
 			}

@@ -18,16 +18,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 class EmulatorState {
-	constructor() {
+	constructor(emulator) {
+		this.emulator     = emulator;
 		this.emuName      = null;
 		this.emuConfig    = null;
 		this.emuIfce      = null;
 		
-		this.loaded       = false;
-		this.running      = false;
 		this.gotRoms      = false;
 		this.gotBootMedia = false;
 		this.downloading  = false;
+		this.started      = false;
+		this.running      = false; // Emscripten preinit called. Okay to manipulate files
 		this.floppyDrives = new Array();
 	}
 	
@@ -63,7 +64,12 @@ class EmulatorState {
 		if(callback) callback();
 	}
 
-	stateChanged() {
+	/* This method should be called after one of the state variables has been
+	 * changed. The primary role for this method is to show/hide the status
+	 * dialog boxes. It may also invoke callbacks. In certain contexts, this
+	 * is unsafe, so the the caller may set unsafeForCallbacks to true
+	 */
+	stateChanged(unsafeForCallbacks) {
 		/*console.log("State transition:");
 		console.log("  gotRoms: ",             this.gotRoms);
 		console.log("  gotConfig: ",           this.emuConfig != false);
@@ -72,14 +78,18 @@ class EmulatorState {
 		
 		popups.setVisibility("popup-rom-missing",     !this.gotRoms);
 		popups.setVisibility("popup-need-boot-media", !this.gotBootMedia);
-		popups.setVisibility("popup-status",          this.downloading);
+		popups.setVisibility("popup-status",          this.downloading || (this.started && !this.running));
 
-		if(this.emuConfig) {
-			this.callCallback("onEmulatorConfigured");
-		}
+		if(!unsafeForCallbacks) {
+			/* Dispatch callbacks if it is safe to do so */
 
-		if(this.gotRoms && this.emuConfig && this.emuIfce) {
-			this.callCallback("onEmulatorLoaded");
+			if(this.emuConfig) {
+				this.callCallback("onEmulatorConfigured");
+			}
+
+			if(this.gotRoms && this.emuConfig && this.emuIfce) {
+				this.callCallback("onEmulatorLoaded");
+			}
 		}
 	}
 	
@@ -94,7 +104,7 @@ class EmulatorState {
 			}
 			if(remaining == 0) {
 				if(me.running) {
-					me.syncEmscriptenFS(true); 
+					me.syncEmscriptenFS(true);
 				} else if(me.gotBootMedia) {
 					me.requestRestart();
 				}
@@ -107,19 +117,15 @@ class EmulatorState {
 	
 	configLoaded(config) {
 		this.emuConfig = config;
-		loadEmulatorResources();
+		this.emulator.preloadResources();
 		this.stateChanged();
 	}
 	
 	syncEmscriptenFS(doMount) {
-		var filesWritten = fileManager.syncEmscriptenFS();
-		console.log("Preparing disks...");
-		for(var i = 0; i < filesWritten.length; i++) {
-			emuState.getEmulatorInterface().prepareDisk(filesWritten[i]);
-			if(doMount) {
-				emuState.getEmulatorInterface().mountDisk(filesWritten[i]);
-			}
-		}
+		this.emuIfce.syncEmscriptenFS(doMount);
+	}
+
+	emscriptenPostRun() {
 	}
 	
 	emscriptenPreInit() {
@@ -129,6 +135,7 @@ class EmulatorState {
 	emscriptenPreRun() {
 		emuState.getEmulatorInterface().preRun();
 		this.running = true;
+		this.stateChanged(true);
 	}
 	
 	emscriptenDependencies(remaining) {
@@ -157,9 +164,9 @@ class EmulatorState {
 		if (!this.gotRoms || !this.gotBootMedia) {
 			return;
 		}
-		if (!this.loaded) {
-			loadEmulator();
-			this.loaded = true;
+		if (!this.started) {
+			this.emulator.loadScriptsAndStart();
+			this.started = true;
 			this.stateChanged();
 			this.setStatus("Starting emulator...");
 		} else if(this.running) {
@@ -184,36 +191,39 @@ class EmulatorState {
 }
 
 class Emulator {
-	constructor() {
+	constructor(emulator) {
 		this.onEmulatorConfigured  = function() {};
 		this.onEmulatorLoaded      = function() {};
-		this.onEmulatorRunning     = function() {};
-	}
-}
 
-function createEmscriptenModule() {
-	var module = {
-		preRun: [function () {emuState.emscriptenPreRun();}],
-		postRun: [emulatorCallbacks.onEmulatorRunning],
-		preInit: [function () {emuState.emscriptenPreInit();}],
-		arguments: [],
-		noInitialRun: false,
-		print: function(text) {
-			text = Array.prototype.slice.call(arguments).join(' ');
-			console.log(text);
-		},
-		printErr: function(text) {
-			text = Array.prototype.slice.call(arguments).join(' ');
-			console.log(text);
-		},
-		canvas: document.getElementById('screen'),
-		setStatus: function(status) {emuState.emscriptenStatus(status);},
-		totalDependencies: 0,
-		monitorRunDependencies: function(left) {emuState.emscriptenDependencies(left);}
-	};
-	// Give the emulator a chance to modify the Emscripten module
-	emuState.getEmulatorInterface().configModule(module);
-	return module;
+		this.state       = emuState    = new EmulatorState(this);
+		this.fileManager = fileManager = new EmscriptenFileManager();
+
+		// Bootstrap the emulator
+		this.state.setEmulator(emulator);
+		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
+	}
+
+	preloadResources() {
+		console.log("Loading emulator resources");
+		var config = this.state.getConfig();
+		for(var i = 0; i < config.pre.length; i++) {
+			loadResource(config.pre[i], true);
+		}
+	}
+
+	/* Load the main emulator script(s). This will start the emulator execution. */
+	loadScriptsAndStart() {
+		console.log("Loading emulator scripts");
+		Module = this.state.getEmulatorInterface().createEmscriptenModule(this.state);
+		var config = this.state.getConfig();
+		for(var i = 0; i < config.run.length; i++) {
+			loadResource(config.run[i], true);
+		}
+	}
+
+	restart() {
+		this.state.requestRestart();
+	}
 }
 
 function processEmulatorConfig(emulatorConfig) {
@@ -239,27 +249,6 @@ function processEmulatorConfig(emulatorConfig) {
 	}
 	emuState.romsLoaded();
 	emuState.configLoaded(emulatorConfig);
-}
-
-function loadEmulatorResources() {
-	console.log("Loading emulator resources");
-	var config = emuState.getConfig();
-	for(var i = 0; i < config.pre.length; i++) {
-		loadResource(config.pre[i], true);
-	}
-}
-
-function loadEmulator() {
-	console.log("Loading emulator scripts");
-	Module = createEmscriptenModule();
-	var config = emuState.getConfig();
-	for(var i = 0; i < config.run.length; i++) {
-		loadResource(config.run[i], true);
-	}
-}
-
-function restartComputer() {
-	emuState.requestRestart();
 }
 
 /* File management - Most of the heavy-lifting is done by the EmscriptenFileManager object */

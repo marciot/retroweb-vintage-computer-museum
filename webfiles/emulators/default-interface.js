@@ -41,6 +41,42 @@ class EmulatorInterface {
 		console.log("Setting argument " + arg + " to " + value);
 	}
 
+	createEmscriptenModule(stateObj) {
+		var module = {
+			preRun: [function () {stateObj.emscriptenPreRun();}],
+			postRun: [function () {stateObj.emscriptenPostRun();}],
+			preInit: [function () {stateObj.emscriptenPreInit();}],
+			arguments: [],
+			noInitialRun: false,
+			print: function(text) {
+				text = Array.prototype.slice.call(arguments).join(' ');
+				console.log(text);
+			},
+			printErr: function(text) {
+				text = Array.prototype.slice.call(arguments).join(' ');
+				console.log(text);
+			},
+			canvas: document.getElementById('screen'),
+			setStatus: function(status) {stateObj.emscriptenStatus(status);},
+			totalDependencies: 0,
+			monitorRunDependencies: function(left) {stateObj.emscriptenDependencies(left);}
+		};
+		// Give the emulator subclasses a chance to modify the Emscripten module
+		this.configModule(module);
+		return module;
+	}
+
+	syncEmscriptenFS(doMount) {
+		var filesWritten = fileManager.syncEmscriptenFS();
+		console.log("Preparing disks...");
+		for(var i = 0; i < filesWritten.length; i++) {
+			this.prepareDisk(filesWritten[i]);
+			if(doMount) {
+				this.mountDisk(filesWritten[i]);
+			}
+		}
+	}
+
 	configModule(module) {
 		module.arguments = [];
 		for (var arg in this.arguments) {

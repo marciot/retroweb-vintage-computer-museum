@@ -41,6 +41,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </style>
 
 <script type="text/javascript">
+
+	/* SAE is not an Emscripten based emulator, but we can still make use of the preloading routines and
+	 * the EmscriptenFileManager as a storage object for binary blobs. Basically, files get preloaded
+	 * into the object, and then mountDisk retrieves them using EmscriptenFileManager.getFileBinaryData
+	 */
+	 
 	processEmulatorConfig(
 		{
 			"name" : "Amiga 500",
@@ -108,11 +114,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		console.log("Got Disk:" + data.byteLength );
 		var disk = toBinaryString(data);
 		config.floppy.drive[n].type = SAEV_Config_Floppy_Type_35_DD;
-		config.floppy.drive[n].name = "floppy";						
-		config.floppy.drive[n].data = disk;						
+		config.floppy.drive[n].name = "floppy";
+		config.floppy.drive[n].data = disk;
 		SAE({
 			cmd:'insert',
 			unit:n
-		});				
+		});
 	}
 </script>
