@@ -42,11 +42,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 <script type="text/javascript">
 
-	/* SAE is not an Emscripten based emulator, but we can still make use of the preloading routines and
-	 * the EmscriptenFileManager as a storage object for binary blobs. Basically, files get preloaded
-	 * into the object, and then mountDisk retrieves them using EmscriptenFileManager.getFileBinaryData
+	/* SAE is not an Emscripten based emulator, so right now we pretend that it
+	 * is by creating a fake Enscripten environment consisting of a dummy FS
+	 * object.
+	 *
+	 * The preload routines populate an EmscriptenFileManager object. We treat
+	 * this as a storage repository for binary blobs and mountDisk retrieves
+	 * them using EmscriptenFileManager.getFileBinaryData and presents it to
+	 * SAE.
 	 */
-	 
+
 	processEmulatorConfig(
 		{
 			"name" : "Amiga 500",
@@ -80,9 +85,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			]
 		}
 	);
-	
+
 	/* Interface to RetroWeb Browser */
-	
+
 	new class extends EmulatorInterface {
 		constructor() {
 			super();
@@ -100,17 +105,106 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			console.log("Mounting " + diskFile);
 			var data = fileManager.getFileBinaryData(diskFile);
 			var driveId = diskFile.match(/fd(\d)+/);
-			insertDisk(data, parseInt(driveId[1])-1);
-		}
-
-		reset() {
-			pcSetMessage ("emu.reset", "");
+			saeInsertDisk(data, parseInt(driveId[1])-1);
 		}
 	}
-	
+
 	/* Helper functions */
 
-	function insertDisk(data, n) {
+	var config;
+	var FS;
+
+	/* The following function is called from sae-amiga.js. The reason for that file
+	 * is that the loader expects to be able to startup the emulator by loading a
+	 * JavaScript file. */
+	function saeBootstrap() {
+		saeInit();
+		saeStart();
+	}
+
+	function saeInit() {
+		/*var el = document.getElementById( 'screen' );
+		el.parentNode.removeChild( el );*/
+
+		SAE({cmd:'init'});
+
+		info = SAE({cmd:'getInfo'});
+		config = SAE({cmd:'getConfig'});
+
+		config.video.id = 'screen-div';
+
+		config.cpu.speed = SAEV_Config_CPU_Speed_Original;
+		config.cpu.compatible = true;
+
+		config.chipset.mask = SAEV_Config_Chipset_Mask_OCS;
+		config.chipset.agnus_dip = false; /* A1000 */
+		config.chipset.collision_level = SAEV_Config_Chipset_ColLevel_None;
+
+		config.blitter.immediate = true;
+		config.blitter.waiting = config.blitter.immediate ? 0 : 1;
+
+		config.ram.chip.size = SAEV_Config_RAM_Chip_Size_512K;
+		config.ram.slow.size = SAEV_Config_RAM_Slow_Size_512K;
+		config.ram.fast.size = SAEV_Config_RAM_Fast_Size_1M;
+
+		config.audio.enabled =  true;
+		if (config.audio.enabled) {
+			config.audio.mode = SAEV_Config_Audio_Mode_Play_Best;
+			config.audio.channels = SAEV_Config_Audio_Channels_Stereo;
+			config.audio.rate = SAEV_Config_Audio_Rate_44100;
+		}
+
+		config.video.id = 'screen';
+		config.video.enabled = true;
+		config.video.scale = false;
+		config.video.framerate = 1;
+		config.video.ntsc = false;
+
+		config.keyboard.enabled = true;
+		config.keyboard.mapShift = false;
+
+		config.mouse = {};
+		config.mouse.scaleX = 1.5;
+		config.mouse.scaleY = 1.5;
+
+		config.serial.enabled = false;
+
+		/*config.hooks.error = func;
+		config.hooks.power_led = func;
+		config.hooks.floppy_motor = func;
+		config.hooks.floppy_step = func;
+		config.hooks.fps = func;
+		config.hooks.cpu = func; */
+
+		saeRoms(fileManager.getFileBinaryData("/sae.rom"));
+
+		// Make fake Emscripten object
+		FS = {};
+		FS.mkdir = function() {};
+		FS.write = function() {};
+		FS.close = function() {};
+		FS.open = function() {};
+	}
+
+	function saeStart() {
+		SAE({cmd:'start'});
+		emuState.emscriptenPreInit();
+		emuState.emscriptenPreRun();
+	}
+
+	function saeRoms(data) {
+		console.log("Got ROM:" + data.byteLength );
+		var rom = toBinaryString(data);
+		console.log("Got ROM:" + rom.length );
+		if (!(data.byteLength == 0x40000 || data.byteLength == 0x80000)) {
+			alert('Invalid rom-size, 256 or 512kb.');
+			return;
+		}
+		config.rom.size = (data.byteLength == 0x40000) ? SAEV_Config_ROM_Size_256K : SAEV_Config_ROM_Size_512K;
+		config.rom.data = rom;
+	}
+
+	function saeInsertDisk(data, n) {
 		console.log("Got Disk:" + data.byteLength );
 		var disk = toBinaryString(data);
 		config.floppy.drive[n].type = SAEV_Config_Floppy_Type_35_DD;
@@ -120,5 +214,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			cmd:'insert',
 			unit:n
 		});
+	}
+
+	function toBinaryString(data) {
+		var bytes = new Uint8Array(data);
+		var str = "";
+		for(var i = 0; i < bytes.length; i++) {
+			str += String.fromCharCode(bytes[i]);
+		}
+		return str;
 	}
 </script>
