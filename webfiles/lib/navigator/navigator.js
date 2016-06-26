@@ -161,7 +161,7 @@ function navTo(url, specialBehavior) {
 		specialBehavior = 'redirect';
 	} else {
 		/* Otherwise, simply update the content in place */
-		panels.setVisibility("navigator-panel");
+		panels.setVisibility("navigator-panel", true);
 		fetchAndReplaceWikiContent(url, renderWikiContent);
 		console.log("Updated content: " + url + ((specialBehavior) ? " (" + specialBehavior + ")" : ''));
 	}
