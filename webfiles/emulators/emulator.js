@@ -183,6 +183,14 @@ class EmulatorState {
 	}
 }
 
+class Emulator {
+	constructor() {
+		this.onEmulatorConfigured  = function() {};
+		this.onEmulatorLoaded      = function() {};
+		this.onEmulatorRunning     = function() {};
+	}
+}
+
 function createEmscriptenModule() {
 	var module = {
 		preRun: [function () {emuState.emscriptenPreRun();}],

@@ -302,11 +302,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	var emuState;
 	var fileManager;
 	var popups;
-	var emulatorCallbacks = {
-		onEmulatorConfigured: function() {},
-		onEmulatorLoaded:     function() {},
-		onEmulatorRunning:    function() {}
-	};
+	var emulatorCallbacks;
 	
 	function createEmulator(host, emulator) {
 		emuState    = new EmulatorState();
@@ -331,6 +327,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		emuState.setEmulator(emulator);		
 		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
 
-		return emulatorCallbacks;
+		var emulatorObj = emulatorCallbacks = new Emulator();
+		return emulatorObj;
 	}
 </script>
