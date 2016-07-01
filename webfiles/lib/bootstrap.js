@@ -52,7 +52,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 })(window.RetroWeb = window.RetroWeb || {});
 
 if(!(RetroWeb.query.debug == "raw")) {
-	document.write('<script type="text/javascript" src="/lib/webcomponents/webcomponents.min.js"></script>');
+	document.write('<script type="text/javascript" src="http://code.jquery.com/jquery-1.12.4.min.js"></script>');
+	document.write('<script type="text/javascript" src="/lib/webcomponents/webcomponents.js"></script>');
+	document.write('<link rel="import" href="/components/inline-svg.html"></link>');
+	document.write('<link rel="import" href="/components/animated-zoom.html"></link>');
+	document.write('<link rel="import" href="/components/emulator-buttons.html"></link>');
 	document.write('<link rel="import" href="/emulators/emulator.html"></link>');
 	document.write('<link rel="import" href="/lib/navigator/navigator.html"></link>');
 	document.write('<link rel="import" href="/lib/retroweb-main.html"></link>');

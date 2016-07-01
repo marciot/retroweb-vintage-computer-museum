@@ -17,6 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+var PopupManager;
+
+if(!PopupManager) { // Guard for multiple definitions
+
 /* Decode the query variable
  */
 function parseQuery(url) {
@@ -154,7 +158,7 @@ function simulateKeyAction(type, keyCode, charCode, shifted) {
 /* This object manages popup dialog boxes. Since our pop-up boxes are translucent,
  * this object ensures that only the topmost popup box is visible at once.
  */
-class PopupManager {
+PopupManager = class {
 	constructor() {
 		this.visibleElement = null;
 		this.popupBoxes     = [];
@@ -189,3 +193,5 @@ class PopupManager {
 		this.setVisibleElement(document.getElementById(topmost));
 	}
 }
+
+}; // End of guard for multiple definitions

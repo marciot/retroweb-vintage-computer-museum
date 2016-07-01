@@ -17,44 +17,73 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 
-<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" src="/lib/utils.js"></script>
-
 <style>
 	body {
 		height: 100%;
+		padding: 0;
 	}
 
 	html {
 		height: 100%;
 	}
-
-	/* Expand up to 1600px, then center horizontally */
-	.horizontalExpandAndCenter {
-		position:     absolute;
-		top:          5px;
-		left:         5px;
-		
-		width:        100%;
-		height:       100%;
-		background:   white;
-
-		max-width:    1600px;
-		margin-left:  auto;
-		margin-right: auto;
-	}
-
-	.no-select {
-		-webkit-touch-callout: none;
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-	}
 </style>
 
 <template id="retrowebTemplate">
+	<style>
+		/* Expand up to 1600px, then center horizontally */
+		.horizontalExpandAndCenter {
+			position:     absolute;
+
+			top:          5px;
+			left:         5px;
+			
+			width:        100%;
+			height:       100%;
+			background:   white;
+
+			max-width:    1600px;
+			margin-left:  auto;
+			margin-right: auto;
+		}
+
+		.no-select {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		/* Interface buttons */
+
+		.ui-buttons {
+			position: relative;
+			z-index:  10;
+		}
+
+		.ui-btn {
+			font-size: small;
+			font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+
+			width: 50px;
+			text-align: center;
+		}
+
+		.btn-icon {
+			width: 32px;
+			height: 32px;
+		}
+
+		.btn-label {
+			visibility : hidden;
+		}
+
+		.btn-icon:hover~.btn-label {
+			visibility : visible;
+		}
+	</style>
+	
 	<div class="horizontalExpandAndCenter no-select">
 		<div id="emulator">
 			<!-- The emulator gets inserted here -->
@@ -62,12 +91,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		<table id="ui-buttons" class="ui-buttons">
 			<tr>
 				<td class="ui-btn">
-					<img class="btn-icon" src="/ui-artwork/document.png" onclick="panels.open('navigator-panel');"><br>
+					<img class="btn-icon" src="/ui-artwork/document.png" onclick="panels.setVisibility('navigator-panel', true);"><br>
 					<span class="btn-label">Show Navigator</span>
-				</td>
-				<td class="ui-btn">
-					<img class="btn-icon" src="/ui-artwork/power.png" onclick="emulator.restart()"><br>
-					<span class="btn-label">Restart Computer</span>
 				</td>
 			</tr>
 		</table>
@@ -76,6 +101,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		</div>
 	</div>
 </template>
+
+<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="/lib/utils.js"></script>
 
 <script>
 	// Global variables for RetroWeb

@@ -1,0 +1,178 @@
+<!--
+RetroWeb Browser
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+
+<template id="AnimatedZoomTemplate">
+	<content></content>
+</template>
+
+<!-- The following styles apply to the shadow host and thus are outside of the template -->
+<style>
+	.animateZoom {
+		transition: width 1s, height 1s, left 1s, top 1s, background 1s, max-width 1s, max-height 1s;
+	}
+	
+	.duringZoomTransition {
+		z-index:      100;
+		background:   black;
+	}
+</style>
+
+<script>
+	// The following is requires for the webcomponents polyfill
+    document._currentScript = document._currentScript || document.currentScript;
+    
+	// importDoc references this import's document
+    	
+    var animatedZoomImportDoc = document._currentScript.ownerDocument;
+    	
+    var AnimatedZoomProto = Object.create(HTMLElement.prototype);
+
+	AnimatedZoomProto.createdCallback = function() {
+		var t = animatedZoomImportDoc.getElementById('AnimatedZoomTemplate');
+      	var clone = document.importNode(t.content, true);
+      	var shadowRoot = this.createShadowRoot();
+		shadowRoot.appendChild(clone);
+		
+		var me = this;
+		function onFullscreenChange() {
+			if (!me.isFullscreen()) {
+				me.zoomOut();
+			}
+		}
+
+		$(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', onFullscreenChange);
+	};
+	
+    AnimatedZoomProto.zoomIn = function() {
+		var el = this;
+		/* First convert the screen to fixed positioning
+		 *   http://stackoverflow.com/questions/17304645/css-relative-to-fixed-w-css-transition
+		 */
+		var fixedPosition = {
+			position: 'fixed',
+			top:      $(el).offset().top  - $(window).scrollTop(),
+			left:     $(el).offset().left - $(window).scrollLeft()
+		};
+		$(el).css(fixedPosition).data(fixedPosition);
+
+		/* Now enable animations */
+		setTimeout(function(){
+			zoomedElement = el;
+
+			$(el)
+				.addClass("zoomed animateZoom duringZoomTransition")
+				.removeClass("zoomable")
+				.css({
+					top:        '0',
+					left:       '0',
+					width:      '100%',
+					height:     '100%',
+				})
+		}, 10);
+
+		/* Schedule a transition to full screen after the transitions have run */
+		var me = this;
+		setTimeout(function(){
+			/* Hide the scrollbars
+			 * http://stackoverflow.com/questions/242608/disable-browsers-vertical-and-horizontal-scrollbars
+			 */
+			$("html").css("overflow", "hidden");
+
+			if(me.getAttribute('fullscreen') != "no") {
+				me.enterFullscreen();
+			}
+		}, 1000);
+	};
+	
+	AnimatedZoomProto.zoomOut = function() {
+		/* Exit full screen mode if we are in full screen mode */
+		if(this.isFullscreen()) {
+			this.exitFullscreen();
+		}
+		
+		/* Proceed to zoom the element out */
+		
+		var el = this;
+		if($(el).hasClass("zoomed")) {
+			/* Removing the attribute "style" will cause the screen to
+			 * animate back to its original location */
+			$(el)
+				.removeAttr("style").css($(el).data())
+				.removeClass("zoomed");
+
+			/* After the animation has finished, restore the attributes */
+			setTimeout(function(){
+				$(el)
+					.removeClass("animateZoom duringZoomTransition")
+					.addClass("zoomable").removeAttr("style");
+					zoomedElement = undefined;
+			},1000);
+			
+			/* Show the scroll bars on the document */
+			$("html").css("overflow", "auto");
+		}
+	};
+	
+	AnimatedZoomProto.isZoomed = function() {
+		return $(this).hasClass("zoomed");
+	}
+	
+	AnimatedZoomProto.toggleZoom = function() {
+		if(this.isZoomed()) {
+			this.zoomOut();
+		} else {
+			this.zoomIn();
+		}
+	}
+
+	/* The following methods simply wrap a compatibility layer around the FullscreenAPI
+	 *
+	 * https://davidwalsh.name/fullscreen
+	 */
+	AnimatedZoomProto.enterFullscreen = function() {
+		var element = this;
+		if(element.requestFullscreen) {
+			element.requestFullscreen();
+		} else if(element.mozRequestFullScreen) {
+			element.mozRequestFullScreen();
+		} else if(element.webkitRequestFullscreen) {
+			element.webkitRequestFullscreen();
+		} else if(element.msRequestFullscreen) {
+			element.msRequestFullscreen();
+		}
+	}
+	
+	AnimatedZoomProto.isFullscreen = function() {
+		return document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+	}
+	
+	AnimatedZoomProto.exitFullscreen = function() {
+		if(document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement) {
+			if(document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if(document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if(document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			}
+		}
+	}
+
+	var AnimatedZoom = document.registerElement('animated-zoom', {prototype: AnimatedZoomProto});
+</script>

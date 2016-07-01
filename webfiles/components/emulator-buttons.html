@@ -1,0 +1,216 @@
+<!--
+RetroWeb Browser
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+<template id="EmulatorButtonsTemplate">
+	<style>
+		#screen-container {
+			position:		relative;
+			padding:		0px;
+			width:			100%;
+			height:			100%;
+		}
+
+		/* Emulator controls overlay - This control shows up over the computer's screen
+		 * and has a zoom button, a cursor button and a reset button.
+		*/
+		#screen-overlay-controls {
+			display: 		none;
+			top:			0px;
+			position: 		absolute;
+			width:			100%;
+			height:			100%;
+			opacity:		0.5;
+			background: 	black;
+		}
+
+		.showOverlayOnHover:hover #screen-overlay-controls {
+			display:        block;
+		}
+
+		#screen-overlay-controls #controls {
+			position:       absolute;
+			top:            50%;
+			width:          100%;
+			height:         100px;
+			margin-top:     -50px;
+			text-align:     center;
+		}
+
+		.roundedBtn {
+			display:        inline-block;
+			width:          75px;
+			height:         75px;
+			background:     #333333;
+			opacity:        0.85;
+			border-radius:  10px;
+			border:         1px solid darkGray;
+			margin:         0px 10px;
+		}
+
+		#screen-overlay-controls inline-svg:hover {
+			background:     lightGray;
+			border:         1px solid lightGray;
+		}
+
+		#screen-overlay-controls inline-svg {
+			--path-color: 			darkGray;
+		}
+
+		#screen-overlay-controls inline-svg:hover inline-svg {
+			--path-color: 			black;
+		}
+
+		/* The following controls show up when in zoomed (i.e. full screen) mode */
+
+		.full-screen-controls {
+			display: 		none;
+			position:		absolute;
+			width:			7vw;
+			height:			7vw;
+		}
+
+		#zoomOutBtn {
+			right:			2vw;
+			top:			2vw;
+		}
+
+		#powerBtn2 {
+			right:			2vw;
+			bottom:			2vw;
+		}
+
+		inline-svg.full-screen-controls {
+			--path-color:	lightGray;
+		}
+
+		inline-svg.full-screen-controls:hover {
+			--path-color:	#333333;
+		}
+
+		/* The following will not work on Firefox, see below for alternative */
+		
+		:host-context(.zoomed) .full-screen-controls  {
+			display:		block;
+		}
+	</style>
+	<div id="screen-container">
+		<content id="screen"></content>
+
+		<inline-svg src="/ui-artwork/appbar.magnify.minus.svg" id="zoomOutBtn" class="full-screen-controls">></inline-svg>
+		<inline-svg src="/ui-artwork/appbar.power.svg"         id="powerBtn2"  class="full-screen-controls"></inline-svg>
+
+		<div id="screen-overlay-controls">
+			<div id="controls">
+				<inline-svg src="/ui-artwork/appbar.magnify.add.svg"    id="zoomInBtn"   class="roundedBtn"></inline-svg>
+				<inline-svg src="/ui-artwork/appbar.cursor.default.svg" id="interactBtn" class="roundedBtn"></inline-svg>
+				<inline-svg src="/ui-artwork/appbar.power.svg"          id="powerBtn"    class="roundedBtn"></inline-svg>
+			</div>
+		</div>
+	</div>
+</template>
+
+<style>
+	/* Fix for :host-context not working on Firefox:
+	 *
+	 *   http://stackoverflow.com/questions/25468701/why-does-the-host-selector-only-work-in-chrome-with-platform-js
+	 */
+	animated-zoom.zoomed .full-screen-controls  {
+		display:		block;
+	}
+</style>
+
+<script>
+	// The following is requires for the webcomponents polyfill
+    document._currentScript = document._currentScript || document.currentScript;
+    
+	// importDoc references this import's document
+    	
+    var emulatorButtonsImportDoc = document._currentScript.ownerDocument;
+    	
+    var EmulatorButtonsProto = Object.create(HTMLElement.prototype);
+
+	EmulatorButtonsProto.createdCallback = function() {
+		var t = emulatorButtonsImportDoc.getElementById('EmulatorButtonsTemplate');
+		var clone = document.importNode(t.content, true);
+		var shadowRoot = this.createShadowRoot();
+		shadowRoot.appendChild(clone);
+
+		/* Proceed to set up events */
+		function redirectEventToCanvas(e) {
+			/* Reference: 
+			   http://stackoverflow.com/questions/11974262/how-to-clone-or-re-dispatch-dom-events
+			  */
+			var evt = new MouseEvent(e.type, e);
+			document.getElementById('screen').dispatchEvent(evt);
+			return true;
+		}
+
+		/* Set up event redirection so that we can click on the "interact"
+		 * button and have it activate the screen of the emulator */
+		$(shadowRoot).find("#screen-overlay-controls").on('click',      redirectEventToCanvas);
+		$(shadowRoot).find("#screen-overlay-controls").on('mouseup',    redirectEventToCanvas);
+		$(shadowRoot).find("#screen-overlay-controls").on('mousedown',  redirectEventToCanvas);
+
+		/* Add actions to the overlay buttons. The central button has no action,
+		 * a click on it trickles down to screen-overlay-controls and causes it
+		 * to vanish */
+
+		var zoomAttr   = this.getAttribute('zoomTarget');
+		var zoomTarget = (zoomAttr ? $(this).closest('#'+zoomAttr) : $(this).closest('animated-zoom'))[0];
+		
+		if(zoomTarget) {
+			$(shadowRoot).find("#zoomInBtn").on('click', function()  {
+				overlayActiveState(false);
+				zoomTarget.zoomIn();
+			});
+			$(shadowRoot).find("#zoomOutBtn").on('click',  function() {
+				zoomTarget.zoomOut();
+				overlayActiveState(true);
+			});
+		}
+
+		function overlayActiveState(active) {
+			if (active) {
+				$(shadowRoot).find("#screen-container").addClass("showOverlayOnHover");
+			} else {
+				$(shadowRoot).find("#screen-container").removeClass("showOverlayOnHover");
+			}
+		}
+
+		/* The overlay is hidden to reveal the screen when the user clicks. Moving the
+		 * mouse away from the screen area primes the overlay to reappear once the mouse
+		 * renters the screen (this is handled by a hover event)
+		 */
+		$(shadowRoot).find("#screen").on('mouseleave', 
+			function() {
+				if(!(zoomTarget && zoomTarget.isZoomed())) overlayActiveState(true);
+		});
+		$(shadowRoot).find("#screen-overlay-controls").on('click',
+			function() {
+				overlayActiveState(false);
+		});
+		
+		overlayActiveState(true);
+	}
+	
+    EmulatorButtonsProto.setRestartAction = function(func) {
+		$(this.shadowRoot).find("#powerBtn, #powerBtn2").click(func);
+	};
+
+	var EmulatorButtons = document.registerElement('emulator-buttons', {prototype: EmulatorButtonsProto});
+</script>

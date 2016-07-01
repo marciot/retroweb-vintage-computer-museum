@@ -22,42 +22,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		position: absolute;
 		top:      0px;
 		right:    0px;
-		
+
 		/* Show background below other elements */
 		background-repeat: no-repeat;
 	}
 
-	.screen {
-		position: absolute;
+	/* I use text-align on screen-container and display: inline on
+	 * screen to center the canvas horizontally on the container.
+	 * This is useful in full screen mode.
+	 *
+	 *   http://stackoverflow.com/questions/1152203/centering-a-canvas
+	 */
+	#zoomable {
+		position:   absolute;
+		display:    block;
+
+		text-align: center;
+	}
+
+	#zoomable #screen {
+		position:   relative;
+		display:    inline;
+
+		width:      auto;
+		height:     100%;
+		max-width:  100%;
+		max-height: 100%;
+	}
+
+	#zoomable.zoomed #screen {
+		height:     90%;
+		max-width:  90%;
+		max-height: 90%;
+		top:        5%;
 	}
 
 	#screen {
-		width: 100%;
-		height: 100%;
-	}
-
-	.popup {
-		/* Allow centering of popups (see margin formula below) */
-		position: absolute;
-		top:      50%;
-		left:     50%;
-	}
-
-	.ui-buttons {
-		position: relative;
-		z-index:  10;
+		cursor: none;
+		outline: none;
 	}
 
 	.sidepanel {
 		height:       100%;
 		min-width:    500px;
-	}
-
-	/* Formatting */
-
-	#screen {
-		cursor: none;
-		outline: none;
 	}
 
 	/* Popup boxes are the dark, translucent, rounded-cornered
@@ -66,12 +73,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	 */
 	 
 	DIV.popup {
-		display: none;
-		border-radius: 30px;
-		background: black;
-		opacity: 0.85;
-		text-align: center;
-		color: white;
+		display:        none;
+		border-radius:  30px;
+		background:     black;
+		opacity:        0.85;
+		text-align:     center;
+		color:          white;
+
+		/* Allow centering of popups (see margin formula below) */
+		position: absolute;
+		top:      50%;
+		left:     50%;
 	}
 
 	DIV.popup H1 {
@@ -112,24 +124,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		height:       150px;
 		margin-left: -195px;
 		margin-top:   -95px;
-	}
-
-	#popup-mouse-center {
-		padding:      20px;
-		width:       400px;
-		height:      200px;
-		margin-left: -220px; /* -0.5 * width - padding */
-		margin-top:  -120px; /* -0.5 * height - padding */
-	}
-
-	#popup-mouse-center-target {
-		position: absolute;
-		top:         50%;
-		left:        50%;
-		width:       64px;
-		height:      64px;
-		margin-left: -32px; /* -0.5 * width - padding */
-		margin-top:  -32px; /* -0.5 * height - padding */
 	}
 
 	#popup-mac-eject-disk {
@@ -181,45 +175,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		from {transform: rotate(0deg);}
 		to {transform: rotate(360deg);}
 	}
-	
+
 	.small-icon {
 		width: 64px;
 		height: 64px;
-	}
-
-	/* Interface buttons */
-
-	.ui-btn {
-		font-size: small;
-		font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
-
-		width: 50px;
-		text-align: center;
-	}
-
-	.btn-icon {
-		width: 32px;
-		height: 32px;
-	}
-
-	.btn-label {
-		visibility : hidden;
-	}
-
-	.btn-icon:hover~.btn-label {
-		visibility : visible;
 	}
 </style>
 
 <template id="emulatorTemplate">
 	<div class="background" id="background">
-		<div class="screen">
-			<canvas id="screen" oncontextmenu="event.preventDefault()">
-				<!-- Main rendering canvas for emulator: -->
-			</canvas>
-			
+	
+		<animated-zoom id="zoomable" class="screen">
+			<emulator-buttons>
+				<canvas id="screen">
+				</canvas>
+			</emulator-buttons>
+
 			<!-- Pop-up windows that overlay the screen area: -->
-			
+
 			<div id="popup-status" class="popup">
 				<div class="spinner"></div>
 				<div class="emscripten" id="status-text">Downloading...</div>
@@ -227,19 +200,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					<progress value="0" max="100" id="progress" hidden=0></progress>  
 				</div>
 			</div>
-			
+
 			<div id="popup-need-boot-media" class="popup">
 				<img src="/ui-artwork/sunny.png" class="small-icon">
 				<h1>This computer needs a boot disk!<br>Follow the green dots!</h1>
 			</div>
-			
+
 			<div id="popup-rom-missing" class="popup">
 				<img src="/ui-artwork/rom.png" class="small-icon">
 				<p>This computer cannot start without a valid ROM file.</p>
 				<input type="button" value="Select ROM file..."
 					onclick="openFileUploader ('Select ROM image', doRomUpload);">
 			</div>
-			
+
 			<div id="popup-uploader" class="popup">
 				<h1 id="uploader-text">Select a file:</h1>
 				<form name="file-upload" onsubmit="return false">
@@ -250,12 +223,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					<input type="button" value="Cancel" onclick="popups.close('popup-uploader');">
 				</form>
 			</div>
-			
-			<div id="popup-mouse-center" class="popup">
-				<h1>Wait for the desktop to appear then double-click the icon.</h1>
-				<img src="/ui-artwork/sunny.png" id="popup-mouse-center-target" onclick="popups.close('popup-mouse-center');">
-			</div>
-			
+
 			<div id="popup-mac-eject-disk" class="popup">
 				<img src="/ui-artwork/drag-to-trash.png">
 				<div>
@@ -267,11 +235,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					<input type="button" value="Gotcha!" onclick="popups.close('popup-mac-eject-disk');">
 				</div>
 			</div>
-			
-		</div>
+		</animated-zoom>
 	</div>
+	
+	<script>
+		$("#screen").click(function() {return false;});
+	</script>
 </template>
 
+<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="/lib/utils.js"></script>
 <script type="text/javascript" src="/lib/emscripten-fs-utils.js"></script>
 <script type="text/javascript" src="/emulators/default-interface.js"></script>
 <script type="text/javascript" src="/emulators/emulator.js"></script>
@@ -296,14 +269,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 		}, false);
 	}
-	
+
 	// Global variables for emulator
 	var Module;
 	var emuState;
 	var fileManager;
 	var popups;
 	var emulatorCallbacks;
-	
+
+	/* Public constructor function */
+
 	function createEmulator(host, emulator) {
 		var template = emuImportDoc.getElementById('emulatorTemplate');
 		var clone = document.importNode(template.content, true);
@@ -313,7 +288,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 		// Initialize handler for dialog boxes
 		popups = new PopupManager();
-		popups.add("popup-mouse-center");
 		popups.add("popup-rom-missing");
 		popups.add("popup-need-boot-media");
 		popups.add("popup-status");
@@ -321,6 +295,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		popups.add("popup-mac-eject-disk");
 
 		var emulatorObj = emulatorCallbacks = new Emulator(emulator);
+
+		// Initialize the callback
+		document.getElementsByTagName("emulator-buttons")[0].setRestartAction(
+			function() {
+				emulatorObj.restart();
+			});
+
 		return emulatorObj;
 	}
 </script>

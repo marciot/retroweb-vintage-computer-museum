@@ -1,0 +1,66 @@
+<html>
+	<head>
+	    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+		<script type="text/javascript" src="/lib/webcomponents/webcomponents.js"></script>
+		<script type="text/javascript" src="/lib/utils.js"></script>
+		<link rel="import" href="/components/animated-zoom.html">
+		<style>
+			
+			body {
+				position: absolute;
+			}
+
+			/* I use text-align on screen-container and display: inline on
+			 * screen to center the canvas horizontally on the container.
+			 * This is useful in full screen mode.
+			 *
+			 *   http://stackoverflow.com/questions/1152203/centering-a-canvas
+			 */
+			#zoomable {
+				position:   absolute;
+				display:    block;
+				
+				top:        10px;
+				left:       10px;
+				width:      512px;
+				height:     342px;
+				
+				text-align: center;
+			}
+			
+			#zoomable #screen {
+				background: yellow;
+				
+				position:   relative;
+				display:    inline;
+				
+				width:      auto;
+				height:     100%;
+				max-width:  100%;
+				max-height: 100%;
+			}
+			
+			#zoomable.zoomed #screen {
+				height:     90%;
+				max-width:  90%;
+				max-height: 90%;
+				top:        5%;
+			}
+		</style>
+	</head>
+	<body>
+		<animated-zoom id="zoomable">
+			<canvas id="screen" width=512 height=342>
+			</canvas>
+		</animated-zoom>
+		
+		<script>
+			window.addEventListener('WebComponentsReady', function(e) {
+				var el = document.getElementById("zoomable");
+				el.onclick = function() {
+					el.toggleZoom();
+				}
+			});
+		</script>
+	</body>
+</html>
