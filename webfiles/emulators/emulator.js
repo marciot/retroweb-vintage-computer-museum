@@ -56,7 +56,7 @@ class EmulatorState {
 	}
 
 	setStatus(text) {
-		document.getElementById("status-text").innerHTML = text;
+		popups.setStatus(text);
 	}
 	
 	// Calls a callback and clears the callback so it won't be called multiple times.
@@ -296,40 +296,18 @@ class Emulator {
 	 * to select a file or floppy to upload. */
 
 	uploadFloppy(drive, isBootable) {
-		if(!window.FileReader) {
-			// Browser is not compatible
-			alert("Your web browser does not support this feature");
-			return;
-		}
-		document.getElementById('uploader-text').innerHTML = "Select floppy disk image";
-		document.getElementById('uploader-ok-btn').onclick = function(evt) {
-			popups.setVisibility("popup-uploader", false);
-
-			var file = document.getElementById('uploader-file').files[0];
+		popups.askForFile("Select floppy disk image", function(file) {
 			var dstName = this.state.getEmulatorInterface().getFileNameForDrive(drive, file.name);
-
 			this.fileManager.writeFileFromFile(dstName, file);
 			this.state.waitForMedia(dstName, isBootable);
-			return false;
-		}
-		popups.setVisibility("popup-uploader", true);
+		});
 	}
 
 	uploadFile(dstName, what, isBootable) {
-		if(!window.FileReader) {
-			// Browser is not compatible
-			alert("Your web browser does not support this feature");
-			return;
-		}
-		document.getElementById('uploader-text').innerHTML = "Please select a " + what;
-		document.getElementById('uploader-ok-btn').onclick = function(evt) {
-			popups.setVisibility("popup-uploader", false);
-			var file = document.getElementById('uploader-file').files[0];
+		popups.askForFile("Please select a " + what, function(file) {
 			this.fileManager.writeFileFromFile(dstName, file);
 			this.state.waitForMedia(dstName, isBootable);
-			return false;
-		}
-		popups.setVisibility("popup-uploader", true);
+		});
 	}
 
 	/* The download actions allow you to download modified files from the Emscripten FS to

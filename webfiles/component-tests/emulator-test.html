@@ -19,16 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <!DOCTYPE html>
 <html>
 	<head>
-		
+
 		<!-- WebComponents is needed for HTML imports on iOS 7 -->
 		<script type="text/javascript" src="/lib/webcomponents/webcomponents.min.js"></script>
 		<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 		<script type="text/javascript" src="/lib/utils.js"></script>
 		
+		<link rel="import" href="/components/inline-svg.html"></link>
+		<link rel="import" href="/components/animated-zoom.html"></link>
+		<link rel="import" href="/components/emulator-buttons.html"></link>
+		<link rel="import" href="/components/emulator-popups.html"></link>
 		<link rel="import" href="/emulators/emulator.html">
-		
+
 		<title>Mac Plus Emulator</title>
-		
+
 		<style>
 			body {
 				height: 100%;
@@ -43,12 +47,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				position:     relative;
 				width:        100%;
 				height:       100%;
-				
+
 				max-width:    1600px;
 				margin-left:  auto;
 				margin-right: auto;
 			}
-			
+
 			.no-select {
 				-webkit-touch-callout: none;
 				-webkit-user-select: none;
@@ -62,19 +66,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	<body>
 		<div class="horizontalExpandAndCenter no-select" id="emulator">
 		</div>
-		
+
 		<script type="text/javascript">
 			function webComponentsReady() {
 				var emulator = createEmulator(
 					document.getElementById("emulator"),
 					"pce-macplus"
 				);
-				
+
 				emulator.onEmulatorLoaded = function() {
-					mountDriveFromUrl("hd1", "/disks/mac-marcio's-boot-1.0.qed", true);
+					emulator.mountDriveFromUrl("hd1", "/disks/mac-marcio's-boot-1.0.qed", true);
 				}
 			}
-			
+
 			window.addEventListener('WebComponentsReady', webComponentsReady);		
 		</script>
 	</body>

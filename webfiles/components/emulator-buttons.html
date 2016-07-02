@@ -156,7 +156,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			   http://stackoverflow.com/questions/11974262/how-to-clone-or-re-dispatch-dom-events
 			  */
 			var evt = new MouseEvent(e.type, e);
-			document.getElementById('screen').dispatchEvent(evt);
+			$(shadowRoot).find("#screen")[0].dispatchEvent(evt);
 			return true;
 		}
 

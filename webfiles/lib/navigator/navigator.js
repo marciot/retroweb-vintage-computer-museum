@@ -29,6 +29,14 @@ function navInitialDoc() {
 	renderWikiContent();
 }
 
+function navShow() {
+	$("#navigator-panel").show();
+}
+
+function navHide() {
+	$("#navigator-panel").hide();
+}
+
 /* This fetches a new page via XHR and substitutes the content of the #retroweb-markup
  * element with the #retroweb-markup element from the new page. This function does not
  * render the content.
@@ -161,7 +169,7 @@ function navTo(url, specialBehavior) {
 		specialBehavior = 'redirect';
 	} else {
 		/* Otherwise, simply update the content in place */
-		panels.setVisibility("navigator-panel", true);
+		navShow();
 		fetchAndReplaceWikiContent(url, renderWikiContent);
 		console.log("Updated content: " + url + ((specialBehavior) ? " (" + specialBehavior + ")" : ''));
 	}

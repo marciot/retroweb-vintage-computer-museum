@@ -1,0 +1,234 @@
+<html>
+	<head>
+	    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+		<script type="text/javascript" src="/lib/webcomponents/webcomponents.js"></script>
+		<link rel="import" href="/components/inline-svg.html">
+		<link rel="import" href="/components/animated-zoom.html">
+		<link rel="import" href="/components/emulator-buttons.html">
+		<link rel="import" href="/components/emulator-popups.html">
+		<style>
+			
+			body {
+				position:			absolute;
+				font-family: 		"Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+				margin:				2em;
+				
+				background-color: 	#eef;
+			}
+			
+			h1 {
+				text-align:			center;
+				margin:				2em 0;
+				font-size:			300%;
+			}
+
+			/* I use text-align on screen-container and display: inline on
+			 * screen to center the canvas horizontally on the container.
+			 * This is useful in full screen mode.
+			 *
+			 *   http://stackoverflow.com/questions/1152203/centering-a-canvas
+			 */
+			.zoomable, .demo {
+				position:			relative;
+				display:			block;
+				
+				width: 				512px;
+				height:				342px;
+				
+				text-align:			center;
+			}
+
+			.zoomable .screen {
+				position:			relative;
+				display:			inline;
+				
+				width:				auto;
+				height:				100%;
+				max-width:			100%;
+				max-height:			100%;
+			}
+
+			.zoomable.zoomed .screen {
+				height:     		90%;
+				max-width:  		90%;
+				max-height: 		90%;
+				top:        		5%;
+			}
+
+			inline-svg {
+				width: 				250px;
+				height:				345px;
+			}
+
+			inline-svg {
+				--path-color:		darkGray;
+			}
+			
+			#testSvg1:hover {
+				--path-color:		red;
+			}
+
+			#testSvg2:hover {
+				--path-color:		green;
+			}
+
+			table {
+				border-collapse:	collapse;
+			}
+
+			table, th, td {
+				padding:			1em;
+				vertical-align:		top;
+			}
+			
+			tr {
+				border:				2px solid black;
+			}
+			
+			td {
+				background-color:	white;
+			}
+			
+			pre {
+				background:			lightGray;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>RetroWeb Components</h1>
+		
+		<table>
+			<tr>
+				<th>
+					<inline-svg src="/ui-artwork/appbar.magnify.add.svg"   id="testSvg1"></inline-svg>
+					<inline-svg src="/ui-artwork/appbar.magnify.minus.svg" id="testSvg2"></inline-svg>
+				</th>
+				<td>
+					<h2>inline-svg</h2>
+					The inline-svg tag inserts SVG images into the document where they may be styled or animated using CSS rules (drag the mouse over the images to demonstrate).
+<pre>
+&lt;style&gt;
+   inline-svg:hover {
+      --path-color: green;
+   }
+&lt;/style&gt;
+
+&lt;inline-svg src=&quot;test.svg&quot;&gt;&lt;/inline-svg&gt;
+</pre>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<br>
+					<div class="zoomable">
+						<animated-zoom class="zoomable" id="test1">
+							<img src="/artwork/gem.png" class="screen" width=512 height=342>
+						</animated-zoom>
+					</div>
+				</th>
+				<td>
+					<h2>animated-zoom</h2>
+					<p>
+					Surrounding an emulator's screen with this tag to give it the ability to animate in and out of full screen mode:
+					</p>
+<pre>
+&lt;animated-zoom&gt;
+   &lt;canvas&gt;&lt;/canvas&gt;
+&lt;/animated-zoom&gt;
+</pre>
+					<p>
+					This tag will trigger when the methods zoomIn, zoomOut or toggleZoom are called from Javascript (the toggleZoom method is bound to a click in this example)
+					</p>
+					<p>Combine this element with <code>emulator-buttons</code> for a ready-made user interface</p>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<br>
+					<animated-zoom class="zoomable">
+						<emulator-buttons id="test2">
+							<img src="/artwork/gem.png" class="screen" width=512 height=342>
+						</emulator-buttons>
+					</animated-zoom>
+				</th>
+				<td>
+					<h2>emulator-buttons (for use with animated-zoom)</h2>
+					<p>
+					Surround an element with <code>emulator-buttons</code> and <code>animated-zoom</code> to give the element interactive controls for zooming, restarting, or interacting an emulator:
+					</p>
+<pre>
+&lt;animated-zoom&gt;
+   &lt;emulator-buttons&gt;
+      &lt;canvas&gt;&lt;/canvas&gt;
+   &lt;/emulator-buttons&gt;
+&lt;/animated-zoom&gt;
+</pre>
+					<p>
+					The controls will be shown overlayed on the emulator's screen when the cursor hovers over it. The three buttons have the following actions:
+						<ol>
+							<li>Triggers the surrounding <code>animate-zoom</code> object.
+							<li>Hides the controls and passes the click to the emulator.
+							<li>Call a user-specified reset function.
+						</ol>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<th>
+					<br>
+					<div class="demo">
+						<img src="/artwork/gem.png" id="test-popup-img" width=512 height=342>
+						<emulator-popups id="test-popups">
+						</emulator-popups>
+					</div>
+				</th>
+				<td>
+					<h2>emulator-popups</h2>
+					<p>
+					Overlays dialog and status boxes over the emulator.
+					</p>
+<pre>
+&lt;div style=&quot;position: relative&quot;&gt;
+   &lt;canvas&gt;&lt;/canvas&gt;
+   &lt;emulator-popups&gt;&lt;/emulator-popups&gt;
+&lt;/div&gt;
+</pre>
+					<p>
+					The dialog boxes will be shown overlayed on the emulator's screen
+					</p>
+				</td>
+			</tr>
+		</table>
+		
+		<script>
+			window.addEventListener('WebComponentsReady', function(e) {
+				var el1 = document.getElementById("test1");
+				el1.onclick = function() {
+					el1.toggleZoom();
+				}
+
+				var el2 = document.getElementById("test2");
+				el2.setRestartAction(function() {alert("You clicked the restart button");});
+				
+				document.querySelector("inline-svg").addEventListener('click', function() {
+			alert("I was clicked!");});
+			
+				var el3 = document.getElementById("test-popup-img");
+				var el4 = document.getElementById("test-popups");
+				var which   = 0;
+				var popups = $(el4.shadowRoot).find(".popup");
+				function choosePopup() {
+					el4.setVisibility(popups[which].id, false);
+					which++;
+					if(which >= popups.size()) {
+						which = 0;
+					}
+					el4.setVisibility(popups[which].id, true);
+				}
+				choosePopup();
+				setInterval(choosePopup, 5000);
+			});
+		</script>
+	</body>
+</html>

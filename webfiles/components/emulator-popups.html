@@ -1,0 +1,286 @@
+<!--
+RetroWeb Browser
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+<template id="EmulatorPopupsTemplate">
+	<style>
+		/* Popup boxes are the dark, translucent, rounded-cornered
+		 * dialog boxes that show up centered on the simulated
+		 * computer's display
+		 */
+		 
+		DIV.popup {
+			display:        none;
+			border-radius:  30px;
+			background:     black;
+			opacity:        0.85;
+			text-align:     center;
+			color:          white;
+
+			/* Allow centering of popups (see margin formula below) */
+			position: absolute;
+			top:      50%;
+			left:     50%;
+		}
+
+		DIV.popup H1 {
+			font-size: large;
+		}
+
+		DIV.popup P {
+			text-align: left;
+		}
+
+		#popup-status {
+			padding:      20px;
+			width:       150px;
+			height:      100px;
+			margin-left: -95px; /* -0.5 * width - padding */
+			margin-top:  -70px; /* -0.5 * height - padding */
+		}
+
+		#popup-rom-missing {
+			padding:       20px;
+			width:        350px;
+			height:       150px;
+			margin-left: -195px;
+			margin-top:   -95px;
+		}
+
+		#popup-need-boot-media {
+			padding:       20px;
+			width:        350px;
+			height:       125px;
+			margin-left: -195px;
+			margin-top:   -82px;
+		}
+
+		#popup-uploader {
+			padding:       20px;
+			width:        350px;
+			height:       150px;
+			margin-left: -195px;
+			margin-top:   -95px;
+		}
+
+		#popup-mac-eject-disk {
+			padding:       20px;
+			width:        350px;
+			height:       150px;
+			margin-left: -195px;
+			margin-top:   -95px;
+		}
+
+		#popup-mac-eject-disk IMG {
+			float: right;
+		}
+
+		#popup-mac-eject-disk DIV {
+			margin-right: 60px;
+		}
+
+		/* Emscripten spinner animation */
+
+		.spinner {
+			height: 50px;
+			width: 50px;
+			margin: 0px auto;
+			-webkit-animation: rotation .8s linear infinite;
+			-moz-animation: rotation .8s linear infinite;
+			-o-animation: rotation .8s linear infinite;
+			animation: rotation 0.8s linear infinite;
+			border-left: 10px solid rgb(0,0,0);
+			border-right: 10px solid rgb(0,0,0);
+			border-bottom: 10px solid rgb(0,0,0);
+			border-top: 10px solid rgb(255,255,255);
+			border-radius: 100%;
+			background-color: rgb(0,0,0);
+		}
+		@-webkit-keyframes rotation {
+			from {-webkit-transform: rotate(0deg);}
+			to {-webkit-transform: rotate(360deg);}
+		}
+		@-moz-keyframes rotation {
+			from {-moz-transform: rotate(0deg);}
+			to {-moz-transform: rotate(360deg);}
+		}
+		@-o-keyframes rotation {
+			from {-o-transform: rotate(0deg);}
+			to {-o-transform: rotate(360deg);}
+		}
+		@keyframes rotation {
+			from {transform: rotate(0deg);}
+			to {transform: rotate(360deg);}
+		}
+
+		.small-icon {
+			width: 64px;
+			height: 64px;
+		}
+	</style>
+
+	<div id="popup-rom-missing" class="popup">
+		<img src="/ui-artwork/rom.png" class="small-icon">
+		<p>This computer cannot start without a valid ROM file.</p>
+		<input type="button" value="Select ROM file..." id="select-rom-btn">
+	</div>
+
+	<div id="popup-need-boot-media" class="popup">
+		<img src="/ui-artwork/sunny.png" class="small-icon">
+		<h1>This computer needs a boot disk!<br>Follow the green dots!</h1>
+	</div>
+
+	<div id="popup-status" class="popup">
+		<div class="spinner"></div>
+		<div class="emscripten" id="status-text">Downloading...</div>
+		<div class="emscripten">
+			<progress value="0" max="100" id="progress" hidden=0></progress>  
+		</div>
+	</div>
+
+	<div id="popup-uploader" class="popup">
+		<h1 id="uploader-text">Select a file:</h1>
+		<form name="file-upload" onsubmit="return false">
+			<p>
+			<input type="file" id="uploader-file" chars="80"><br>
+			</p>
+			<input type="submit" value="OK"     id="uploader-ok-btn">
+			<input type="button" value="Cancel" id="uploader-cancel-btn">
+		</form>
+	</div>
+
+	<div id="popup-mac-eject-disk" class="popup">
+		<img src="/ui-artwork/drag-to-trash.png">
+		<div>
+			<h1>Ejecting disks on the Macintosh</h1>
+			<p>
+				Before inserting a new disk on the Macintosh, you need to
+				drag the old one to the trash can.
+			</p>
+			<input type="button" value="Gotcha!" id="mac-eject-ok-btn">
+		</div>
+	</div>
+</template>
+
+<script>
+	// The following is requires for the webcomponents polyfill
+    document._currentScript = document._currentScript || document.currentScript;
+    
+	// importDoc references this import's document
+    	
+    var emulatorPopupsImportDoc = document._currentScript.ownerDocument;
+    	
+    var EmulatorPopupsProto = Object.create(HTMLElement.prototype);
+
+	EmulatorPopupsProto.createdCallback = function() {
+		var t = emulatorPopupsImportDoc.getElementById('EmulatorPopupsTemplate');
+		var clone = document.importNode(t.content, true);
+		var shadowRoot = this.createShadowRoot();
+		shadowRoot.appendChild(clone);
+
+		// Initialize handler for dialog boxes
+		var popups = this.popups = new PopupManager(shadowRoot);
+
+		function closeButtonAction(popupId, buttonSelector) {
+			$(shadowRoot).find('#'+popupId).find(buttonSelector).click(
+				function() {popups.setVisibility(popupId, false);});
+		}
+
+		closeButtonAction("popup-mac-eject-disk", "#mac-eject-ok-btn");
+		closeButtonAction("popup-uploader",       "#uploader-cancel-btn");
+	}
+
+    EmulatorPopupsProto.setVisibility = function(id, state) {
+		this.popups.setVisibility(id, state);
+	};
+
+    EmulatorPopupsProto.setStatus = function(status) {
+		$(this.shadowRoot).find("#status-text").innerHTML = status;
+	};
+
+	EmulatorPopupsProto.askForFile = function(prompt, callback) {
+		if(!window.FileReader) {
+			// Browser is not compatible
+			alert("Your web browser does not support this feature");
+			return;
+		}
+		$(this.shadowRoot).find('#uploader-text').html(prompt);
+		$(this.shadowRoot).find('#uploader-ok-btn').click(function(evt) {
+			this.setVisibility("popup-uploader", false);
+			var file = $(this.shadowRoot).find('#uploader-file')[0].files[0];
+			callback(file);
+			return false;
+		});
+		this.setVisibility("popup-uploader", true);
+	}
+
+	EmulatorPopupsProto.askForRom = function(callback) {
+		var me = this;
+		$(shadowRoot).find('#select-rom-btn').click(
+			function() {me.askForFile("Select ROM image", callback);}
+		);
+	}
+
+	var EmulatorPopups = document.registerElement('emulator-popups', {prototype: EmulatorPopupsProto});
+	
+	/* This object manages popup dialog boxes. Since our pop-up boxes are translucent,
+	 * this object ensures that only the topmost popup box is visible at once.
+	 */
+	class PopupManager {
+		constructor(shadowRoot) {
+			this.popupBoxes     = [];
+			this.$visibleElement = null;
+			this.$shadowRoot     = $(shadowRoot);
+
+			var me = this;
+			this.$shadowRoot.find(".popup").each(function(i,el) {me.add(el);});
+		}
+
+		add(el) {
+			this.popupBoxes.push( {
+				"id" : el.id,
+				"open" : false
+			});
+		}
+
+		setVisibleElement(id) {
+			var $el = this.$shadowRoot.find("#"+id);
+			if(this.$visibleElement != $el) {
+				if(this.$visibleElement) {
+					this.$visibleElement.hide();
+				}
+				if($el) {
+					$el.show();
+				}
+				this.$visibleElement = $el;
+			}
+		}
+
+		setVisibility(id, state) {
+			var topmost = null;
+			for (var i = 0; i < this.popupBoxes.length; ++i) {
+				if (id == this.popupBoxes[i].id) {
+					this.popupBoxes[i].open = state;
+				}
+				if (this.popupBoxes[i].open) {
+					topmost = this.popupBoxes[i].id;
+				}
+			}
+			this.setVisibleElement(topmost);
+		}
+	}
+</script>

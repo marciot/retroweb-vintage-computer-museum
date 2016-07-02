@@ -17,10 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-var PopupManager;
-
-if(!PopupManager) { // Guard for multiple definitions
-
 /* Decode the query variable
  */
 function parseQuery(url) {
@@ -154,44 +150,3 @@ function simulateKeyAction(type, keyCode, charCode, shifted) {
 	var evt = window.crossBrowser_initKeyboardEvent(type, {"key": keyCode, "char": charCode, "shiftKey" : shifted});
     document.dispatchEvent(evt);
 }
-
-/* This object manages popup dialog boxes. Since our pop-up boxes are translucent,
- * this object ensures that only the topmost popup box is visible at once.
- */
-PopupManager = class {
-	constructor() {
-		this.visibleElement = null;
-		this.popupBoxes     = [];
-	}
-
-	setVisibleElement(el) {
-		if(this.visibleElement != el) {
-			if(this.visibleElement) {
-				$(this.visibleElement).hide();
-			}
-			if(el) {
-				$(el).show();
-			}
-			this.visibleElement = el;
-		}
-	}
-
-	add(id) {
-		this.popupBoxes.push({"id" : id, "open" : false});
-	}
-
-	setVisibility(id, state) {
-		var topmost = null;
-		for (var i = 0; i < this.popupBoxes.length; ++i) {
-			if (id == this.popupBoxes[i].id) {
-				this.popupBoxes[i].open = state;
-			}
-			if (this.popupBoxes[i].open) {
-				topmost = this.popupBoxes[i].id;
-			}
-		}
-		this.setVisibleElement(document.getElementById(topmost));
-	}
-}
-
-}; // End of guard for multiple definitions

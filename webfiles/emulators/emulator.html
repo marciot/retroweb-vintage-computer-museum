@@ -66,175 +66,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		height:       100%;
 		min-width:    500px;
 	}
-
-	/* Popup boxes are the dark, translucent, rounded-cornered
-	 * dialog boxes that show up centered on the simulated
-	 * computer's display
-	 */
-	 
-	DIV.popup {
-		display:        none;
-		border-radius:  30px;
-		background:     black;
-		opacity:        0.85;
-		text-align:     center;
-		color:          white;
-
-		/* Allow centering of popups (see margin formula below) */
-		position: absolute;
-		top:      50%;
-		left:     50%;
-	}
-
-	DIV.popup H1 {
-		font-size: large;
-	}
-
-	DIV.popup P {
-		text-align: left;
-	}
-
-	#popup-status {
-		padding:      20px;
-		width:       150px;
-		height:      100px;
-		margin-left: -95px; /* -0.5 * width - padding */
-		margin-top:  -70px; /* -0.5 * height - padding */
-	}
-
-	#popup-rom-missing {
-		padding:       20px;
-		width:        350px;
-		height:       150px;
-		margin-left: -195px;
-		margin-top:   -95px;
-	}
-
-	#popup-need-boot-media {
-		padding:       20px;
-		width:        350px;
-		height:       125px;
-		margin-left: -195px;
-		margin-top:   -82px;
-	}
-
-	#popup-uploader {
-		padding:       20px;
-		width:        350px;
-		height:       150px;
-		margin-left: -195px;
-		margin-top:   -95px;
-	}
-
-	#popup-mac-eject-disk {
-		padding:       20px;
-		width:        350px;
-		height:       150px;
-		margin-left: -195px;
-		margin-top:   -95px;
-	}
-
-	#popup-mac-eject-disk IMG {
-		float: right;
-	}
-
-	#popup-mac-eject-disk DIV {
-		margin-right: 60px;
-	}
-
-	/* Emscripten spinner animation */
-
-	.spinner {
-		height: 50px;
-		width: 50px;
-		margin: 0px auto;
-		-webkit-animation: rotation .8s linear infinite;
-		-moz-animation: rotation .8s linear infinite;
-		-o-animation: rotation .8s linear infinite;
-		animation: rotation 0.8s linear infinite;
-		border-left: 10px solid rgb(0,0,0);
-		border-right: 10px solid rgb(0,0,0);
-		border-bottom: 10px solid rgb(0,0,0);
-		border-top: 10px solid rgb(255,255,255);
-		border-radius: 100%;
-		background-color: rgb(0,0,0);
-	}
-	@-webkit-keyframes rotation {
-		from {-webkit-transform: rotate(0deg);}
-		to {-webkit-transform: rotate(360deg);}
-	}
-	@-moz-keyframes rotation {
-		from {-moz-transform: rotate(0deg);}
-		to {-moz-transform: rotate(360deg);}
-	}
-	@-o-keyframes rotation {
-		from {-o-transform: rotate(0deg);}
-		to {-o-transform: rotate(360deg);}
-	}
-	@keyframes rotation {
-		from {transform: rotate(0deg);}
-		to {transform: rotate(360deg);}
-	}
-
-	.small-icon {
-		width: 64px;
-		height: 64px;
-	}
 </style>
 
 <template id="emulatorTemplate">
 	<div class="background" id="background">
-	
 		<animated-zoom id="zoomable" class="screen">
 			<emulator-buttons>
 				<canvas id="screen">
 				</canvas>
 			</emulator-buttons>
-
-			<!-- Pop-up windows that overlay the screen area: -->
-
-			<div id="popup-status" class="popup">
-				<div class="spinner"></div>
-				<div class="emscripten" id="status-text">Downloading...</div>
-				<div class="emscripten">
-					<progress value="0" max="100" id="progress" hidden=0></progress>  
-				</div>
-			</div>
-
-			<div id="popup-need-boot-media" class="popup">
-				<img src="/ui-artwork/sunny.png" class="small-icon">
-				<h1>This computer needs a boot disk!<br>Follow the green dots!</h1>
-			</div>
-
-			<div id="popup-rom-missing" class="popup">
-				<img src="/ui-artwork/rom.png" class="small-icon">
-				<p>This computer cannot start without a valid ROM file.</p>
-				<input type="button" value="Select ROM file..."
-					onclick="openFileUploader ('Select ROM image', doRomUpload);">
-			</div>
-
-			<div id="popup-uploader" class="popup">
-				<h1 id="uploader-text">Select a file:</h1>
-				<form name="file-upload" onsubmit="return false">
-					<p>
-					<input type="file" id="uploader-file" chars="80"><br>
-					</p>
-					<input type="submit" value="OK" id="uploader-ok-btn">
-					<input type="button" value="Cancel" onclick="popups.close('popup-uploader');">
-				</form>
-			</div>
-
-			<div id="popup-mac-eject-disk" class="popup">
-				<img src="/ui-artwork/drag-to-trash.png">
-				<div>
-					<h1>Ejecting disks on the Macintosh</h1>
-					<p>
-						Before inserting a new disk on the Macintosh, you need to
-						drag the old one to the trash can.
-					</p>
-					<input type="button" value="Gotcha!" onclick="popups.close('popup-mac-eject-disk');">
-				</div>
-			</div>
+			<emulator-popups>
+				<!-- Pop-up messages or dialogs that overlay the screen area -->
+			</emulator-popups>
 		</animated-zoom>
 	</div>
 	
@@ -244,7 +87,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" src="/lib/utils.js"></script>
 <script type="text/javascript" src="/lib/emscripten-fs-utils.js"></script>
 <script type="text/javascript" src="/emulators/default-interface.js"></script>
 <script type="text/javascript" src="/emulators/emulator.js"></script>
@@ -253,29 +95,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <script>
 	// The following is requires for the webcomponents polyfill
 	document._currentScript = document._currentScript || document.currentScript;
-	
+
 	// importDoc references this import's document
 	var emuImportDoc = document._currentScript.ownerDocument;
-	
-	function setupHandlers() {
-		// Add tab index to ensure the canvas retains focus			
-		$("#screen").attr("tabindex", "0").mousedown(function(){ $(this).focus(); return false; });
-		
-		// Ignore arrow keys and pageup/pagedown
-		window.addEventListener('keydown', function(e) {
-			console.log(e.keyCode);
-			if([32, 33, 34,  37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-				e.preventDefault();
-			}
-		}, false);
-	}
 
 	// Global variables for emulator
 	var Module;
 	var emuState;
 	var fileManager;
-	var popups;
 	var emulatorCallbacks;
+	var popups;
 
 	/* Public constructor function */
 
@@ -284,24 +113,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		var clone = document.importNode(template.content, true);
 		host.appendChild(clone);
 
-		setupHandlers();
+		// Add tab index to ensure the canvas retains focus
+		$("#screen").attr("tabindex", "0").mousedown(function(){ $(this).focus(); return false; });
 
-		// Initialize handler for dialog boxes
-		popups = new PopupManager();
-		popups.add("popup-rom-missing");
-		popups.add("popup-need-boot-media");
-		popups.add("popup-status");
-		popups.add("popup-uploader");
-		popups.add("popup-mac-eject-disk");
+		// Ignore arrow keys and pageup/pagedown
+		window.addEventListener('keydown', function(e) {
+			console.log(e.keyCode);
+			if([32, 33, 34,  37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+				e.preventDefault();
+			}
+		}, false);
+
+		var emulatorButtons = document.getElementsByTagName("emulator-buttons")[0];
+		popups              = document.getElementsByTagName("emulator-popups" )[0];
 
 		var emulatorObj = emulatorCallbacks = new Emulator(emulator);
-
-		// Initialize the callback
-		document.getElementsByTagName("emulator-buttons")[0].setRestartAction(
-			function() {
-				emulatorObj.restart();
-			});
-
+		emulatorButtons.setRestartAction(function() {emulatorObj.restart();});
 		return emulatorObj;
 	}
 </script>
