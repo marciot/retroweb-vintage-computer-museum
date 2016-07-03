@@ -79,13 +79,15 @@ function saveEmscriptenFile(emscriptenFS, srcFileName) {
  *   5 - From the preInit callback, call syncEmscriptenFS to playback
  *       file system operations into the actual Emscripten FS.
  */
-function EmscriptenFileManager() {
-	this.dirs  = new Array();
-	this.files = new Array();
-	this.remainingFiles = 0;
-	this.print = function(text) {console.log(text)};
+class EmscriptenFileManager {
+	constructor() {
+		this.dirs  = new Array();
+		this.files = new Array();
+		this.remainingFiles = 0;
+		this.print = function(text) {console.log(text)};
+	}
 	
-	this.setPrintCallback = function(callback) {
+	setPrintCallback(callback) {
 		this.print = callback;
 	}
 	
@@ -102,7 +104,7 @@ function EmscriptenFileManager() {
 	 * of zero indicates that it is a good time to launch
 	 * the emulator and call "syncEmscriptenFS" from preInit.
 	 */
-	this.setFileReadyCallback = function(callback) {
+	setFileReadyCallback(callback) {
 		this.fileReadyCallback = callback;
 	}
 	
@@ -110,7 +112,7 @@ function EmscriptenFileManager() {
 	 * on an Emscripten FS object. It should be called during
 	 * or after Emscripten's preInit phase.
 	 */
-	this.syncEmscriptenFS = function() {		
+	syncEmscriptenFS() {
 		var filesWritten = [];
 		if(typeof FS == 'undefined') {
 			this.print("Enscripten FS not defined");
@@ -141,8 +143,8 @@ function EmscriptenFileManager() {
 		
 		return filesWritten;
 	}
-	
-	this._fileRef = function(fileName) {
+
+	_fileRef(fileName) {
 		for(var i = 0; i < this.files.length; i++) {
 			if(this.files[i].name == fileName) {
 				return this.files[i];
@@ -157,11 +159,11 @@ function EmscriptenFileManager() {
 		return newRef;
 	}
 	
-	this._incrementCounter = function() {
+	_incrementCounter() {
 		this.remainingFiles++;
 	}
 	
-	this._decrementCounter = function(depName) {
+	_decrementCounter(depName) {
 		this.remainingFiles--;
 		if(typeof this.fileReadyCallback == 'function') {
 			this.fileReadyCallback(this.remainingFiles, depName);
@@ -174,7 +176,7 @@ function EmscriptenFileManager() {
 	   is actually started.
 	 */
 	
-	this.makeDir = function(dirPath) {
+	makeDir(dirPath) {
 		this.dirs.push({"path" : dirPath, "written" : false});
 	}
 	
@@ -183,7 +185,7 @@ function EmscriptenFileManager() {
 	 *   dstFileName : Name used to write file to the Emscripten FS
 	 *   srcUrl :      URL for the resource
 	 */
-	this.writeFileFromBinaryData = function(dstFileName, srcData) {
+	writeFileFromBinaryData(dstFileName, srcData) {
 		var ref = this._fileRef(dstFileName);
 		ref.data = new Uint8Array(srcData);
 		ref.written = false;
@@ -195,7 +197,7 @@ function EmscriptenFileManager() {
 	 *   dstFileName : Name used to write file to the Emscripten FS
 	 *   srcUrl :      URL for the resource
 	 */
-	this.writeFileFromUrl = function(dstFileName, srcUrl) {
+	writeFileFromUrl(dstFileName, srcUrl) {
 		var me = this;
 		this._incrementCounter();
 		fetchFile(srcUrl,
@@ -220,7 +222,7 @@ function EmscriptenFileManager() {
 	 *   dstFileName : Name used to write file to the Emscripten FS
 	 *   srcFile :     Exiting file object
 	 */
-	this.writeFileFromFile = function(dstName, srcFile) {
+	writeFileFromFile(dstName, srcFile) {
 		var me = this;
 		this._incrementCounter();
 		var reader = new FileReader();
@@ -241,7 +243,7 @@ function EmscriptenFileManager() {
 	 * as a dependency.
 	 */
 	
-	this.waitForCallback = function(callback, depName) {
+	waitForCallback(callback, depName) {
 		var me = this;
 		this._incrementCounter();
 		return function(arg1, arg2, arg3) {
@@ -250,7 +252,7 @@ function EmscriptenFileManager() {
 		}
 	}
 	
-	this.getFileBinaryData = function(fileName) {
+	getFileBinaryData(fileName) {
 		var ref = this._fileRef(fileName);
 		return ref.data;
 	}
