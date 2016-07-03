@@ -222,27 +222,34 @@ function activateShowTargetElements() {
 
 /* This object manages hints on a webpage
  */
-class HintManager {
-	constructor(element) {
-		this.curHint = 0;
+var HintManager;
 
-		element.hintManager = this;
-		$(element).children("LI:first").show();
+if(!HintManager) {
+	/* Classes have difficulties getting multiply defined, so we put a guard here */
+	HintManager = class {
+		constructor(element) {
+			this.curHint = 0;
 
-		if($(element).children("LI").length > 1) {
-			var title = (element.className == "trivia") ? "More trivia" : "More hints";
-			$("<input type='button' value='" + title + "'>")
-				.click(function() {this.parentNode.hintManager.nextHint();})
-				.prependTo(element);
+			element.hintManager = this;
+			$(element).children("LI:first").show();
+
+			if($(element).children("LI").length > 1) {
+				var title = (element.className == "trivia") ? "More trivia" : "More hints";
+				$("<input type='button' value='" + title + "'>")
+					.click(function() {this.parentNode.hintManager.nextHint();})
+					.prependTo(element);
+			}
+		}
+
+		nextHint() {
+			var hints = $(element).children("LI");
+			$(hints[this.curHint]).hide();
+			this.curHint = (this.curHint + 1) % hints.length;
+			$(hints[this.curHint]).show();
 		}
 	}
-
-	nextHint() {
-		var hints = $(element).children("LI");
-		$(hints[this.curHint]).hide();
-		this.curHint = (this.curHint + 1) % hints.length;
-		$(hints[this.curHint]).show();
-	}
+} else {
+	console.log("TODO: Fix multiple includes of docs.js");
 }
 
 function implicitClassNames() {
@@ -298,7 +305,7 @@ function applyClassSetters() {
  */
 function applyDynamicFormatting(emulator) {
 	implicitClassNames();
-	applyClassSetters();
+	//applyClassSetters();
 	implicitShowTarget();
 	defineGlossaryTerms();
 	declareReferences();

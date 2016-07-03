@@ -112,41 +112,26 @@ var finishFormatting;
 var trailingLinks;
 
 function renderWikiContent() {
-	var el = document.getElementById("retroweb-markup");
-	trailingLinks = new TrailingLinks(el);
-	el.innerHTML = wikify(el.innerHTML)
+	var srcElement = document.getElementById("retroweb-markup");
+	var dstElement = document.getElementById("html-iframe");
+	dstElement.innerHTML = srcElement.innerHTML;
+	trailingLinks = new TrailingLinks(dstElement);
+	dstElement.innerHTML = wikify(dstElement.innerHTML)
 		.replace(/\$EMULATOR/g, emuState.getEmulator())
 		.replace(/\$EMU_NAME/g, emuState.getConfig().name)
 		.replace(/\$EMU_PAGE/g, implicitUrlFromName(emuState.getConfig().name));;
-	trailingLinks.substitute(el);
-	
-	var wikiTemplate = navImportDoc.getElementById("wikiTemplate").innerHTML;
-	var html = wikiTemplate.replace(/\$WIKI_CONTENT/g, el.innerHTML);
-	
+	trailingLinks.substitute(dstElement);
+
 	if(RetroWeb.query.debug == "html") {
 		// If ?debug=html is present in the query, then show the transformed wiki source
-		html = '<pre>' + html.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</pre>';
+		dstElement.innerHTML = '<pre>' + dstElement.innerHTML.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</pre>';
 	}
-	
-	var element = document.getElementById("html-iframe");
-	/* A bit of kludge here to handle the fact that document.write() seems to execute asynchronously.
-	 * Rather than calling finishFormatting directly, we set a global function that gets
-	 * called by the wiki template when the browser is done rendering the wiki content.
-	 */
-	finishFormatting = function() {
-		var doc = element.contentWindow.document;
-		processJSONContent(doc, doc.body);
-		expandRetrowebIcons(doc, doc);
-		navAttachHandlersToAnchors(element.contentWindow.document);
-		element.contentWindow.applyDynamicFormatting(emuState.getEmulator());
-	}
-	
-	$(element.contentWindow.document).empty();
-	element.contentWindow.document.open();
-	element.contentWindow.document.write('<html><body>'+html+'</html></body>');
-	element.contentWindow.document.close();
-	$("html,body", element.contentWindow.document).scrollTop(0);
-	RetroWeb.addIOSErrorHandler(element.contentWindow);
+
+	$(dstElement).scrollTop(0);
+
+	processJSONContent(document, dstElement);
+	navAttachHandlersToAnchors(dstElement);
+	applyDynamicFormatting(emuState.getEmulator());
 }
 
 function parseQueryFromUrl(url) {
@@ -202,7 +187,7 @@ function navAttachHandlersToAnchors(element) {
 			this.innerHTML,
 			this.getAttribute("data-type"),
 			this.getAttribute("href"),
-			this.getAttribute("data-cfg")
+			this.getAttribute("data-json")
 		);
 	}
 	

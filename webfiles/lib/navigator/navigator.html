@@ -62,26 +62,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 		#navigator-content {
 			height:         90%;
+			padding-right:	20px;
 		}
 
 		#html-iframe {
-			max-width:  100%;
-			width:      100%;
-			height:     100%;
-		}
+			width:			100%;
+			height:			100%;
 
-		/* Fix for iOS bug where the iframe resizes to the size of the content.
-		 * For iOS only, we make the parent DIV scrollable.
-		 * http://stackoverflow.com/questions/16937070/iframe-size-with-css-on-ios
-		 */
-		#scroll-for-iOS {
-			width:      100%;
-			height:     100%;
-		}
-
-		.iOSHack #scroll-for-iOS {
-			overflow:                   auto;
-			-webkit-overflow-scrolling: touch;
+			overflow:		auto;
+			padding:		0px 10px;
 		}
 
 		/* Fancy fade-out decoration for HTML viewer iframe. This works
@@ -112,6 +101,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			background: linear-gradient(rgba(255,255,255,0),#eef);
 		}
 	</style>
+	<link rel="stylesheet" type="text/css" href="/lib/navigator/docs.css">
 	<div id="navigator-panel" class="navigator sidepanel-window">
 		<div class="title-bar">
 			<select id="emulator-select" onchange="onEmulatorChange()">
@@ -123,9 +113,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		</div>
 		<div id="navigator-content">
 			<div class="fade-effect">
-				<div id="scroll-for-iOS">
-					<iframe id="html-iframe" frameborder="0" seamless="seamless" scrolling="yes" src="about:blank">
-					</iframe>
+				<div id="html-iframe" class="docs">
 				</div>
 				<div class="fade-effect-top"></div>
 				<div class="fade-effect-bottom"></div>
@@ -134,22 +122,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	</div>
 </template>
 
-<template id="wikiTemplate">
-	<link rel="stylesheet" type="text/css" href="/lib/navigator/docs.css">
-	<link rel="stylesheet" type="text/css" href="/lib/navigator/icons.css">
-	<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
-	<script type="text/javascript" src="/lib/navigator/docs.js"></script>
-	$WIKI_CONTENT
-	<script type="text/javascript">
-		parent.finishFormatting();
-	</script>
-</template>
-
 <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script type="text/javascript" src="/lib/wikify.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator_json.js"></script>
 <script type="text/javascript" src="/lib/navigator/navigator_icons.js"></script>
+<script type="text/javascript" src="/lib/navigator/docs.js"></script>
 
 <script>
 	// The following is requires for the webcomponents polyfill
@@ -165,9 +143,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 		navShow();
 		navAddPopStateHandler();
-
-		if(RetroWeb.isIOS) {
-			$("#navigator-panel").addClass("iOSHack");
-		}
 	}
 </script>

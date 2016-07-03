@@ -29,8 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * Into a series of anchors:
  *
  *	<a href="href" data-type="data-type">label</a>
- *	<a href="href" data-type="data-type" class="class" data-cfg='{"className": "class"}'>label</a>
- *	<a href="href" data-type="data-type" class="class" data-cfg='{"option": "value"}'>label</a>
+ *	<a href="href" data-type="data-type" class="class" data-json='{"className": "class"}'>label</a>
+ *	<a href="href" data-type="data-type" class="class" data-json='{"option": "value"}'>label</a>
  *
  */
 function expandJSONIconArrayToAnchors(doc, jsonIcons, containerElement) {
@@ -45,12 +45,11 @@ function expandJSONIconArrayToAnchors(doc, jsonIcons, containerElement) {
 		}
 		icon.appendChild(doc.createTextNode(name));
 		if(type) icon.setAttribute("data-type", type);
-		if(opts) icon.setAttribute("data-cfg", JSON.stringify(opts));
+		if(opts) icon.setAttribute("data-json", JSON.stringify(opts));
 		if(arg)  icon.setAttribute("href", arg);
 		containerElement.appendChild(icon);
 	}
 }
-
 
 /* JSON can be used as a compact representation for icons. The format is as such:
  * 
@@ -62,10 +61,10 @@ function expandJSONIconArrayToAnchors(doc, jsonIcons, containerElement) {
  *		]
  *	}
  *
- * This function emits anchors nested in an x-icons element for subsequent processing.
+ * This function emits anchors nested in an file-icons element for subsequent processing.
  */
 function processJSONIcons( doc, json ) {
-	var icons = doc.createElement("x-icons");
+	var icons = doc.createElement("file-icons");
 	if(json.hasOwnProperty("class")) {
 		icons.className = json["class"];
 	} else {
@@ -76,6 +75,7 @@ function processJSONIcons( doc, json ) {
 		}
 	}
 	expandJSONIconArrayToAnchors(doc, json.icons, icons);
+	icons.update();
 	return icons;
 }
 

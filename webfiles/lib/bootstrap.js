@@ -59,6 +59,7 @@ if(!(RetroWeb.query.debug == "raw")) {
 	document.write('<link rel="import" href="/components/emulator-skin.html"></link>');
 	document.write('<link rel="import" href="/components/emulator-buttons.html"></link>');
 	document.write('<link rel="import" href="/components/emulator-popups.html"></link>');
+	document.write('<link rel="import" href="/components/file-icons.html"></link>');
 	document.write('<link rel="import" href="/emulators/emulator.html"></link>');
 	document.write('<link rel="import" href="/lib/navigator/navigator.html"></link>');
 	document.write('<link rel="import" href="/lib/retroweb-main.html"></link>');

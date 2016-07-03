@@ -17,39 +17,39 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-BODY {
+ DIV.docs {
 	margin-top: 20px;
 	margin-bottom: 100px;
 	font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
 }
 
-TD, TH {
+.docs TD, .docs TH {
 	box-shadow: 1px 1px 2px rgba(0,0,0,0.45);
 }
 
-TABLE, TD, TH {
+.docs TABLE, .docs TD, .docs TH {
 	margin: 10px auto;
 	border-spacing: 3px;
 	border-collapse: separate;
 	padding: 5px;
 }
 
-TH {
+.docs TH {
 	border: 1px solid;
 	background: #ccc;
 	color: #555;
 }
 
-TD {
+.docs TD {
 	border: 1px solid #555;
 	background: #ccf;
 }
 
-TD.centered {
+TD.docs .centered {
   text-align: center;
 }
 
-H1, H2, H3, H4, H5, H6 {
+.docs H1, .docs H2, .docs  H3, .docs H4, .docs H5, .docs H6 {
 	border-bottom-style: solid;
 	border-width: 1px;
 	border-color: #555;
@@ -57,29 +57,29 @@ H1, H2, H3, H4, H5, H6 {
 	clear: both;
 }
 
-OL LI {
+.docs OL .docs LI {
 	padding-top: 4px;
 	padding-bottom: 4px;
 }
 
-UL:not([class]) {
+.docs UL:not([class]) {
     list-style: none;
     padding-left:1em;
     margin: 20px 0
 }
 
-UL:not([class]) LI {
+.docs UL:not([class]) .docs LI {
     padding: 3px 1em;
 }
 
-UL:not([class]) LI:before {
+.docs UL:not([class]) .docs LI:before {
     content: "\25A0 ";
     color: #777;
 	padding-right:7px;
 	font-size: larger;
 }
 
-DT {
+.docs DT {
 	float:       left;
 	clear:       left;
 	font-weight: bold;
@@ -88,35 +88,35 @@ DT {
 	color:       #777;
 }
 
-DT:after {
+.docs DT:after {
     content: ":";
 }
 
-DD {
+.docs DD {
 	margin-left: 110px;
 	padding-bottom: 0.5em;
 }
 
-DD:after {
+.docs DD:after {
 	content: '';
 	clear: left;
 	display: block;
 }
 
-DL.wide DT {
+.docs DL.wide DT {
 	width: 30%;
 }
 
-DL.wide DD {
+.docs DL.wide DD {
 	margin-left: 30%;
 	padding-left: 5px;
 }
 
-CITE {
+.docs CITE {
 	text-decoration: underline;
 }
 
-HR {
+.docs HR {
 	max-width: 5%;
 	border: none;
 	border-top: 4px double #bbc;
@@ -138,7 +138,7 @@ HR {
 	user-select: none;
 }
 
-A.show-target {
+.docs A.show-target {
 	margin-top: 40px;
 	font-weight: bold;
 	text-decoration: underline;
@@ -148,7 +148,7 @@ A.show-target {
 
 /* Text bubbles */
 
-.bubble SPAN.bubble-body {
+.docs .bubble SPAN.bubble-body {
 	position: absolute;
 	display: none;
     bottom:  30px;
@@ -164,7 +164,7 @@ A.show-target {
 	box-shadow: 3px 3px 3px rgba(0,0,0,0.45);
 }
 
-SPAN.bubble-tail
+.docs SPAN.bubble-tail
 {
 	position: absolute;
 	width:    0;
@@ -176,33 +176,33 @@ SPAN.bubble-tail
 	display: none;
 }
 
-.bubble {
+.docs .bubble {
 	position: relative;
 	font-style: italic;
 }
 
-.bubble:hover SPAN {
+.docs .bubble:hover SPAN {
     display: inline;
 }
 
-.reference {
+.docs .reference {
 	vertical-align: super;
 	font-size: smaller;
 	font-style: normal;
 	text-decoration: none;
 }
 
-P.tagline {
+.docs P.tagline {
 	font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
 }
 
-.trivia UL,.hints UL {
+.docs .trivia UL,.docs .hints UL {
 	padding: 0px;
 	margin: 0px;
 	list-style-type: none;
 }
 
-.trivia LI,.hints LI {
+.docs .trivia LI,.hints LI {
 	font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
 	font-style: italic;
 	//color: green;
@@ -220,54 +220,54 @@ P.tagline {
 	background: #ccf;
 }
 
-.trivia INPUT, .hints INPUT {
+.docs .trivia INPUT, .docs .hints INPUT {
 	float: right;
 	margin-left: 20px;
 	margin-right: 70px;
 	margin-top: 1em;
 }
 
-SPAN.highlight {
+.docs SPAN.highlight {
 	text-decoration:underline;
 }
 
-TD.align-center {
+.docs TD.align-center {
   text-align: center;
 }
 
-TD.align-right {
+.docs TD.align-right {
   text-align: right;
 }
 
-IMG.float-right {
+.docs IMG.float-right {
 	float: right;
 	margin: 0px 20px 10px 20px;
 }
 
-IMG.float-left {
+.docs IMG.float-left {
 	float: left;
 	margin: 0px 20px 10px 20px;
 }
 
-IMG.center {
+.docs IMG.center {
 	margin: 0 auto;
 	display: block;
 }
 
-IMG.inline {
+.docs IMG.inline {
 	height: 1em;
 	width: 1em;
 	vertical-align: text-bottom;
 }
 
-FIGURE.screenshot IMG {
+.docs FIGURE.screenshot IMG {
 	border: solid 1px black;
 	max-width: 100%;
 	display: block;
 	margin: 0 auto;
 }
 
-FIGURE.screenshot FIGCAPTION {
+.docs FIGURE.screenshot FIGCAPTION {
 	font-size: smaller;
 	font-style: italic;
 	font-weight: bold;
@@ -275,7 +275,7 @@ FIGURE.screenshot FIGCAPTION {
 	max-width: 100%;
 }
 
-FIGURE.screenshot {
+.docs FIGURE.screenshot {
 	width:intrinsic; /* For Safari, see https://developer.mozilla.org/en-US/docs/CSS/width */
     width:-moz-fit-content;
     width:-webkit-fit-content;
@@ -287,12 +287,12 @@ FIGURE.screenshot {
 	max-width: 75%;
 }
 
-FIGURE.float-right IMG, FIGURE.float-left IMG {
+.docs FIGURE.float-right IMG, FIGURE.float-left IMG {
 	display: block;
 	max-width: 100%;
 }
 
-FIGURE.float-right FIGCAPTION, FIGURE.float-left FIGCAPTION {
+.docs FIGURE.float-right FIGCAPTION, FIGURE.float-left FIGCAPTION {
 	font-size: smaller;
 	font-style: italic;
 	font-weight: bold;
@@ -300,7 +300,7 @@ FIGURE.float-right FIGCAPTION, FIGURE.float-left FIGCAPTION {
 	max-width: 90%;
 }
 
-FIGURE.float-right {
+.docs FIGURE.float-right {
 	float: right;
 	padding: 10px 10px;
 	margin: 0 20px 20px 20px;
@@ -308,7 +308,7 @@ FIGURE.float-right {
 	max-width: 40%;
 }
 
-FIGURE.float-left {
+.docs FIGURE.float-left {
 	float: left;
 	padding: 10px 10px;
 	margin: 0 20px 20px 20px;
@@ -316,40 +316,40 @@ FIGURE.float-left {
 	max-width: 40%;
 }
 
-DIV.float-right {
+.docs .float-right {
 	float: right;
 	padding: 0px 20px;
 }
 
-DIV.float-left {
+.docs .float-left {
 	float: left;
 	padding: 0px 20px;
 }
 
-PRE {
+.docs PRE {
 	font-family: monospace;
     white-space: pre-wrap;
 	color: DarkGreen;
 	margin-left: 25px;
 }
 
-a[href^="http"]:after {
+.docs a[href^="http"]:after {
      content: " " url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);   
 }
 
-.hidden {
+.docs .hidden {
 	display: none;
 }
 
-.header {
+.docs .header {
 	text-align: center;
 }
 
-.license {
+.docs .license {
 	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 }
 
-.typedCommand {
+.docs .typedCommand {
 	border-style: solid;
 	border-width: 1px;
 	border-color: black;
@@ -357,7 +357,7 @@ a[href^="http"]:after {
 	white-space: pre-wrap;
 }
 
-#happy-mac {
+.docs #happy-mac {
 	width:64px;
 	height:64px;
 	margin: 10px auto;

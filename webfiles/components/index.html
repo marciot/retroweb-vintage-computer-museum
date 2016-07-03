@@ -7,6 +7,7 @@
 		<link rel="import" href="/components/emulator-buttons.html">
 		<link rel="import" href="/components/emulator-popups.html">
 		<link rel="import" href="/components/emulator-skin.html">
+		<link rel="import" href="/components/file-icons.html">
 		<style>
 			
 			body {
@@ -84,19 +85,19 @@
 				padding:			1em;
 				vertical-align:		top;
 			}
-			
+
 			tr {
 				border:				2px solid black;
 			}
-			
+
 			td {
 				background-color:	white;
 			}
-			
+
 			pre {
 				background:			lightGray;
 			}
-			
+
 			#skin-demo {
 				position:			absolute;
 				transform-origin:	left top;
@@ -104,22 +105,28 @@
 				width:              2048px;
 				height:             1368px;
 			}
-			
+
 			#skin-demo-outer {
 				width: 				512px;
 				height:				342px;
 				background:			white;
 			}
-			
+
 			#screen-area {
 				width:				100%;
 				height:				100%;
 			}
-			
+
 			th.footer ul {
 				list-style:			none;
 				margin-left:		0;
-			} 
+			}
+
+			.three-column {
+				-webkit-column-count: 3; /* Chrome, Safari, Opera */
+				-moz-column-count: 3; /* Firefox */
+				column-count: 3;
+			}
 		</style>
 	</head>
 	<body>
@@ -166,6 +173,8 @@
 				</td>
 			</tr>
 
+			<!-- ---------------------------------------------------------- -->
+
 			<tr>
 				<th>
 					<div id="skin-demo-outer">
@@ -210,6 +219,8 @@
 				</td>
 			</tr>
 
+			<!-- ---------------------------------------------------------- -->
+
 			<tr>
 				<th>
 					<br>
@@ -247,6 +258,9 @@
 					</dl>
 				</td>
 			</tr>
+
+			<!-- ---------------------------------------------------------- -->
+
 			<tr>
 				<th>
 					<br>
@@ -286,7 +300,9 @@
 					</p>
 				</td>
 			</tr>
-			
+
+			<!-- ---------------------------------------------------------- -->
+
 			<tr>
 				<th>
 					<br>
@@ -327,7 +343,76 @@
 						<dd>Returns an array of popup names</dd>
 					</dl>
 				</td>
-				
+			</tr>
+
+			<!-- ---------------------------------------------------------- -->
+
+			<tr>
+				<th>
+					<file-icons>
+						<a data-type="folder">Folder</a>
+						<a data-type="folder-dot">Folder with Boot Files</a>
+						<a data-type="boot-hd">Bootable Disk</a>
+						<a data-type="boot-floppy">Bootable Floppy</a>
+						<a data-type="floppy">Floppy</a>
+						<a data-type="boot-rom">Boot into ROM</a>
+						<a data-type="rom">ROM No Dot</a>
+						<a data-type="doc">Local Document</a>
+						<a data-type="hyperlink">External Hyperlink</a>
+						<a data-type="download-file">Download File</a>
+						<a data-type="download-floppy">Download Floppy</a>
+						<a data-type="upload-file">Upload File</a>
+						<a data-type="upload-floppy">Upload Floppy</a>
+						<a data-type="enter-url">Enter URL</a>
+						<a data-type="cassette">Interact with Cassette</a>
+						<a data-type="power">Start Emulator</a>
+					</file-icons>
+				</th>
+				<td>
+					<h2>file-icons</h2>
+					<p>
+					Shows icons for mounting disks or triggering actions.
+					</p>
+<pre>
+&lt;file-icons&gt;
+   &lt;a data-type=&quot;type&quot; href=&quot;resource-url&quot; data-json=&quot;{ ... }&quot;&gt;&lt;/a&gt;
+&lt;/file-icons&gt;
+</pre>
+
+					<h3>Anchor Attributes:</h3>
+					<dl>
+						<dt>data-type</dt>
+						<dd>Select icon type</dd>
+						<dt>href</dt>
+						<dd>Link to the resource (such as to a disk image)</dd>
+						<dt>data-json</dt>
+						<dd>Additional configuration data, JSON encoded</dd>
+					</dl>
+
+					<h3>Data-Type Values:</h3>
+					<ul class="three-column">
+						<li>folder</li>
+						<li>folder-dot</li>
+						<li>boot-hd</li>
+						<li>boot-floppy</li>
+						<li>floppy</li>
+						<li>boot-rom</li>
+						<li>rom</li>
+						<li>doc</li>
+						<li>hyperlink</li>
+						<li>download-file</li>
+						<li>download-floppy</li>
+						<li>upload-file</li>
+						<li>upload-floppy</li>
+						<li>enter-url</li>
+						<li>cassette</li>
+						<li>power</li>
+					</ul>
+				</td>
+			</tr>
+
+			<!-- ---------------------------------------------------------- -->
+
 			<tr>
 				<th colspan="2" class="footer">
 					<h1>Additional Examples</h1>

@@ -17,50 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* Sets the class for an icon. If the class is not defined, then the
- * class becomes the data-type, else hyperlink if there is no data-type
- */
-function setDefaultIconClass(e) {
-	if(e.className == "") {
-		if(e.getAttribute("data-type")) {
-			$(e).addClass(e.getAttribute("data-type"))
-		} else {
-			$(e).addClass("hyperlink");
-		}
-	}
-}
-
-/* The following function expands the "x-icons" tag, which is intermediate markup for
- * rendering hyper-links as icons. Due to the verbosity of such markup, JSON blocks
- * are used in most wiki pages.
- *
- * <x-icons class="classes">
- *    <a>...</a>
- *    <a>...</a>
- * </x-icons>
- *
- * Becomes:
- *
- * <div class="icons classes">
- *   <ol>
- *      <li><a>...</a></li>
- *      <li><a>...</a></li>
- *   </ol>
- * </div>
- *
- */
-function expandRetrowebIcons(doc, element) {
-	// Wrap A with LI tags
-	$("x-icons>A",element).each(function(i,e) {
-		setDefaultIconClass(e);
-		$(e).replaceWith($('<li>'+e.outerHTML+'</li>',doc));
-	});
-	// Replace the x-icons with DIV, OL
-	$("x-icons",element).each(function(i,e) {
-		$(e).replaceWith($('<div class="icons ' + e.className + '"><ol>'+e.innerHTML+'</ol></div>',doc));
-	});
-}
-
 function processBootOptions(opts) {
 	if(opts && "emulator-args" in opts) {
 		var args = opts["emulator-args"];
