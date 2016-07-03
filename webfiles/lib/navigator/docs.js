@@ -222,24 +222,26 @@ function activateShowTargetElements() {
 
 /* This object manages hints on a webpage
  */
-function HintManager(element) {
-	element.hintManager = this;
-	this.curHint = 0;
-	$(element).children("LI:first").show();
-	
-	this.nextHint = function() {
+class HintManager {
+	constructor(element) {
+		this.curHint = 0;
+
+		element.hintManager = this;
+		$(element).children("LI:first").show();
+
+		if($(element).children("LI").length > 1) {
+			var title = (element.className == "trivia") ? "More trivia" : "More hints";
+			$("<input type='button' value='" + title + "'>")
+				.click(function() {this.parentNode.hintManager.nextHint();})
+				.prependTo(element);
+		}
+	}
+
+	nextHint() {
 		var hints = $(element).children("LI");
 		$(hints[this.curHint]).hide();
 		this.curHint = (this.curHint + 1) % hints.length;
 		$(hints[this.curHint]).show();
-	}
-	
-	if($(element).children("LI").length > 1) {
-		var title = (element.className == "trivia") ? "More trivia" : "More hints";
-		
-		$("<input type='button' value='" + title + "'>")
-			.click(function() {this.parentNode.hintManager.nextHint();})
-			.prependTo(element);
 	}
 }
 
