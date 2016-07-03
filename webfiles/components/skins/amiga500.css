@@ -1,0 +1,30 @@
+/* See "macplus.css" for documentation */
+
+.background {
+	background-image:	url(/components/skins/amiga500.jpg);
+	width:				1581px;
+	height:				1176px;
+}
+
+.background-max-width {
+	max-width:			1550px;
+}
+
+.flush-right .background {
+	margin-right:		-500px;
+}
+
+.screen {
+	left:				422px;
+	top:				195px;
+	width:				520px;
+	height:				370px;
+}
+
+.sidebar {
+	margin-right: 		1315px;
+}
+
+.flush-right .sidebar {
+	margin-right: 		815px;
+}

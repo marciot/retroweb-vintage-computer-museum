@@ -17,16 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <style>
-	.background {
-		/* Anchor to the top-right of the document */
-		position: absolute;
-		top:      0px;
-		right:    0px;
-
-		/* Show background below other elements */
-		background-repeat: no-repeat;
-	}
-
 	/* I use text-align on screen-container and display: inline on
 	 * screen to center the canvas horizontally on the container.
 	 * This is useful in full screen mode.
@@ -62,28 +52,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		outline: none;
 	}
 
-	.sidepanel {
-		height:       100%;
-		min-width:    500px;
+	.screen {
+		position:	absolute;
+		width:		100%;
+		height:		100%;
 	}
 </style>
 
 <template id="emulatorTemplate">
-	<div class="background" id="background">
-		<animated-zoom id="zoomable" class="screen">
-			<emulator-buttons>
-				<canvas id="screen">
-				</canvas>
-			</emulator-buttons>
-			<emulator-popups>
-				<!-- Pop-up messages or dialogs that overlay the screen area -->
-			</emulator-popups>
-		</animated-zoom>
-	</div>
-	
-	<script>
-		$("#screen").click(function() {return false;});
-	</script>
+	<animated-zoom id="zoomable" class="screen">
+		<emulator-buttons>
+			<canvas id="screen"></canvas>
+		</emulator-buttons>
+		<emulator-popups>
+			<!-- Pop-up messages or dialogs that overlay the screen area -->
+		</emulator-popups>
+	</animated-zoom>
 </template>
 
 <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
@@ -108,7 +92,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	/* Public constructor function */
 
-	function createEmulator(host, emulator) {
+	function createEmulator(host, emulatorType) {
 		var template = emuImportDoc.getElementById('emulatorTemplate');
 		var clone = document.importNode(template.content, true);
 		host.appendChild(clone);
@@ -127,7 +111,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		var emulatorButtons = document.getElementsByTagName("emulator-buttons")[0];
 		popups              = document.getElementsByTagName("emulator-popups" )[0];
 
-		var emulatorObj = emulatorCallbacks = new Emulator(emulator);
+		var emulatorObj = emulatorCallbacks = new Emulator(emulatorType);
 		emulatorButtons.setRestartAction(function() {emulatorObj.restart();});
 		return emulatorObj;
 	}

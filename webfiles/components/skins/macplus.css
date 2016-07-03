@@ -1,0 +1,38 @@
+/* This is the background. It should be scaled such that the emulator's screen
+ * fits inside the screen region */
+.background {
+	background-image:		url(/components/skins/macplus.jpg);
+	width:					1590px;
+	height:					1208px;
+}
+
+/* Beyond this width the background will be centered rather than flush
+ * right */
+.background-max-width {
+	max-width:				1500px;
+}
+
+/* When flush-right is set, pull the right margin inwards to crop the background */
+.flush-right .background {
+	margin-right:			-120px; /* A */
+}
+
+/* Screen position and size relative to background image */
+.screen {
+	left:					817px;
+	top:					175px;
+	width:					512px;
+	height:					342px;
+}
+
+/* Clear the space to the right of the sidebar for it not to overlap the background.
+ * The flush-right value is the smaller of the two, and is the first plus the
+ * margin-right value used to crop the background.
+ */
+.sidebar {
+	margin-right:			900px;  /* B */
+}
+
+.flush-right .sidebar {
+	margin-right:			780px;  /* Calculate as B + A */
+}

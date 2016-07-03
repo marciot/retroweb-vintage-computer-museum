@@ -1,0 +1,26 @@
+/* See "macplus.css" for documentation */
+
+.background {
+	background-image:		url(/components/skins/apple2e.jpg);
+	width:					1003px;
+	height:					1101px;
+}
+
+.flush-right .background {
+	margin-right:			-140px;
+}
+
+.screen {
+	left:					265px;
+	top:					150px;
+	width:					420px;
+	height:					288px;
+}
+
+.sidebar {
+	margin-right:			860px;
+}
+
+.flush-right .sidebar {
+	margin-right:			720px;
+}

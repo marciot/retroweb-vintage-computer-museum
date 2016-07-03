@@ -34,8 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			position: 		absolute;
 			width:			100%;
 			height:			100%;
-			opacity:		0.5;
-			background: 	black;
+			background: 	rgba(0,0,0,0.75);
 		}
 
 		.showOverlayOnHover:hover #screen-overlay-controls {
@@ -55,7 +54,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			display:        inline-block;
 			width:          75px;
 			height:         75px;
-			background:     #333333;
+			background:     black;
 			opacity:        0.85;
 			border-radius:  10px;
 			border:         1px solid darkGray;
@@ -71,7 +70,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			--path-color: 			darkGray;
 		}
 
-		#screen-overlay-controls inline-svg:hover inline-svg {
+		#screen-overlay-controls inline-svg:hover {
 			--path-color: 			black;
 		}
 
@@ -155,8 +154,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			/* Reference: 
 			   http://stackoverflow.com/questions/11974262/how-to-clone-or-re-dispatch-dom-events
 			  */
-			var evt = new MouseEvent(e.type, e);
-			$(shadowRoot).find("#screen")[0].dispatchEvent(evt);
+			var distributedNodes = $(shadowRoot).find("#screen")[0].getDistributedNodes();
+			var canvas = $(distributedNodes).filter("canvas");
+			if(canvas.length) {
+				var evt = new MouseEvent(e.type, e);
+				canvas[0].dispatchEvent(evt);
+			} else {
+				console.log("Unable to locate canvas element to dispatch click event to. User will have to click twice to activate emulator");
+			}
 			return true;
 		}
 

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		 
 		DIV.popup {
 			display:        none;
-			border-radius:  30px;
+			border-radius:  20px;
 			background:     black;
 			opacity:        0.85;
 			text-align:     center;
@@ -230,9 +230,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	EmulatorPopupsProto.askForRom = function(callback) {
 		var me = this;
-		$(shadowRoot).find('#select-rom-btn').click(
+		$(this.shadowRoot).find('#select-rom-btn').click(
 			function() {me.askForFile("Select ROM image", callback);}
 		);
+	}
+
+	EmulatorPopupsProto.getNames = function() {
+		var popups = [];
+		$(this.shadowRoot).find('.popup').each(
+			function(i, el) {popups.push(el.id);}
+		);
+		return popups;
 	}
 
 	var EmulatorPopups = document.registerElement('emulator-popups', {prototype: EmulatorPopupsProto});

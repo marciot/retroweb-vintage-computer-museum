@@ -1,0 +1,399 @@
+<html>
+	<head>
+	    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+		<script type="text/javascript" src="/lib/webcomponents/webcomponents.js"></script>
+		<link rel="import" href="/components/inline-svg.html">
+		<link rel="import" href="/components/animated-zoom.html">
+		<link rel="import" href="/components/emulator-buttons.html">
+		<link rel="import" href="/components/emulator-popups.html">
+		<link rel="import" href="/components/emulator-skin.html">
+		<style>
+			
+			body {
+				font-family: 		"Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+				background-color: 	#eef;
+			}
+			
+			body {
+				padding:			3em;
+				width:				auto;
+				font-size:			200%;
+			}
+			
+			body>>h1 {
+				text-align:			center;
+				margin:				2em 0;
+			}
+
+			/* I use text-align on screen-container and display: inline on
+			 * screen to center the canvas horizontally on the container.
+			 * This is useful in full screen mode.
+			 *
+			 *   http://stackoverflow.com/questions/1152203/centering-a-canvas
+			 */
+			.zoomable, .demo {
+				position:			relative;
+				display:			block;
+				
+				width: 				512px;
+				height:				342px;
+				
+				text-align:			center;
+			}
+
+			.zoomable .screen {
+				position:			relative;
+				display:			inline;
+				
+				width:				auto;
+				height:				100%;
+				max-width:			100%;
+				max-height:			100%;
+			}
+
+			.zoomable.zoomed .screen {
+				height:     		90%;
+				max-width:  		90%;
+				max-height: 		90%;
+				top:        		5%;
+			}
+
+			inline-svg {
+				width: 				250px;
+				height:				345px;
+			}
+
+			inline-svg {
+				--path-color:		darkGray;
+			}
+			
+			#testSvg1:hover {
+				--path-color:		red;
+			}
+
+			#testSvg2:hover {
+				--path-color:		green;
+			}
+
+			table {
+				border-collapse:	collapse;
+				margin:				5em 0;
+			}
+
+			table, th, td {
+				padding:			1em;
+				vertical-align:		top;
+			}
+			
+			tr {
+				border:				2px solid black;
+			}
+			
+			td {
+				background-color:	white;
+			}
+			
+			pre {
+				background:			lightGray;
+			}
+			
+			#skin-demo {
+				position:			absolute;
+				transform-origin:	left top;
+				transform:			scale(.25);
+				width:              2048px;
+				height:             1368px;
+			}
+			
+			#skin-demo-outer {
+				width: 				512px;
+				height:				342px;
+				background:			white;
+			}
+			
+			#screen-area {
+				width:				100%;
+				height:				100%;
+			}
+			
+			th.footer ul {
+				list-style:			none;
+				margin-left:		0;
+			} 
+		</style>
+	</head>
+	<body>
+		<h1>RetroWeb Components</h1>
+		
+		<p>
+		RetroWeb Components is a library of WebComponents for working with JavaScript-based emulators.
+		</p>
+		<p>
+		This library was created by splitting up the functionality of the <a href="http://retroweb.maclab.org">RetroWeb Vintage Computer Museum</a> into smaller stand-alone components. These components are meant to be simple enough to be incorporated into other websites or used with other JavaScript emulators.
+		</p>
+		
+		<table>
+
+			<tr>
+				<th>
+					<inline-svg src="/ui-artwork/appbar.magnify.add.svg"   id="testSvg1"></inline-svg>
+					<inline-svg src="/ui-artwork/appbar.magnify.minus.svg" id="testSvg2"></inline-svg>
+				</th>
+				<td>
+					<h2>inline-svg</h2>
+					The inline-svg tag inserts SVG images into the document where they may be styled or animated using CSS rules.
+<pre>
+&lt;style&gt;
+   inline-svg:hover {
+      --path-color: green;
+   }
+&lt;/style&gt;
+
+&lt;inline-svg src=&quot;test.svg&quot;&gt;&lt;/inline-svg&gt;
+</pre>
+
+					<h3>Element Attributes:</h3>
+					<dl>
+						<dt>src</dt>
+						<dd>URL for the SVG</dd>
+					</dl>
+					
+					<h3>CSS Attributes:</h3>
+					<dl>
+						<dt>--path-color</dt>
+						<dd>Color of SVG path elements</dd>
+					</dl>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<div id="skin-demo-outer">
+						<div id="skin-demo">
+							<emulator-skin id="test-skins" name="macplus">
+								<img id="screen-area" src="screen.png" class="screen">
+							</emulator-skin>
+						</div>
+					</div>
+				</th>
+				<td>
+					<h2>emulator-skin</h2>
+					<p>
+					Surrond the <code>canvas</code> element of an emulator with this element to give it the look of a vintage computer.
+					</p>
+<pre>
+&lt;emulator-skin name=&quot;macplus&quot;&gt;
+   &lt;canvas id="screen-area"&gt;&lt;/canvas&gt;
+   &lt;div id="sidebar"&gt;
+      Additional content can go here
+   &lt;/div&gt;
+&lt;/emulator-skin&gt;
+</pre>
+
+					<button id="next-skin">Show next skin</button>
+					
+					<h3>Element Attributes:</h3>
+					<dl>
+						<dt>name</dt>
+						<dd>Name of skin (e.g. "macplus")</dd>
+						<dt>flush</dt>
+						<dd>Set to "right" to push the emulator's screen to the right side of the page</dd>
+					</dl>
+					
+					<h3>JavaScript Methods:</h3>
+					<dl>
+						<dt>loadByName(name)</dt>
+						<dd>Same as "name" attribute</dd>
+						<dt>getNames()</dt>
+						<dd>Return an array of names of skins</dd>
+					</dl>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<br>
+					<div class="zoomable">
+						<animated-zoom class="zoomable" id="animatedZoomDemo">
+							<img src="screen.png" class="screen" width=512 height=342>
+						</animated-zoom>
+					</div>
+				</th>
+				<td>
+					<h2>animated-zoom</h2>
+					<p>
+					Surrounding an emulator's <code>canvas</code> with this element to give it the ability to animate in and out of full screen mode:
+					</p>
+<pre>
+&lt;animated-zoom&gt;
+   &lt;canvas&gt;&lt;/canvas&gt;
+&lt;/animated-zoom&gt;
+</pre>
+					<p>
+					This element provides no controls for triggering the action. Use this element alone if you intend to build your own user interface, otherwise combine it with <code>emulator-buttons</code> for a complete solution.
+					</p>
+					<button id="zoom-btn">Try it</button>
+					
+					<h3>JavaScript Methods:</h3>
+					<dl>
+						<dt>zoomIn()</dt>
+						<dd>Zooms the contents to full screen</dd>
+						<dt>zoomOut()</dt>
+						<dd>Zooms the contents back to the original size</dd>
+						<dt>toggleZoom()</dt>
+						<dd>Alternates between the zoomed and unzoomed state</dd>
+						<dt>isZoomed()</dt>
+						<dd>Returns the current zoom state</dd>
+					</dl>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<br>
+					<animated-zoom class="zoomable">
+						<emulator-buttons id="emulatorButtonsDemo">
+							<img src="screen.png" class="screen" width=512 height=342>
+						</emulator-buttons>
+					</animated-zoom>
+				</th>
+				<td>
+					<h2>emulator-buttons (for use with animated-zoom)</h2>
+					<p>
+					Surround an element with <code>emulator-buttons</code> and <code>animated-zoom</code> to give the emulator interactive on-screen buttons:
+					</p>
+<pre>
+&lt;animated-zoom&gt;
+   &lt;emulator-buttons&gt;
+      &lt;canvas&gt;&lt;/canvas&gt;
+   &lt;/emulator-buttons&gt;
+&lt;/animated-zoom&gt;
+</pre>
+					<p>
+					The buttons will be shown on the emulator's screen when the user hovers over it. The buttons do the following actions:
+						<ul>
+							<li><strong>Left:</strong> Triggers the surrounding <code>animate-zoom</code> into zooming out to full-screen.
+							<li><strong>Center:</strong> Allows the user to interact with the emulator.
+							<li><strong>Right:</strong> Triggers a callback function to reset the emulator.
+						</ul>
+						
+					In addition to the floating controls, <code>emulator-buttons</code> will also add two buttons to the full-screen mode, allowing the user to exit full screen mode or restart the emulator.
+
+					<h3>JavaScript Methods:</h3>
+					<dl>
+						<dt>setRestartAction(callback)</dt>
+						<dd>Sets a function to be called when the user clicks the restart button</dd>
+					</dl>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<th>
+					<br>
+					<div class="demo">
+						<img src="screen.png" id="test-popup-img" width=512 height=342>
+						<emulator-popups id="test-popups">
+						</emulator-popups>
+					</div>
+				</th>
+				<td>
+					<h2>emulator-popups</h2>
+					<p>
+					Shows dialog and status boxes over the emulator.
+					</p>
+<pre>
+&lt;div style=&quot;position: relative&quot;&gt;
+   &lt;canvas&gt;&lt;/canvas&gt;
+   &lt;emulator-popups&gt;&lt;/emulator-popups&gt;
+&lt;/div&gt;
+</pre>
+					<p>
+					The various dialog boxes can be triggered by JavaScript and will provide results via callbacks.
+					</p>
+					
+					<button id="next-popup">Show next popup</button>
+					
+					<h3>JavaScript Methods:</h3>
+					<dl>
+						<dt>setVisibility(named, visibility)</dt>
+						<dd>Shows or hides a named popup</dd>
+						<dt>setStatus(status)</dt>
+						<dd>Sets the string on the status popup (does not show it)</dd>
+						<dt>askForFile(prompt, callback)</dt>
+						<dd>Shows the popup asking the user to choose a local file; calls <code>callback</code> with file as an argument</dd>
+						<dt>askForRom(callback)</dt>
+						<dd>Shows the popup informing the user that a ROM is needed and allowing the user choose one; calls <code>callback</code> with file as an argument</dd>
+						<dt>getNames()</dt>
+						<dd>Returns an array of popup names</dd>
+					</dl>
+				</td>
+				
+			<tr>
+				<th colspan="2" class="footer">
+					<h1>Additional Examples</h1>
+					<ul>
+						<li><a href="examples/emulator-example.html">Mac Plus emulator</a>
+						<li><a href="http://retroweb.maclab.org">RetroWeb Vintage Computer Museum</a>
+					</ul>
+				</th>
+			</tr>
+
+		</table>
+
+		<script>
+			window.addEventListener('WebComponentsReady', function(e) {
+				function animatedZoomDemo() {
+					var el = $("#animatedZoomDemo")[0];
+					$("#zoom-btn").click(function() {el.toggleZoom();});
+					$(el).click(function() {el.zoomOut();});
+				}
+				
+				function emulatorSkinsDemo() {
+					var skin	= document.getElementById("test-skins");
+					makeIteratorButton(
+						$("#next-skin"),
+						skin.getNames(),
+						function(current, last) {
+							skin.loadByName(current);
+						}
+					);
+				}
+
+				function emulatorButtonsDemo() {
+					var el = document.getElementById("emulatorButtonsDemo");
+					el.setRestartAction(function() {alert("You clicked the restart button");});
+				}
+				
+				function emulatorPopupDemo() {
+					var popups		= document.getElementById("test-popups");
+					makeIteratorButton(
+						$("#next-popup"),
+						popups.getNames(),
+						function(current, last) {
+							popups.setVisibility(last, false);
+							popups.setVisibility(current, true);
+						}
+					);
+				}
+				
+				function makeIteratorButton(btn, list, callback) {
+					var which		= 0;
+					function chooseNext() {
+						var prev = list[which];
+						which++;
+						if(which >= list.length) {
+							which = 0;
+						}
+						callback(list[which], prev);
+					}
+					$(btn).click(chooseNext);
+				}
+				
+				emulatorSkinsDemo();
+				animatedZoomDemo();
+				emulatorButtonsDemo();
+				emulatorPopupDemo();
+			});
+		</script>
+	</body>
+</html>

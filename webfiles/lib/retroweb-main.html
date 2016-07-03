@@ -17,44 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 
-<style>
-	body {
-		height: 100%;
-		padding: 0;
-	}
-
-	html {
-		height: 100%;
-	}
-</style>
-
 <template id="retrowebTemplate">
 	<style>
-		/* Expand up to 1600px, then center horizontally */
-		.horizontalExpandAndCenter {
-			position:     absolute;
-
-			top:          5px;
-			left:         5px;
-			
-			width:        100%;
-			height:       100%;
-			background:   white;
-
-			max-width:    1600px;
-			margin-left:  auto;
-			margin-right: auto;
-		}
-
-		.no-select {
-			-webkit-touch-callout: none;
-			-webkit-user-select: none;
-			-khtml-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-		}
-
 		/* Interface buttons */
 
 		.ui-buttons {
@@ -82,24 +46,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		.btn-icon:hover~.btn-label {
 			visibility : visible;
 		}
+
+		#sidebar {
+			padding-top:		30px;
+			padding-left:		10px;
+			padding-right:		10px;
+			width:				100%;
+			height:				100%;
+		}
 	</style>
 	
-	<div class="horizontalExpandAndCenter no-select">
-		<div id="emulator">
-			<!-- The emulator gets inserted here -->
-		</div>
-		<table id="ui-buttons" class="ui-buttons">
-			<tr>
-				<td class="ui-btn">
-					<img class="btn-icon" src="/ui-artwork/document.png" onclick="navShow();"><br>
-					<span class="btn-label">Show Navigator</span>
-				</td>
-			</tr>
-		</table>
-		<div class="sidepanel" id="sidepanel">
+	<emulator-skin id="skin" flush="right">
+		<div id="screen-area"></div>
+		<div id="sidebar">
+			<table id="ui-buttons" class="ui-buttons">
+				<tr>
+					<td class="ui-btn">
+						<img class="btn-icon" src="/ui-artwork/document.png" onclick="navShow();"><br>
+						<span class="btn-label">Show Navigator</span>
+					</td>
+				</tr>
+			</table>
 			<!-- The navigator gets inserted here -->
 		</div>
-	</div>
+	</emulator-skin>
 </template>
 
 <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
@@ -132,6 +102,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 		}
 
+		function setBackground(emulator) {
+			var skins = {
+				"pce-macplus"	: "macplus",
+				"pce-ibmpc"		: "ibm5160",
+				"pce-ibmpc-xt"	: "ibm5160",
+				"pce-atarist"	: "atari1040st",
+				"pce-rc759"		: "rc759",
+				"sae-amiga"		: "amiga500",
+				"mame-c64"		: "commodore64c",
+				"mame-trs80"	: "trs80-model1",
+				"mame-apple2e"	: "apple2e",
+				"xerox-star"	: "xerox-star"
+			};
+			if(emulator == "xerox-star") {
+				$("#screen-area").hide();
+			}
+			var skin = document.getElementById("skin").loadByName(skins[emulator]);
+		}
+
 		function webComponentsReady() {
 			// Stamp the HTML inside the body of the main page
 			var template = importDoc.getElementById('retrowebTemplate');
@@ -139,7 +128,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			var host = document.getElementsByTagName("body")[0];
 			host.appendChild(clone);
 
-			createNavigator(document.getElementById("sidepanel"));
+			createNavigator(document.getElementById("sidebar"));
 			populateEmulatorList();
 
 			var whichEmulator = RetroWeb.query.emulator || chooseEmulator();
@@ -147,8 +136,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			// jsmess has been renamed to mame
 			whichEmulator = whichEmulator.replace("jsmess", "mame");
 
+			setBackground(whichEmulator);
+
 			emulator = createEmulator(
-				document.getElementById("emulator"),
+				document.getElementById("screen-area"),
 				whichEmulator
 			);
 
