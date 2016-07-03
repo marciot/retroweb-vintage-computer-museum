@@ -113,7 +113,7 @@ var trailingLinks;
 
 function renderWikiContent() {
 	var srcElement = document.getElementById("retroweb-markup");
-	var dstElement = document.getElementById("html-iframe");
+	var dstElement = document.getElementById("html-content");
 	dstElement.innerHTML = srcElement.innerHTML;
 	trailingLinks = new TrailingLinks(dstElement);
 	dstElement.innerHTML = wikify(dstElement.innerHTML)

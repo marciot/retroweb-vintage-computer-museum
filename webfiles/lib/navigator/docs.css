@@ -68,11 +68,11 @@ TD.docs .centered {
     margin: 20px 0
 }
 
-.docs UL:not([class]) .docs LI {
+.docs UL:not([class]) LI {
     padding: 3px 1em;
 }
 
-.docs UL:not([class]) .docs LI:before {
+.docs UL:not([class]) LI:before {
     content: "\25A0 ";
     color: #777;
 	padding-right:7px;
