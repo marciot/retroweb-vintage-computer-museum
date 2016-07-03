@@ -51,16 +51,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		cursor: none;
 		outline: none;
 	}
-
-	.screen {
-		position:	absolute;
-		width:		100%;
-		height:		100%;
-	}
 </style>
 
 <template id="emulatorTemplate">
-	<animated-zoom id="zoomable" class="screen">
+	<style>
+		/* Use a gnarly id here to avoid collision with other classes in Firefox */
+		.screen-id71385468 {
+			position:	absolute;
+			width:		100%;
+			height:		100%;
+		}
+	</style>
+	<animated-zoom id="zoomable" class="screen-id71385468">
 		<emulator-buttons>
 			<canvas id="screen"></canvas>
 		</emulator-buttons>

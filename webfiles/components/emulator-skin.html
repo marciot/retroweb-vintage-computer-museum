@@ -47,7 +47,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			margin:					0;
 		}
 
-		.screen {
+		.screen-position-and-size {
 			position:				absolute;
 		}
 
@@ -69,7 +69,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	</style>
 	<div id="skin" class="horizontalExpandAndCenter no-select background-max-width">
 		<div class="background">
-			<div class="screen">
+			<div class="screen-position-and-size">
 				<content select="#screen-area"></content>
 			</div>
 		</div>
@@ -93,6 +93,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </style>
 
 <script>
+	var skinsPath	= "/components/skins";
 	var skinLibrary = [
 		"amiga500", "apple2e", "atari1040st",  "commodore64c", "ibm5160",
 		"macplus",   "rc759",  "trs80-model1", "xerox-star"
@@ -104,9 +105,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	// skinImportDoc references this import's document
 
     var skinImportDoc = document._currentScript.ownerDocument;
-	var skinImportURL = document._currentScript.ownerDocument.URL;
-
-	var skinPrefix = skinImportURL.substr(0, skinImportURL.lastIndexOf('/'));
 
 	var EmulatorSkinProto = Object.create(HTMLElement.prototype);
 
@@ -124,13 +122,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 		var flush = this.getAttribute('flush');
 		if(flush == "right") {
-			console.log("Flush right requested");
 			$(shadowRoot).find("#skin").addClass("flush-right");
 		}
 	};
 
 	EmulatorSkinProto.loadByName = function(name) {
-		$(this.shadowRoot).find("#skin-resources").load(skinPrefix + '/skins/' + name + ".css");
+		$(this.shadowRoot).find("#skin-resources").load(skinsPath + '/' + name + ".css", null,
+			function(response, status, xhr) {
+				if (status == "error") {
+					alert("Unable to find the skins, please make sure the variable skinsPath is set correctly");
+				}
+			}
+		);
 	}
 
 	EmulatorSkinProto.getNames = function() {
