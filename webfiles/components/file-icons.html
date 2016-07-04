@@ -190,44 +190,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	 *    </ol>
 	 *  </file-icons>
 	 *
-	 * This is currently done in the host element rather than the shadow DOM
-	 * because I could not figure out how to properly get it to work with nested
-	 * shadow DOMs. Currently all the shadow DOM does is add a style sheet to
-	 * convert the list into icons.
+	 * This is done in the shadow host rather than the shadow root because I could
+	 * not get it to work that way.
 	 */
 	FileIconsProto.update = function() {
 		
 		/* Sets the class for an icon. If the class is not defined, then the
-		 * class becomes the data-type, else hyperlink if there is no data-type
+		 * class becomes the data-type (if that exists) or else hyperlink
 		 */
 		function setDefaultIconClass(e) {
 			if(e.className == "") {
-				if(e.getAttribute("data-type")) {
-					$(e).addClass(e.getAttribute("data-type"))
-				} else {
-					$(e).addClass("hyperlink");
-				}
+				$(e).addClass(e.getAttribute("data-type") || "hyperlink");
 			}
 		}
 
-		var list = $(this).find("UL");
-		if(!list.size()) {
-			list = document.createElement("UL");
-			list.className = "icons";
-			this.appendChild(list);
+		/* Find a UL inside this element, otherwise append new one */
+		var ol = $(this).find("ol");
+		if(ol.size()) {
+			ol = ol[0];
 		} else {
-			list = list[0];
+			ol = document.createElement("ol");
+			ol.className = "icons";
+			this.appendChild(ol);
 		}
 
-		var anchors = $(this).children("A");
-		if(anchors.size()) {
-			anchors.each(function(i,e) {
+		/* Each unwrapped A gets wrapped in LI and added to the OL */
+		$(this).children("A").each(
+			function(i,e) {
 				setDefaultIconClass(e);
-				var listItem = document.createElement("LI");
-				listItem.appendChild(e);
-				list.appendChild(listItem);
-			});
-		}
+				var li = document.createElement("li");
+				li.appendChild(e);
+				ol.appendChild(li);
+		});
 	}
 
 	var FileIcons = document.registerElement('file-icons', {prototype: FileIconsProto});
