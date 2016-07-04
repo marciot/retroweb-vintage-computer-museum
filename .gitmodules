@@ -1,0 +1,3 @@
+[submodule "webfiles/components"]
+	path = webfiles/components
+	url = https://github.com/marciot/retroweb-components.git
