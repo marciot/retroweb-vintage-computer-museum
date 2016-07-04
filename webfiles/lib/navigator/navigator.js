@@ -127,11 +127,11 @@ function renderWikiContent() {
 		dstElement.innerHTML = '<pre>' + dstElement.innerHTML.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</pre>';
 	}
 
-	$(dstElement).scrollTop(0);
-
 	processJSONContent(document, dstElement);
 	navAttachHandlersToAnchors(dstElement);
 	applyDynamicFormatting(emuState.getEmulator());
+
+	$("#html-frame").scrollTop(0);
 }
 
 function parseQueryFromUrl(url) {
