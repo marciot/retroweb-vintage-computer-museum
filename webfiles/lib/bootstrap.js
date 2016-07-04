@@ -49,11 +49,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	style.appendChild(document.createTextNode(""));
 	document.head.appendChild(style);
 	style.sheet.insertRule("#retroweb-markup { display: none }", 0);
+	
+	/* However, if Javascript fails, show the original content. This allows Googlebot to
+	   crawl the content regardless of Javascript errors. Uncommenting document.write lets
+	   me see the error in Google's search dashboard, but I am unable to make it work.
+	   */
+	window.onerror = function(error) {
+		//document.write(error);
+		style.remove();
+	};
 })(window.RetroWeb = window.RetroWeb || {});
 
 if(!(RetroWeb.query.debug == "raw")) {
 	document.write('<script type="text/javascript" src="http://code.jquery.com/jquery-1.12.4.min.js"></script>');
-	document.write('<script type="text/javascript" src="/lib/webcomponents/webcomponents.js"></script>');
+	document.write('<script type="text/javascript" src="/lib/webcomponents/webcomponents.min.js"></script>');
 	document.write('<link rel="import" href="/components/inline-svg.html"></link>');
 	document.write('<link rel="import" href="/components/animated-zoom.html"></link>');
 	document.write('<link rel="import" href="/components/emulator-skin.html"></link>');

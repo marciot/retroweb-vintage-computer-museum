@@ -49,12 +49,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     
 	// importDoc references this import's document
     	
-    var importDoc = document._currentScript.ownerDocument;
+    var inlineSVGImportDoc = document._currentScript.ownerDocument;
     	
     var InlineSVGProto = Object.create(HTMLElement.prototype);
 
 	InlineSVGProto.createdCallback = function() {
-		var t = importDoc.getElementById('InlineSVGTemplate');
+		var t = inlineSVGImportDoc.getElementById('InlineSVGTemplate');
       	var clone = document.importNode(t.content, true);
       	var shadowRoot = this.createShadowRoot();
 		shadowRoot.appendChild(clone);
