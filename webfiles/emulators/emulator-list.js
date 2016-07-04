@@ -23,14 +23,14 @@ function chooseEmulator() {
 }
 
 function populateEmulatorList() {
-	addEmulator("jsmess-apple2e","Apple IIe");
+	addEmulator("mame-apple2e",  "Apple IIe");
 	addEmulator("pce-macplus",   "Apple Macintosh");
 	addEmulator("pce-atarist",   "Atari 1040ST");
-	addEmulator("jsmess-c64",    "Commodore 64");
+	addEmulator("mame-c64",      "Commodore 64");
 	addEmulator("sae-amiga",     "Commodore Amiga 500");
 	addEmulator("pce-ibmpc",     "IBM PC Model 5150 (w/ cassette interface)");
 	addEmulator("pce-ibmpc-xt",  "IBM PC Model 5160 (IBM PC XT)");
 	addEmulator("pce-rc759",     "Regnecentralen RC759 Piccoline");
-	addEmulator("jsmess-trs80",  "Tandy/RadioShack TRS-80 Model 1");
+	addEmulator("mame-trs80",    "Tandy/RadioShack TRS-80 Model 1");
 	addEmulator("xerox-star",    "Xerox 8010 Information System (Xerox Star)");
 }

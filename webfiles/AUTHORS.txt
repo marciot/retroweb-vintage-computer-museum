@@ -5,4 +5,4 @@ This project incorporates emulators worked on by the following people:
 Hampa Hug <hampa@hampa.ch> wrote the PCE emulator (emulators/pce-*)
 James Friend <james@jsdf.co> ported PCE to JavaScript (emulators/pce-*)
 Rupert Hausberger wrote the Scripted Amiga Emulator (emulators/sae-amiga)
-The JSMESS and MESS team collaboratively wrote the JSMESS emulators (emulators/jsmess-*) 
+The MAME teams collaboratively wrote the MESS emulators (emulators/mame-*) 
