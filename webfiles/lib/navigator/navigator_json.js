@@ -86,7 +86,8 @@ function processJSONIcons( doc, json ) {
  */
 function processJSONEmulators( docs, json ) {
 	if(json.emulators.indexOf(emuState.getEmulator()) == -1) {
-		navTo("?emulator=" + json.emulators[0], 'redirect');
+		var emulator = json.emulators[0];
+		navTo("?emulator=" + emulator);
 	}
 }
 

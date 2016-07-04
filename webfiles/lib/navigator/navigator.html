@@ -20,26 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <template id="navigatorTemplate">
 	<style>
 		.sidepanel-window {
-			border-radius:   10px;
-			opacity:          0.95;
+			border-radius:    10px;
 			border-width:     1px;
 			border-style:     solid;
 			border-color:     #777;
 			display:          none;
 			padding:          2px;
-			background-color: #eef;
+			background-color: rgba(238,238,255,0.95);
 			box-shadow:       5px 5px 10px rgba(0,0,0,0.35);
 		}
 
 		.navigator {
 			position:   relative;
-			height:     80%;
+			height:     85%;
 			top:        0px;
 			overflow:   hidden;
-		}
-
-		.navigator-panel {
-			display: none;
 		}
 
 		.title-bar {
@@ -109,7 +104,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			</select>
 			<img src="/ui-artwork/appbar.close.svg"      onclick="navHide();">
 			<img src="/ui-artwork/appbar.arrow.left.svg" onclick="navGoBack()">
-			<img src="/ui-artwork/appbar.home.svg"       onclick="navGoHome()">
+			<img src="/ui-artwork/appbar.home.svg"       onclick="navTo('/')">
 		</div>
 		<div id="navigator-content">
 			<div class="fade-effect">

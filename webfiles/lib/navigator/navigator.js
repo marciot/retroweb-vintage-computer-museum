@@ -17,54 +17,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-function navGoBack() {
-	history.back();
-}
-
-function navGoHome() {
-	navTo("/");
-}
-
-function navInitialDoc() {
-	renderWikiContent();
-}
-
-function navShow() {
-	$("#navigator-panel").show();
-}
-
-function navHide() {
-	$("#navigator-panel").hide();
-}
-
-/* This fetches a new page via XHR and substitutes the content of the #retroweb-markup
- * element with the #retroweb-markup element from the new page. This function does not
- * render the content.
+/* At the bottom of the wiki content is one or more A HREF tags. These
+   are back-substituted into the text whenever the [[text]] notation is
+   encountered (these are anchors without hrefs).
  */
-function fetchAndReplaceWikiContent(url, callback) {
-	console.log("fetchAndReplaceWikiContent:" + url );
-	$("#retroweb-markup").load( url + " #retroweb-markup", function(response, status, xhr) {
-		if ( status == "error" ) {
-			var msg = "Sorry but there was an error: ";
-			$("#retroweb-markup").html(msg + xhr.status + " " + xhr.statusText);
-		} else {
-			$("#retroweb-markup").children().first().unwrap();
-			callback();
-		}
-	});
-}
+ 
+/* ************************** Content layout ***********************************/
 
-/* The wiki content is optionally followed by one or more A HREF tags. These are back-substituted into the
-   text whenever the [[text]] notation is encountered
- */
 class TrailingLinks {
-	/* At construction, we remove the A HREF tags from the specified element */
-	
+	/* At construction, gather trailing anchors and remove them from DOM */
 	constructor(el) {
 		this.links = $(this.findTrailingAnchors(el));
 		this.links.detach();
 	}
-	
+
+	/* Walk from the lastChild of el backwards skipping over whitespace nodes and
+	 * and gathering up all anchors into a list. Stop at first non-whitespace or
+	 * non-anchor element */
 	findTrailingAnchors(el) {
 		var anchors = [];
 		var node = el.lastChild;
@@ -86,7 +55,7 @@ class TrailingLinks {
 		return anchors;
 	}
 	
-	/* Looks up a HREF by content */
+	/* Looks up an anchor by content */
 	lookup(content) {
 		var found;
 		this.links.each(function(i) {
@@ -97,6 +66,7 @@ class TrailingLinks {
 		return found;
 	}
 	
+	/* For all anchors without an href, lookup a new value */
 	substitute(el) {
 		var that = this;
 		$("A:not([href])",el).each(function(i,e){
@@ -106,78 +76,6 @@ class TrailingLinks {
 			}
 		});
 	}
-}
-
-var finishFormatting;
-var trailingLinks;
-
-function renderWikiContent() {
-	var srcElement = document.getElementById("retroweb-markup");
-	var dstElement = document.getElementById("html-content");
-	dstElement.innerHTML = srcElement.innerHTML;
-	trailingLinks = new TrailingLinks(dstElement);
-	dstElement.innerHTML = wikify(dstElement.innerHTML)
-		.replace(/\$EMULATOR/g, emuState.getEmulator())
-		.replace(/\$EMU_NAME/g, emuState.getConfig().name)
-		.replace(/\$EMU_PAGE/g, implicitUrlFromName(emuState.getConfig().name));;
-	trailingLinks.substitute(dstElement);
-
-	if(RetroWeb.query.debug == "html") {
-		// If ?debug=html is present in the query, then show the transformed wiki source
-		dstElement.innerHTML = '<pre>' + dstElement.innerHTML.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</pre>';
-	}
-
-	processJSONContent(document, dstElement);
-	navAttachHandlersToAnchors(dstElement);
-	applyDynamicFormatting(emuState.getEmulator());
-
-	$("#html-frame").scrollTop(0);
-}
-
-function parseQueryFromUrl(url) {
-	var searchPos = url.indexOf('?');
-	return (searchPos != -1) ? parseQuery(url.substr(searchPos)) : {};
-}
-
-function navTo(url, specialBehavior) {
-	var params = parseQueryFromUrl(url);
-	
-	console.log( "New url: " + url );
-	
-	if(params.emulator && params.emulator != emuState.getEmulator()) {
-		/* If an emulator is specified, and it does not match what we are currently running,
-		   then we must do a full page reload (to reset the emulator) */
-		if(emuState.isRunning() &&
-			(!confirm("Following this link will shutdown the emulator and change the computer type."))) {
-				return false;
-		}
-		specialBehavior = 'redirect';
-	} else {
-		/* Otherwise, simply update the content in place */
-		navShow();
-		fetchAndReplaceWikiContent(url, renderWikiContent);
-		console.log("Updated content: " + url + ((specialBehavior) ? " (" + specialBehavior + ")" : ''));
-	}
-
-	/* Update the browser history accordingly */
-	
-	switch(specialBehavior) {
-		case 'popState':
-			/* No history manipulation */
-			break;
-		case 'redirect':
-			window.location.replace(url);
-			break;
-		default:
-			history.pushState(null, null, url);
-	}
-}
-
-function navAddPopStateHandler() {
-	window.addEventListener("popstate", function(e) {
-		console.log("Pop state " + window.location.href );
-		navTo(window.location.href, 'popState');
-	});
 }
 
 function navAttachHandlersToAnchors(element) {
@@ -199,3 +97,181 @@ function navAttachHandlersToAnchors(element) {
 	$('A[href^="http"]', element).attr("target", "_blank");
 }
 
+/* This is the rendering workhorse. It takes the wiki content from
+ * retroweb-markup, pastes it into #html-content and applies successive
+ * transformations to the text, ultimately resulting in the rendered page.
+ */
+function renderWikiContent() {
+	var srcElement = document.getElementById("retroweb-markup");
+	var dstElement = document.getElementById("html-content");
+	dstElement.innerHTML = srcElement.innerHTML;
+
+	var trailingLinks = new TrailingLinks(dstElement);
+	dstElement.innerHTML = wikify(dstElement.innerHTML)
+		.replace(/\$EMULATOR/g, emuState.getEmulator())
+		.replace(/\$EMU_NAME/g, emuState.getConfig().name)
+		.replace(/\$EMU_PAGE/g, implicitUrlFromName(emuState.getConfig().name));
+	processJSONContent(document, dstElement);
+	trailingLinks.substitute(dstElement);
+
+	if(RetroWeb.query.debug == "html") {
+		// If ?debug=html is present in the query, then show the transformed wiki source
+		dstElement.innerHTML = '<pre>' + dstElement.innerHTML.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</pre>';
+	}
+
+	navAttachHandlersToAnchors(dstElement);
+	applyDynamicFormatting(emuState.getEmulator());
+
+	$("#html-frame").scrollTop(0);
+}
+
+/* This fetches a new page via XHR and substitutes the content of the #retroweb-markup
+ * element with the #retroweb-markup element from the new page. This allows the user to
+ * navigate to a new page without requiring a full page reload. */
+function fetchAndReplaceWikiContent(url) {
+	$("#retroweb-markup").load( url + " #retroweb-markup", function(response, status, xhr) {
+		if ( status == "error" ) {
+			var msg = "Sorry but there was an error: ";
+			$("#retroweb-markup").html(msg + xhr.status + " " + xhr.statusText);
+		} else {
+			$("#retroweb-markup").children().first().unwrap();
+			renderWikiContent();
+		}
+	});
+}
+
+/******************************* Event handlers (when icons are clicked) ********************************/
+
+function processBootOptions(opts) {
+	if(opts && "emulator-args" in opts) {
+		var args = opts["emulator-args"];
+		for(var arg in args) {
+			emuState.getEmulatorInterface().setArgument(arg, args[arg]);
+		}
+	}
+}
+
+/* Converts a name into an URL by converting spaces to hyphens and appending .html */
+function implicitUrlFromName(name) {
+	return name.replace(/ /g,'-')+".html";
+}
+
+function navProcessIconClick(name, type, param, opts) {
+	opts = opts ? JSON.parse(opts) : {};
+	type = type ? type : "folder";
+
+	function mountDriveFromUrl(name, drive, url, isBootable) {
+		gaTrackEvent("disk-mounted", name);
+		emulator.mountDriveFromUrl(drive, url, isBootable);
+	}
+
+	switch(type) {
+		case "doc":
+		case "folder":
+		case "folder-dot":
+			gaTrackEvent("document-read", name);
+			navTo(param || implicitUrlFromName(name));
+			break;
+		case "boot-hd":
+			processBootOptions(opts);
+			mountDriveFromUrl(name, "hd1", param, true);
+			break;
+		case "boot-floppy":
+			processBootOptions(opts);
+			mountDriveFromUrl(name, "fd1", param, true);
+			break;
+		case "floppy":
+			if(emuState.isRunning()) {
+				mountDriveFromUrl(name, (opts && opts.drive) ? opts.drive : "fd1", param, false);
+			} else {
+				alert("Please boot the computer using a boot disk first");
+			}
+			break;
+		case "boot-rom":
+		case "power":
+			processBootOptions(opts);
+			gaTrackEvent("disk-mounted", name);
+			emuState.getEmulatorInterface().bootFromRom();
+			break;
+
+		case "upload-floppy":
+			gaTrackEvent("disk-mounted", "local-floppy");
+			emulator.uploadFloppy("fd1", true);
+			break;
+		case "download-floppy":
+			emulator.downloadFloppy("fd1");
+			break;
+		case "download-file":
+			emulator.downloadFile(param);
+			break;
+		case "upload-file":
+			emulator.uploadFile(param, "cassette file (.cas)");
+			break;
+		case "get-file":
+			emulator.getFileFromUrl(param, opts.saveAs);
+			break;
+		case "cassette":
+			emulator.cassetteAction(param);
+			break;
+		case "hyperlink":
+			window.open(param);
+			break;
+		default:
+			alert("Action " + type + " is unknown");
+			break;
+	}
+	return false;
+}
+
+/*************************** Navigation functions *******************************/
+
+function parseQueryFromUrl(url) {
+	var searchPos = url.indexOf('?');
+	return (searchPos != -1) ? parseQuery(url.substr(searchPos)) : {};
+}
+
+function navWithReload(url) {
+	if(emuState.isRunning() &&
+		(!confirm("Following this link will shutdown the emulator and change the computer type."))) {
+			return false;
+	}
+	window.location.replace(url);
+}
+
+function navAddPopStateHandler() {
+	window.addEventListener("popstate", function(e) {
+		fetchAndReplaceWikiContent(window.location.href);
+	});
+}
+
+/* Public methods */
+
+function navGoBack() {
+	history.back();
+}
+
+function navInitialDoc() {
+	renderWikiContent();
+}
+
+function navShow() {
+	$("#navigator-panel").show();
+}
+
+function navHide() {
+	$("#navigator-panel").hide();
+}
+
+function navTo(url) {
+	var params = parseQueryFromUrl(url);
+	if(params.emulator && params.emulator != emuState.getEmulator()) {
+		/* If an emulator is specified, and it does not match what we are currently
+		   running, then we must do a full page reload (to reset the emulator) */
+		navWithReload(url);
+	} else {
+		/* Otherwise, simply update the content in place and update history */
+		navShow();
+		fetchAndReplaceWikiContent(url);
+		history.pushState(null, null, url);
+	}
+}
