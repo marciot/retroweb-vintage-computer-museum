@@ -45,11 +45,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
 	/* The following hides the retroweb-markup. The reason we do this from JavaScript
 	   is that we want the content to be visible if the user has disabled JavaScript. */
-	var style = document.createElement("style");
-	style.appendChild(document.createTextNode(""));
-	document.head.appendChild(style);
-	style.sheet.insertRule("#retroweb-markup { display: none }", 0);
-	
+	if(!(RetroWeb.query.debug == "raw")) {
+		var style = document.createElement("style");
+		style.appendChild(document.createTextNode(""));
+		document.head.appendChild(style);
+		style.sheet.insertRule("#retroweb-markup { display: none }", 0);
+	}
+
 	/* However, if Javascript fails, show the original content. This allows Googlebot to
 	   crawl the content regardless of Javascript errors. Uncommenting document.write lets
 	   me see the error in Google's search dashboard, but I am unable to make it work.
@@ -61,6 +63,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 })(window.RetroWeb = window.RetroWeb || {});
 
 if(!(RetroWeb.query.debug == "raw")) {
+	//document.write('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
 	document.write('<script type="text/javascript" src="http://code.jquery.com/jquery-1.12.4.min.js"></script>');
 	document.write('<script type="text/javascript" src="/lib/webcomponents/webcomponents.min.js"></script>');
 	document.write('<link rel="import" href="/components/inline-svg.html"></link>');

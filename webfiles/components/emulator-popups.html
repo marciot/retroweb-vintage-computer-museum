@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		 */
 		 
 		DIV.popup {
-			display:        none;
 			border-radius:  20px;
 			background:     black;
 			opacity:        0.85;
@@ -255,7 +254,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.$shadowRoot     = $(shadowRoot);
 
 			var me = this;
-			this.$shadowRoot.find(".popup").each(function(i,el) {me.add(el);});
+			this.$shadowRoot.find(".popup").hide().each(function(i,el) {me.add(el);});
 		}
 
 		add(el) {

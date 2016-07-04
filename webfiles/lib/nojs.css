@@ -2,7 +2,7 @@
 
 #retroweb-markup {
 	/*font-family: monospace;*/
-    white-space: pre-wrap;
+    white-space:	pre-wrap;
 }
 
 #retroweb-markup::before {

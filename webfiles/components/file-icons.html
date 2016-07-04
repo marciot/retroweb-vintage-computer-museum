@@ -206,7 +206,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 		/* Find a UL inside this element, otherwise append new one */
 		var ol = $(this).find("ol");
-		if(ol.size()) {
+		if(ol.length) {
 			ol = ol[0];
 		} else {
 			ol = document.createElement("ol");
