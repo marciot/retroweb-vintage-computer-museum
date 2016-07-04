@@ -66,6 +66,7 @@ if(!(RetroWeb.query.debug == "raw")) {
 	//document.write('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
 	document.write('<script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>');
 	document.write('<script type="text/javascript" src="/lib/webcomponents/webcomponents.min.js"></script>');
+	document.write('<link rel="import" href="/components/find-base-dir.html"></link>');
 	document.write('<link rel="import" href="/components/inline-svg.html"></link>');
 	document.write('<link rel="import" href="/components/animated-zoom.html"></link>');
 	document.write('<link rel="import" href="/components/emulator-skin.html"></link>');
