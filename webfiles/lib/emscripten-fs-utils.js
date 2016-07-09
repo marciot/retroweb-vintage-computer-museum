@@ -54,8 +54,12 @@ function saveFile(content, filename, contentType)
 /* Shows a dialog box allowing the user to write a file from the Emscripten
  * file system to their hard disk
  */
-function saveEmscriptenFile(emscriptenFS, srcFileName) {
-	var contents = emscriptenFS.readFile(srcFileName, { encoding: 'binary' });
+function saveFileToLocal(srcFileName) {
+	if(typeof FS == 'undefined') {
+		alert("The emulator must be initialized");
+		return;
+	}
+	var contents = FS.readFile(srcFileName, { encoding: 'binary' });
 	saveFile(contents, srcFileName);
 }
 

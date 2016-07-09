@@ -24,8 +24,8 @@ class EmulatorState {
 		this.emulator     = emulator;
 		this.emuName      = null;
 		this.emuConfig    = null;
-		this.emuIfce      = null;
-		
+
+		this.gotIfce      = false;
 		this.gotRoms      = false;
 		this.gotBootMedia = false;
 		this.downloading  = false;
@@ -33,7 +33,7 @@ class EmulatorState {
 		this.running      = false; // Emscripten preinit called. Okay to manipulate files
 		this.floppyDrives = new Array();
 	}
-	
+
 	setEmulator(emulator) {
 		this.emuName = emulator;
 	}
@@ -41,16 +41,7 @@ class EmulatorState {
 	getEmulator() {
 		return this.emuName;
 	}
-	
-	setEmulatorInterface(ifce) {
-		this.emuIfce = ifce;
-		this.stateChanged();
-	}
-	
-	getEmulatorInterface() {
-		return this.emuIfce;
-	}
-	
+
 	getConfig(emulator) {
 		return this.emuConfig;
 	}
@@ -58,7 +49,7 @@ class EmulatorState {
 	setStatus(text) {
 		popups.setStatus(text);
 	}
-	
+
 	// Calls a callback and clears the callback so it won't be called multiple times.
 	callCallback(name) {
 		var callback = emulatorCallbacks[name];
@@ -89,104 +80,78 @@ class EmulatorState {
 				this.callCallback("onEmulatorConfigured");
 			}
 
-			if(this.gotRoms && this.emuConfig && this.emuIfce) {
+			if(this.gotRoms && this.emuConfig && this.gotIfce) {
 				this.callCallback("onEmulatorLoaded");
 			}
 		}
 	}
-	
-	waitForMedia(fileName, isBootable) {
-		this.setStatus("Downloading...");
-		this.downloading = true;
-		this.stateChanged();
-		var me = this;
-		var waitFunc = function(remaining, depName) {
-			if(isBootable && depName == fileName) {
-				me.bootMediaLoaded();
-			}
-			if(remaining == 0) {
-				if(me.running) {
-					me.syncEmscriptenFS(true);
-				} else if(me.gotBootMedia) {
-					me.requestRestart();
-				}
-				me.downloading = false;
-				me.stateChanged();
-			}
-		}
-		fileManager.setFileReadyCallback(waitFunc);
-	}
-	
-	configLoaded(config) {
+
+	transitionToConfigLoaded(config) {
 		this.emuConfig = config;
 		this.emulator.preloadResources();
 		this.stateChanged();
 	}
-	
-	syncEmscriptenFS(doMount) {
-		this.emuIfce.syncEmscriptenFS(doMount);
-	}
 
-	emscriptenPostRun() {
-	}
-	
-	emscriptenPreInit() {
-		this.syncEmscriptenFS(false);
-	}
-	
-	emscriptenPreRun() {
-		emuState.getEmulatorInterface().preRun();
-		this.running = true;
-		this.stateChanged(true);
-	}
-	
-	emscriptenDependencies(remaining) {
-		/*alert("Emscripten dependencies");
-		if(remaining > 0) {
-			popups.open("popup-status");
-		} else {
-			popups.close("popup-status");
-		}*/
-	}
-	
-	emscriptenStatus(status) {
-	}
-	
-	romsLoaded() {
+	transitionToRomsLoaded() {
 		this.gotRoms = true;
 		this.stateChanged();
 	}
-	
-	bootMediaLoaded() {
+
+	transitionToBootMediaLoaded() {
 		this.gotBootMedia = true;
 		this.stateChanged();
 	}
-	
-	requestRestart() {
-		if (!this.gotRoms || !this.gotBootMedia) {
-			return;
-		}
-		if (!this.started) {
-			this.emulator.loadScriptsAndStart();
-			this.started = true;
+
+	transitionToStarted() {
+		this.started = true;
+		this.stateChanged();
+		this.setStatus("Starting emulator...");
+	}
+
+	transitionToRunning() {
+		this.running = true;
+		this.stateChanged(true);
+	}
+
+	transitionToInterfaceLoaded() {
+		this.gotIfce = true;
+		this.stateChanged();
+	}
+
+	transitionToDownloading(state) {
+		if(state) {
+			this.setStatus("Downloading...");
+			this.downloading = true;
 			this.stateChanged();
-			this.setStatus("Starting emulator...");
-		} else if(this.running) {
-			emuState.getEmulatorInterface().reset();
+		} else {
+			this.downloading = false;
+			this.stateChanged();
 		}
 	}
-	
+
+	isReadyToStart() {
+		return this.gotRoms && this.gotBootMedia;
+	}
+
+	isStarted() {
+		return this.started;
+	}
+
 	isRunning() {
 		return this.running;
 	}
-	
+
+	hasBootMedia() {
+		return this.gotBootMedia;
+	}
+
 	floppyMounted(fname) {
 		if( !(fname in this.floppyDrives)) {
 			this.floppyDrives[fname] = {};
 		}
 		this.floppyDrives[fname].mounted = true;
 	}
-	
+
 	isFloppyMounted(fname) {
 		return this.floppyDrives.hasOwnProperty(fname) ? this.floppyDrives[fname].mounted : false;
 	}
@@ -199,6 +164,7 @@ class Emulator {
 
 		this.state       = emuState    = new EmulatorState(this);
 		this.fileManager = fileManager = new EmscriptenFileManager();
+		this.emuIfce     = null;
 
 		/* Bootstrap the emulator by loading "bootstrap.html". This file will call
 		 * the global function processEmulatorConfig. We create this function here
@@ -212,6 +178,15 @@ class Emulator {
 		createGlobalCallback(this);
 		this.state.setEmulator(emulator);
 		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
+	}
+
+	setEmulatorInterface(ifce) {
+		this.emuIfce = ifce;
+		this.state.transitionToInterfaceLoaded();
+	}
+
+	getEmulatorInterface() {
+		return this.emuIfce;
 	}
 
 	processConfig(config) {
@@ -235,8 +210,8 @@ class Emulator {
 			var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
 			this.fileManager.writeFileFromUrl('/' + name, url);
 		}
-		this.state.romsLoaded();
-		this.state.configLoaded(config);
+		this.state.transitionToRomsLoaded();
+		this.state.transitionToConfigLoaded(config);
 	}
 
 	preloadResources() {
@@ -247,10 +222,29 @@ class Emulator {
 		}
 	}
 
+	expectMedia(fileName, isBootable) {
+		this.state.transitionToDownloading(true);
+		var me = this;
+		var waitFunc = function(remaining, depName) {
+			if(isBootable && depName == fileName) {
+				me.state.transitionToBootMediaLoaded();
+			}
+			if(remaining == 0) {
+				if(me.state.isRunning()) {
+					me.getEmulatorInterface().syncFileSystem(true);
+				} else if(me.state.hasBootMedia()) {
+					me.restart();
+				}
+				me.state.transitionToDownloading(false);
+			}
+		}
+		fileManager.setFileReadyCallback(waitFunc);
+	}
+
 	/* Load the main emulator script(s). This will start the emulator execution. */
 	loadScriptsAndStart() {
 		console.log("Loading emulator scripts");
-		Module = this.state.getEmulatorInterface().createEmscriptenModule(this.state);
+		this.getEmulatorInterface().prepareToLoadAndStart(this.state);
 		var config = this.state.getConfig();
 		for(var i = 0; i < config.run.length; i++) {
 			loadResource(config.run[i], true);
@@ -258,7 +252,25 @@ class Emulator {
 	}
 
 	restart() {
-		this.state.requestRestart();
+		if (!this.state.isReadyToStart()) {
+			return;
+		}
+		if (!this.state.isStarted()) {
+			this.loadScriptsAndStart();
+			this.state.transitionToStarted();
+		} else if(this.state.isRunning()) {
+			this.getEmulatorInterface().reset();
+		}
+	}
+
+	bootFromRom(opts) {
+		this.processBootOpts(opts);
+		if(this.state.isRunning()) {
+			alert("Cannot change the boot source once the computer is running. Please reload the page to reset");
+		} else {
+			this.state.transitionToBootMediaLoaded();
+			this.restart();
+		}
 	}
 
 	/* The cassette actions allow you to play, record, rewind or append to the tape */
@@ -268,27 +280,50 @@ class Emulator {
 			alert("The emulator must be running before you use this action.");
 			return;
 		}
-		this.state.getEmulatorInterface().cassetteAction(action);
+		this.getEmulatorInterface().cassetteAction(action);
+	}
+
+	processBootOpts(opts) {
+		if(opts && "emulator-args" in opts) {
+			if(this.state.isRunning()) {
+				console.log("WARNING: Ignoring request for command line arguments since computer is already running");
+			} else {
+				var args = opts["emulator-args"];
+				for(var arg in args) {
+					this.getEmulatorInterface().setArgument(arg, args[arg]);
+				}
+			}
+		}
 	}
 
 	/* This function lets you mount a file into the emulator from an URL */
-	
-	mountDriveFromUrl(drive, url, isBootable) {
-		if(isBootable && this.state.isRunning()) {
+
+	mountDriveFromUrl(drive, url, isBootable, opts) {
+		if(!this.state.isRunning() && !isBootable) {
+			alert("Please boot the computer using a boot disk first");
+			return;
+		}
+		if(this.state.isRunning() && isBootable) {
 			alert("This disk will be inserted, but if you want to boot from it you will need to reload the web page to reset the computer.");
-			isBootable = false;
 		}
 
-		var dstName = this.state.getEmulatorInterface().getFileNameForDrive(drive, url);
+		if(opts) {
+			// Override the drive id if opts.drive exists
+			drive = ("drive" in opts) ? opts.drive : drive;
+			// Add command line switches in opts.emulator-args prior to starting emulator
+			this.processBootOpts(opts);
+		}
+
+		var dstName = this.getEmulatorInterface().getFileNameForDrive(drive, url);
+		this.expectMedia(dstName, isBootable);
 		this.fileManager.writeFileFromUrl(dstName, url);
-		this.state.waitForMedia(dstName, isBootable);
 	}
 
 	/* This function lets you load a file into the emulator from an URL */
 
 	getFileFromUrl(url, file) {
+		this.expectMedia(file);
 		this.fileManager.writeFileFromUrl(file, url);
-		this.state.waitForMedia(file);
 	}
 
 	/* The upload actions allow you to upload modified files from your local computer into
@@ -297,37 +332,28 @@ class Emulator {
 
 	uploadFloppy(drive, isBootable) {
 		popups.askForFile("Select floppy disk image", function(file) {
-			var dstName = this.state.getEmulatorInterface().getFileNameForDrive(drive, file.name);
+			var dstName = this.getEmulatorInterface().getFileNameForDrive(drive, file.name);
+			this.expectMedia(dstName, isBootable);
 			this.fileManager.writeFileFromFile(dstName, file);
-			this.state.waitForMedia(dstName, isBootable);
 		});
 	}
 
 	uploadFile(dstName, what, isBootable) {
 		popups.askForFile("Please select a " + what, function(file) {
+			this.expectMedia(dstName, isBootable);
 			this.fileManager.writeFileFromFile(dstName, file);
-			this.state.waitForMedia(dstName, isBootable);
 		});
 	}
 
-	/* The download actions allow you to download modified files from the Emscripten FS to
-	 * your local computer. */
+	/* The download actions allow you to download modified files to your local computer. */
 
 	downloadFloppy(drive) {
-		var fileName = this.state.getEmulatorInterface().getFileNameForDrive(drive, null);
-		if(typeof FS == 'undefined') {
-			alert("The emulator must be initialized");
-			return;
-		}
-		saveEmscriptenFile(FS, fileName);
+		var fileName = this.getEmulatorInterface().getFileNameForDrive(drive, null);
+		saveFileToLocal(fileName);
 	}
 
 	downloadFile(file) {
-		if(typeof FS == 'undefined') {
-			alert("The emulator must be initialized");
-			return;
-		}
-		saveEmscriptenFile(FS, file);
+		saveFileToLocal(file);
 	}
 }
 

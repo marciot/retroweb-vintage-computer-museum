@@ -142,15 +142,6 @@ function fetchAndReplaceWikiContent(url) {
 
 /******************************* Event handlers (when icons are clicked) ********************************/
 
-function processBootOptions(opts) {
-	if(opts && "emulator-args" in opts) {
-		var args = opts["emulator-args"];
-		for(var arg in args) {
-			emuState.getEmulatorInterface().setArgument(arg, args[arg]);
-		}
-	}
-}
-
 /* Converts a name into an URL by converting spaces to hyphens and appending .html */
 function implicitUrlFromName(name) {
 	return name.replace(/ /g,'-')+".html";
@@ -160,9 +151,9 @@ function navProcessIconClick(name, type, param, opts) {
 	opts = opts ? JSON.parse(opts) : {};
 	type = type ? type : "folder";
 
-	function mountDriveFromUrl(name, drive, url, isBootable) {
+	function mountDriveFromUrl(name, drive, url, isBootable, bootOpts) {
 		gaTrackEvent("disk-mounted", name);
-		emulator.mountDriveFromUrl(drive, url, isBootable);
+		emulator.mountDriveFromUrl(drive, url, isBootable, bootOpts);
 	}
 
 	switch(type) {
@@ -172,28 +163,23 @@ function navProcessIconClick(name, type, param, opts) {
 			gaTrackEvent("document-read", name);
 			navTo(param || implicitUrlFromName(name));
 			break;
+		case "hyperlink":
+			window.open(param);
+			break;
 		case "boot-hd":
-			processBootOptions(opts);
-			mountDriveFromUrl(name, "hd1", param, true);
+			mountDriveFromUrl(name, "hd1", param, true, opts);
 			break;
 		case "boot-floppy":
-			processBootOptions(opts);
-			mountDriveFromUrl(name, "fd1", param, true);
+			mountDriveFromUrl(name, "fd1", param, true, opts);
 			break;
 		case "floppy":
-			if(emuState.isRunning()) {
-				mountDriveFromUrl(name, (opts && opts.drive) ? opts.drive : "fd1", param, false);
-			} else {
-				alert("Please boot the computer using a boot disk first");
-			}
+			mountDriveFromUrl(name, "fd1", param, false, opts);
 			break;
 		case "boot-rom":
 		case "power":
-			processBootOptions(opts);
 			gaTrackEvent("disk-mounted", name);
-			emuState.getEmulatorInterface().bootFromRom();
+			emulator.bootFromRom();
 			break;
-
 		case "upload-floppy":
 			gaTrackEvent("disk-mounted", "local-floppy");
 			emulator.uploadFloppy("fd1", true);
@@ -212,9 +198,6 @@ function navProcessIconClick(name, type, param, opts) {
 			break;
 		case "cassette":
 			emulator.cassetteAction(param);
-			break;
-		case "hyperlink":
-			window.open(param);
 			break;
 		default:
 			alert("Action " + type + " is unknown");

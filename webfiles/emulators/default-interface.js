@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class EmulatorInterface {
 	constructor() {
 		this.arguments = {};
-		emuState.setEmulatorInterface(this);
+		emulator.setEmulatorInterface(this);
 	}
 
 	getFileNameForDrive(drive, fileName) {
@@ -41,11 +41,12 @@ class EmulatorInterface {
 		console.log("Setting argument " + arg + " to " + value);
 	}
 
-	createEmscriptenModule(stateObj) {
-		var module = {
-			preRun: [function () {stateObj.emscriptenPreRun();}],
-			postRun: [function () {stateObj.emscriptenPostRun();}],
-			preInit: [function () {stateObj.emscriptenPreInit();}],
+	prepareToLoadAndStart(stateObj) {
+		var me = this;
+		Module = {
+			preRun:  [function () {stateObj.transitionToRunning(); me.preRun();}],
+			postRun: [],
+			preInit: [function () {me.syncFileSystem(false);}],
 			arguments: [],
 			noInitialRun: false,
 			print: function(text) {
@@ -56,17 +57,16 @@ class EmulatorInterface {
 				text = Array.prototype.slice.call(arguments).join(' ');
 				console.log(text);
 			},
-			canvas: document.getElementById('screen'),
-			setStatus: function(status) {stateObj.emscriptenStatus(status);},
+			canvas:    document.getElementById('screen'),
+			setStatus: function(status) {},
 			totalDependencies: 0,
-			monitorRunDependencies: function(left) {stateObj.emscriptenDependencies(left);}
+			monitorRunDependencies: function(left) {}
 		};
 		// Give the emulator subclasses a chance to modify the Emscripten module
-		this.configModule(module);
-		return module;
+		this.configModule(Module);
 	}
 
-	syncEmscriptenFS(doMount) {
+	syncFileSystem(doMount) {
 		var filesWritten = fileManager.syncEmscriptenFS();
 		console.log("Preparing disks...");
 		for(var i = 0; i < filesWritten.length; i++) {
@@ -87,12 +87,9 @@ class EmulatorInterface {
 		}
 	}
 
-	preInit() {
-	}
-
 	preRun() {
 	}
-	
+
 	prepareDisk(diskFile) {
 	}
 
@@ -102,15 +99,6 @@ class EmulatorInterface {
 
 	reset() {
 		alert( "This functionality is not available for this emulator. Refresh the page to restart the emulator." );
-	}
-	
-	bootFromRom() {
-		if(emuState.isRunning()) {
-			alert("Cannot change the boot media once the computer has already restarted. Please reload the page to reset");
-		} else {
-			emuState.bootMediaLoaded();
-			emuState.requestRestart();
-		}
 	}
 
 	cassetteAction(action) {
