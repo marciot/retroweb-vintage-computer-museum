@@ -138,14 +138,6 @@ TD.docs .centered {
 	user-select: none;
 }
 
-.docs A.show-target {
-	margin-top: 40px;
-	font-weight: bold;
-	text-decoration: underline;
-	color: black;
-	cursor: pointer;
-}
-
 /* Text bubbles */
 
 .docs .bubble SPAN.bubble-body {

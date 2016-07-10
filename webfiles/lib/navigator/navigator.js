@@ -27,8 +27,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class TrailingLinks {
 	/* At construction, gather trailing anchors and remove them from DOM */
 	constructor(el) {
-		this.links = $(this.findTrailingAnchors(el));
-		this.links.detach();
+		this.links = this.findTrailingAnchors(el);
+		for(var i = 0; i < this.links.length; i++) {
+			this.links[i].remove();
+		}
 	}
 
 	/* Walk from the lastChild of el backwards skipping over whitespace nodes and
@@ -58,48 +60,68 @@ class TrailingLinks {
 	/* Looks up an anchor by content */
 	lookup(content) {
 		var found;
-		this.links.each(function(i) {
-			if(content == $( this ).html()) {
-				found = $( this ).attr("href");;
+		for(var i = 0; i < this.links.length; i++) {
+			if(content == this.links[i].innerHTML) {
+				found = this.links[i].getAttribute("href");;
 			}
-		});
+		}
 		return found;
 	}
 	
 	/* For all anchors without an href, lookup a new value */
 	substitute(el) {
 		var that = this;
-		$("A:not([href])",el).each(function(i,e){
-			var href = that.lookup(e.innerHTML);
+		var els = el.querySelectorAll('A:not([href])');
+		for(var i = 0; i < els.length; i++) {
+			var href = that.lookup(els[i].innerHTML);
 			if(href) {
-				e.setAttribute("href", href);
+				els[i].setAttribute("href", href);
 			}
-		});
+		}
 	}
 }
 
-function navAttachHandlersToAnchors(element) {
-	
-	function clickHandler(href) {
-		return navProcessIconClick(
+function navAttachHandlersToAnchors(el) {
+	function clickHandler(event) {
+		navProcessIconClick(
 			this.innerHTML,
 			this.getAttribute("data-type"),
 			this.getAttribute("href"),
 			this.getAttribute("data-json")
 		);
+		event.stopPropagation();
+		event.preventDefault();
 	}
 
-	// Attach handler to anything not having an HREF
-	$('A:not([href])', element).click(clickHandler);
-	// Attach handler to local HREFs
-	$('A[href]:not([href^="http"],[href^="#"])', element).click(clickHandler);
-	$('A[href^="#"]', element).click(function() {
+	function clickFootnote(event) {
+		// Clicking on references to footnotes causes the container to scroll to the bottom
 		var container = document.getElementById("html-content");
 		container.scrollTop = container.scrollHeight;
-		return false;
-	});
-	// Set target for external links so a new page gets opened
-	$('A[href^="http"]', element).attr("target", "_blank");
+		event.stopPropagation();
+		event.preventDefault();
+	}
+
+	function attachAnchorHandler(el) {
+		if(!el.hasAttribute('href')) {
+			// Attach handler to anything not having an HREF
+			el.addEventListener('click', clickHandler);
+		} else {
+			var href = el.getAttribute('href');
+			if(href.indexOf('http:') == 0) {
+				// Set target for external links so a new page gets opened
+				el.setAttribute("target", "_blank");
+			} else if(href.indexOf('#') == 0) {
+				el.addEventListener('click', clickFootnote);
+			} else {
+				el.addEventListener('click', clickHandler);
+			}
+		}
+	}
+	// Attach handlers to anchors
+	var els = el.getElementsByTagName('a');
+	for(var i = 0; i < els.length; i++) {
+		attachAnchorHandler(els[i]);
+	}
 }
 
 /* This is the rendering workhorse. It takes the wiki content from
@@ -135,7 +157,7 @@ function renderWikiContent() {
 	applyDynamicFormatting(dstElement, emuState.getEmulator());
 	navAttachHandlersToAnchors(dstElement);
 
-	$("#html-frame").scrollTop(0);
+	document.querySelector("#html-content").scrollTop = 0;
 }
 
 /* This fetches a new page via XHR and substitutes the content of the #retroweb-markup
@@ -269,11 +291,11 @@ function navInitialDoc() {
 }
 
 function navShow() {
-	$("#navigator-panel").show();
+	document.querySelector("#navigator-panel").style.display = 'block';
 }
 
 function navHide() {
-	$("#navigator-panel").hide();
+	document.querySelector("#navigator-panel").style.display = 'none';
 }
 
 function navTo(url) {

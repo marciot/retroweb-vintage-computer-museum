@@ -17,23 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* Get a query variable
- *
- * Reference:
- *    http://css-tricks.com/snippets/javascript/get-url-variables/
- */
-function getQueryVariable(variable) {
-	var query = window.location.search.substring(1);
-	var vars = query.split("&");
-	for (var i=0;i<vars.length;i++) {
-		var pair = vars[i].split("=");
-		if(pair[0] == variable) {
-			return pair[1];
-		}
-	}
-	return false;
-}
-
 /* Selects the text inside an element
  */
 function selectText(element) {
@@ -46,12 +29,6 @@ function selectText(element) {
 	}
 }
 
-/* Inserts an element after another in the DOM
- */
-function insertAfter(referenceNode, newNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
-
 /* Calls a function for each DOM element having the specified className
  */
 function forEachElementInClass(className, callback, arg) {
@@ -59,24 +36,6 @@ function forEachElementInClass(className, callback, arg) {
 	for (i = 0; i < references.length; ++i) {
 		callback(references[i], i, arg);
 	}
-}
-
-/* Takes a DOM element and strips out everything but the text, similar
- * to innerHTML, but without including tags.
- */
-function elementToString(element) {
-	var str = "";
-	switch(element.nodeType) {
-		case Node.ELEMENT_NODE:
-			for(var i = 0; i < element.childNodes.length; ++i) {
-				str += elementToString(element.childNodes[i]);
-			}
-			break;
-		case Node.TEXT_NODE:
-			str += element.nodeValue;
-			break;
-	}
-	return str;
 }
 
 /* This function attaches an bubble to an element in the DOM */
@@ -98,38 +57,39 @@ function createBubble(element, text) {
  */
 function attachBubbles(refClass, callback) {
 	forEachElementInClass(refClass, function(ref, i) {
-		var anchor = "citation_" + i;
-
 		var footHtml = callback(ref.innerHTML);
 		if(footHtml) {
-			bubbleText = elementToString(footHtml);
+			bubbleText = footHtml.textContent;
 		} else {
 			bubbleText = "Footnote not found";
 		}
 		createBubble(ref, bubbleText);
 
-		// Make it so clicking the reference highlights the reference
-		ref.onclick = function() {
-			var parent = footHtml.parentNode;
-			setVisibility(parent, true);
-			selectText(footHtml);
-		}
-		ref.href = "#" + anchor;
+		if(footHtml) {
+			var anchor = "citation_" + i;
+			// Make it so clicking the reference highlights the reference
+			ref.onclick = function() {
+				var parent = footHtml.parentNode;
+				setVisibility(parent, true);
+				selectText(footHtml);
+			}
+			ref.href = "#" + anchor;
 
-		var footnote = document.createElement('a');
-		footnote.name = anchor;
-		footHtml.insertBefore(footnote, footHtml.firstChild);
+			var footnote = document.createElement('a');
+			footnote.name = anchor;
+			footHtml.insertBefore(footnote, footHtml.firstChild);
+		}
 	});
 }
 
 function getElementOverhang(element, container) {
 	var elementBounds   = element.getBoundingClientRect();
 	var containerBounds = container.getBoundingClientRect();
-	
+
 	if(containerBounds.right - containerBounds.left == 0) {
 		return 0;
 	}
-	
+
 	var overhang = 0;
 	if (elementBounds.right > containerBounds.right) {
 		overhang = elementBounds.right - containerBounds.right;
@@ -176,69 +136,42 @@ function setVisibility(element, visibility) {
 	}
 }
 
-/* This function searches the document for anchor tags of class
- * "show-targets" and makes it so it controls the visibility of
- * the element, indicated by the target attribute.
- */
-function activateShowTargetElements() {
-	forEachElementInClass("show-target", function(ref) {
-		var target = document.getElementById(ref.target);
-		ref.onclick = function () {
-			target.style.display = 'block';
-			ref.style.display = 'none';
-		};
-		ref.className += " no-select";
-		target.style.display = 'none';
-		target.togglePeer = ref;
-	});
-}
-
 /* This object manages hints on a webpage
  */
-var HintManager;
+class HintManager {
+	constructor(element) {
+		this.curHint = 0;
+		this.element = element;
 
-if(!HintManager) {
-	/* Classes have difficulties getting multiply defined, so we put a guard here */
-	HintManager = class {
-		constructor(element) {
-			this.curHint = 0;
-			this.element = element;
+		element.hintManager = this;
+		element.querySelector("LI").style.display = 'block';
 
-			console.log(element.innerHTML);
-			element.hintManager = this;
-			element.querySelector("LI").style.display = 'block';
-
-			if(this.element.querySelectorAll("LI").length > 1) {
-				var title = (element.className == "trivia") ? "More trivia" : "More hints";
-				var btn   = document.createElement('input');
-				btn.type  = 'button';
-				btn.value = title;
-				btn.addEventListener('click',function() {this.parentNode.hintManager.nextHint();});
-				element.insertBefore(btn, element.firstChild);
-			}
-		}
-
-		nextHint() {
-			var hints = this.element.querySelectorAll("LI");
-			hints[this.curHint].style.display = 'none';
-			this.curHint = (this.curHint + 1) % hints.length;
-			hints[this.curHint].style.display = 'block';
+		if(this.element.querySelectorAll("LI").length > 1) {
+			var title = (element.className == "trivia") ? "More trivia" : "More hints";
+			var btn   = document.createElement('input');
+			btn.type  = 'button';
+			btn.value = title;
+			btn.addEventListener('click',function() {this.parentNode.hintManager.nextHint();});
+			element.insertBefore(btn, element.firstChild);
 		}
 	}
-} else {
-	console.log("TODO: Fix multiple includes of docs.js");
-}
 
-function implicitClassNames() {
-	for(var i = 1; i <= 6; ++i) {
-		$("H" + i + ":contains('References')")
-			.nextAll("ol:first").attr("id", "references");
+	nextHint() {
+		var hints = this.element.querySelectorAll("LI");
+		hints[this.curHint].style.display = 'none';
+		this.curHint = (this.curHint + 1) % hints.length;
+		hints[this.curHint].style.display = 'block';
 	}
 }
 
-function implicitShowTarget() {	
-	$('<a class="show-target" target="glossary">Show Glossary</a>')
-		.insertBefore("#glossary");
+function implicitClassNames(el) {
+	var lists = el.querySelectorAll('ol');
+	for(var i = 0; i < lists.length; i++) {
+		var elementRightAbove = lists[i].previousElementSibling;
+		if(elementRightAbove && elementRightAbove.innerHTML.indexOf('References') != -1) {
+			lists[i].setAttribute('id', 'references');
+		}
+	}
 }
 
 function attachHintManagers(el) {
@@ -248,45 +181,31 @@ function attachHintManagers(el) {
 	}
 }
 
-function defineGlossaryTerms() {
-	attachBubbles("glossary_term",
-		function(ref) {
-			var elem;
-			$("#glossary DT").each(function(i,e) {
-				if(e.innerHTML.toLowerCase() == ref.toLowerCase()) {
-					elem = e;
-				}
-			});
-			return $(elem).nextAll("DD:first")[0];
-		}
-	);
-}
-
 function declareReferences() {
 	attachBubbles("reference",
 		function(ref) {
-			return $("#references LI")[parseInt(ref.match(/\d+/))-1];
+			return document.querySelectorAll("#references LI")[parseInt(ref.match(/\d+/))-1];
 		}
 	);
 }
 
-function showEmulatorDiv(emulator) {
-	$("." + emulator).show();
+function showEmulatorDiv(el, emulator) {
+	var el = el.querySelector("." + emulator);
+	if(el) {
+		el.style.display = 'block';
+	}
 }
 
 /* Applies all dynamic formatting to the page
  */
 function applyDynamicFormatting(el, emulator) {
-	implicitClassNames();
-	implicitShowTarget();
-	defineGlossaryTerms();
+	implicitClassNames(el);
 	declareReferences();
-	activateShowTargetElements();
 	attachHintManagers(el);
 	attachBubbleAdjustment();
 	
 	// Adjust bubbles does not works when the bubbles are hidden,
 	// so show the DIV before calling it
-	showEmulatorDiv(emulator);
+	showEmulatorDiv(el, emulator);
 	adjustBubbles();
 }

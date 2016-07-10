@@ -93,12 +93,13 @@ function processJSONIcons( doc, json ) {
  * into DOM elements.
  */
 function processJSONContent(doc, element) {
-	$('SCRIPT[type="application/json"]', element).replaceWith(
-		function() {
-			var json = JSON.parse(this.innerHTML);
-			if(json.hasOwnProperty("icons")) {
-				return processJSONIcons(doc, json);
-			}
+	var els = element.querySelectorAll('SCRIPT[type="application/json"]');
+	for(var i =0; i < els.length; i++) {
+		var json = JSON.parse(els[i].textContent);
+		if(json.hasOwnProperty("icons")) {
+			els[i].parentNode.replaceChild(processJSONIcons(doc, json), els[i]);
+		} else {
+			els[i].remove();
 		}
-	);
+	}
 }
