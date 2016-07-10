@@ -88,11 +88,16 @@ function navAttachHandlersToAnchors(element) {
 			this.getAttribute("data-json")
 		);
 	}
-	
+
 	// Attach handler to anything not having an HREF
 	$('A:not([href])', element).click(clickHandler);
 	// Attach handler to local HREFs
-	$('A[href]:not([href^="http"])', element).click(clickHandler);
+	$('A[href]:not([href^="http"],[href^="#"])', element).click(clickHandler);
+	$('A[href^="#"]', element).click(function() {
+		var container = document.getElementById("html-content");
+		container.scrollTop = container.scrollHeight;
+		return false;
+	});
 	// Set target for external links so a new page gets opened
 	$('A[href^="http"]', element).attr("target", "_blank");
 }
@@ -127,8 +132,8 @@ function renderWikiContent() {
 		dstElement.innerHTML = '<pre>' + dstElement.innerHTML.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</pre>';
 	}
 
-	navAttachHandlersToAnchors(dstElement);
 	applyDynamicFormatting(dstElement, emuState.getEmulator());
+	navAttachHandlersToAnchors(dstElement);
 
 	$("#html-frame").scrollTop(0);
 }

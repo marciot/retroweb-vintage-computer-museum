@@ -17,22 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* JQuery regular expression selector from:
- *   http://james.padolsey.com/javascript/regex-selector-for-jquery/
- */
-jQuery.expr[':'].regex = function(elem, index, match) {
-    var matchParams = match[3].split(','),
-        validLabels = /^(data|css):/,
-        attr = {
-            method: matchParams[0].match(validLabels) ? 
-                        matchParams[0].split(':')[0] : 'attr',
-            property: matchParams.shift().replace(validLabels,'')
-        },
-        regexFlags = 'ig',
-        regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
-    return regex.test(jQuery(elem)[attr.method](attr.property));
-}
-
 /* Get a query variable
  *
  * Reference:
@@ -53,11 +37,7 @@ function getQueryVariable(variable) {
 /* Selects the text inside an element
  */
 function selectText(element) {
-	if (document.selection) {
-		var range = document.body.createTextRange();
-		range.moveToElementText(element);
-		range.select();
-	} else if (window.getSelection) {
+	if (window.getSelection) {
 		var range = document.createRange();
 		range.selectNodeContents(element);
 		var sel = window.getSelection();
@@ -114,20 +94,12 @@ function createBubble(element, text) {
 
 /* This function attaches bubbles to elements of a
  * particular class while retrieving the contents
- * of the bubble from an element elsewhere in the
- * document (such as in a glossary). Example:
- *
- *    <span class="term">dog</span>
- *    <span class="term">cat</span>
- *    ...
- *    <li id="define_dog">Dog: An animal that drools</li>
- *    <li id="define_cat">Cat: An animal that rules</li>
- *
- * A call to attachBubbles("term", "define_") would
- * create floating bubbles defining each term.
+ * of the bubble from a callback.
  */
 function attachBubbles(refClass, callback) {
 	forEachElementInClass(refClass, function(ref, i) {
+		var anchor = "citation_" + i;
+
 		var footHtml = callback(ref.innerHTML);
 		if(footHtml) {
 			bubbleText = elementToString(footHtml);
@@ -135,17 +107,18 @@ function attachBubbles(refClass, callback) {
 			bubbleText = "Footnote not found";
 		}
 		createBubble(ref, bubbleText);
-		
+
 		// Make it so clicking the reference highlights the reference
 		ref.onclick = function() {
 			var parent = footHtml.parentNode;
 			setVisibility(parent, true);
 			selectText(footHtml);
 		}
-		
-		var anchor = "citation_" + i;
 		ref.href = "#" + anchor;
-		$(footHtml).prepend("<a name='" + anchor + "'></a>");
+
+		var footnote = document.createElement('a');
+		footnote.name = anchor;
+		footHtml.insertBefore(footnote, footHtml.firstChild);
 	});
 }
 

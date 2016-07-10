@@ -363,3 +363,7 @@ TD.docs .centered {
 	margin: 10px auto;
 	display: block;
 }
+
+.docs > :last-child {
+	margin-bottom: 5em;
+}
