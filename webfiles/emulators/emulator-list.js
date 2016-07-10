@@ -18,8 +18,30 @@ function onEmulatorChange() {
 	navTo("/?emulator=" + emulatorMenu.options[emulatorMenu.selectedIndex].value);
 }
 
+/* A "data-emulator" attribute on #retroweb-markup will indicate what emulators are compatible with an article.
+ */
+function getCompatibleEmulators() {
+	var el = document.getElementById("retroweb-markup");
+	if(el && el.hasAttribute("data-emulators")) {
+		return el.getAttribute("data-emulators").trim().split(/\s+/);
+	} else {
+		return emulatorsChoices;
+	}
+}
+/* This function checks whether the proposed emulator is compatible with the page and returns an alternative
+ * if it is not.
+ */
+function needAlternativeEmulator(emulator) {
+	var compatibleEmulators = getCompatibleEmulators();
+	if(compatibleEmulators.indexOf(emulator) == -1) {
+		return chooseEmulator();
+	}
+	return false;
+}
+
 function chooseEmulator() {
-	return emulatorsChoices[Math.floor((Math.random()*emulatorsChoices.length))];
+	var choices = getCompatibleEmulators();
+	return choices[Math.floor((Math.random()*choices.length))];
 }
 
 function populateEmulatorList() {

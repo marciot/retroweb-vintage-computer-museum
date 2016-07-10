@@ -79,18 +79,6 @@ function processJSONIcons( doc, json ) {
 	return icons;
 }
 
-/* A JSON block with a value of "emulators" will indicate what emulators are compatible with a page.
- * If the current page is not running that emulator, the page will be refreshed with that emulator.
- *
- *	{"emulators" : ["sae-amiga"]}
- */
-function processJSONEmulators( docs, json ) {
-	if(json.emulators.indexOf(emuState.getEmulator()) == -1) {
-		var emulator = json.emulators[0];
-		navTo("?emulator=" + emulator);
-	}
-}
-
 /* JSON allow for a more compact representation of arbitrary structured data
  * than HTML tags:
  *
@@ -100,17 +88,14 @@ function processJSONEmulators( docs, json ) {
  *      ...
  *   }
  *
- * The wikify function wraps such blocks in a  SCRIPT tag of type="application/javascript".
+ * The wikify function wraps such blocks in a SCRIPT tag of type="application/javascript".
  * Here we find all such tags and call the respective processing function to convert them
  * into DOM elements.
  */
 function processJSONContent(doc, element) {
 	$('SCRIPT[type="application/json"]', element).replaceWith(
 		function() {
-			var json = JSON.parse($(this).html());
-			if(json.hasOwnProperty("emulators")) {
-				return processJSONEmulators(doc, json);
-			}
+			var json = JSON.parse(this.innerHTML);
 			if(json.hasOwnProperty("icons")) {
 				return processJSONIcons(doc, json);
 			}

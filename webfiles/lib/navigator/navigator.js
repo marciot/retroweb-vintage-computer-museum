@@ -104,6 +104,14 @@ function navAttachHandlersToAnchors(element) {
 function renderWikiContent() {
 	var srcElement = document.getElementById("retroweb-markup");
 	var dstElement = document.getElementById("html-content");
+
+	/* Check whether the new page requires a change of emulator */
+	var altEmulator = needAlternativeEmulator(emuState.getEmulator());
+	if(altEmulator) {
+		navTo("?emulator=" + altEmulator);
+		return;
+	}
+
 	dstElement.innerHTML = srcElement.innerHTML;
 
 	var trailingLinks = new TrailingLinks(dstElement);
@@ -129,15 +137,33 @@ function renderWikiContent() {
  * element with the #retroweb-markup element from the new page. This allows the user to
  * navigate to a new page without requiring a full page reload. */
 function fetchAndReplaceWikiContent(url) {
-	$("#retroweb-markup").load( url + " #retroweb-markup", function(response, status, xhr) {
-		if ( status == "error" ) {
-			var msg = "Sorry but there was an error: ";
-			$("#retroweb-markup").html(msg + xhr.status + " " + xhr.statusText);
-		} else {
-			$("#retroweb-markup").children().first().unwrap();
-			renderWikiContent();
-		}
-	});
+		var target = document.querySelector("#retroweb-markup");
+
+		var request = new XMLHttpRequest();
+		request.open('GET', url, true);
+		request.responseType = 'document';
+		request.onload = function() {
+			if (request.status >= 200 && request.status < 400) {
+				var srcElement = request.responseXML.querySelector('#retroweb-markup');
+				/* Copy over attributes */
+				var dataEmulator = srcElement.getAttribute('data-emulators');
+				if(dataEmulator) {
+					target.setAttribute('data-emulators', dataEmulator);
+				}
+				/* Copy the contents of #retroweb-markup over */
+				target.innerHTML = srcElement.innerHTML;
+				renderWikiContent();
+
+				/* Copy the document title over */
+				document.title = request.responseXML.querySelector('title').innerHTML;
+			} else {
+				target.innerHTML = "Sorry but there was an error: " + request.status + " " + request.statusText;
+			}
+		};
+		request.onerror = function() {
+			target.innerHTML = "Sorry but there was an error loading the page " + request.status + " " + request.statusText;
+		};
+		request.send();
 }
 
 /******************************* Event handlers (when icons are clicked) ********************************/
