@@ -128,7 +128,7 @@ function renderWikiContent() {
 	}
 
 	navAttachHandlersToAnchors(dstElement);
-	applyDynamicFormatting(emuState.getEmulator());
+	applyDynamicFormatting(dstElement, emuState.getEmulator());
 
 	$("#html-frame").scrollTop(0);
 }

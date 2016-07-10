@@ -229,23 +229,27 @@ if(!HintManager) {
 	HintManager = class {
 		constructor(element) {
 			this.curHint = 0;
+			this.element = element;
 
+			console.log(element.innerHTML);
 			element.hintManager = this;
-			$(element).children("LI:first").show();
+			element.querySelector("LI").style.display = 'block';
 
-			if($(element).children("LI").length > 1) {
+			if(this.element.querySelectorAll("LI").length > 1) {
 				var title = (element.className == "trivia") ? "More trivia" : "More hints";
-				$("<input type='button' value='" + title + "'>")
-					.click(function() {this.parentNode.hintManager.nextHint();})
-					.prependTo(element);
+				var btn   = document.createElement('input');
+				btn.type  = 'button';
+				btn.value = title;
+				btn.addEventListener('click',function() {this.parentNode.hintManager.nextHint();});
+				element.insertBefore(btn, element.firstChild);
 			}
 		}
 
 		nextHint() {
-			var hints = $(element).children("LI");
-			$(hints[this.curHint]).hide();
+			var hints = this.element.querySelectorAll("LI");
+			hints[this.curHint].style.display = 'none';
 			this.curHint = (this.curHint + 1) % hints.length;
-			$(hints[this.curHint]).show();
+			hints[this.curHint].style.display = 'block';
 		}
 	}
 } else {
@@ -264,8 +268,11 @@ function implicitShowTarget() {
 		.insertBefore("#glossary");
 }
 
-function attachHintManagers() {
-	$(".hints,.trivia").each(function(i,el) {new HintManager(el)});
+function attachHintManagers(el) {
+	var els = el.querySelectorAll(".hints,.trivia");
+	for(var i = 0; i < els.length; i++) {
+		new HintManager(els[i]);
+	}
 }
 
 function defineGlossaryTerms() {
@@ -294,23 +301,15 @@ function showEmulatorDiv(emulator) {
 	$("." + emulator).show();
 }
 
-function applyClassSetters() {
-	$("DIV:regex(class,^set-class-)").each(function(i,e) {
-		var className = e.className.substring(10);
-		$(e).children().addClass(className);
-	});
-}
-
 /* Applies all dynamic formatting to the page
  */
-function applyDynamicFormatting(emulator) {
+function applyDynamicFormatting(el, emulator) {
 	implicitClassNames();
-	//applyClassSetters();
 	implicitShowTarget();
 	defineGlossaryTerms();
 	declareReferences();
 	activateShowTargetElements();
-	attachHintManagers();
+	attachHintManagers(el);
 	attachBubbleAdjustment();
 	
 	// Adjust bubbles does not works when the bubbles are hidden,

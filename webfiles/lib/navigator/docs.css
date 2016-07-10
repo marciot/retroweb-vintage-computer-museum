@@ -103,11 +103,11 @@ TD.docs .centered {
 	display: block;
 }
 
-.docs DL.wide DT {
+.docs .wide DT {
 	width: 30%;
 }
 
-.docs DL.wide DD {
+.docs .wide DD {
 	margin-left: 30%;
 	padding-left: 5px;
 }
