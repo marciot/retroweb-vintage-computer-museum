@@ -72,19 +72,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	</animated-zoom>
 </template>
 
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 <script type="text/javascript" src="/lib/emscripten-fs-utils.js"></script>
 <script type="text/javascript" src="/emulators/default-interface.js"></script>
 <script type="text/javascript" src="/emulators/emulator.js"></script>
 <script type="text/javascript" src="/emulators/emulator-list.js"></script>
 
 <script>
-	// The following is requires for the webcomponents polyfill
-	document._currentScript = document._currentScript || document.currentScript;
-
-	// importDoc references this import's document
-	var emuImportDoc = document._currentScript.ownerDocument;
-
 	// Global variables for emulator
 	var Module;
 	var emuState;
@@ -93,15 +86,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	var popups;
 	var emulator;
 
-	/* Public constructor function */
-
-	function createEmulator(host, emulatorType) {
-		var template = emuImportDoc.getElementById('emulatorTemplate');
+(function(namespace, thisDoc){
+	namespace.createEmulator = function(host, emulatorType) {
+		var template = thisDoc.getElementById('emulatorTemplate');
 		var clone = document.importNode(template.content, true);
 		host.appendChild(clone);
 
 		// Add tab index to ensure the canvas retains focus
-		$("#screen").attr("tabindex", "0").mousedown(function(){ $(this).focus(); return false; });
+		var screen = document.querySelector("#screen");
+		screen.setAttribute("tabindex", "0");
+		screen.addEventListener('mousedown', function(){ $(this).focus(); return false; });
 
 		// Ignore arrow keys and pageup/pagedown
 		window.addEventListener('keydown', function(e) {
@@ -118,4 +112,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		emulatorButtons.setRestartAction(function() {emulatorObj.restart();});
 		return emulatorObj;
 	}
+})(window.RetroWeb = window.RetroWeb || {}, (document._currentScript || document.currentScript).ownerDocument);
 </script>

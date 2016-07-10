@@ -73,7 +73,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	</emulator-skin>
 </template>
 
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 <script type="text/javascript" src="/lib/utils.js"></script>
 
 <script>
@@ -81,13 +80,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	var emulator = null;
 
-	(function(namespace){
-		// The following is requires for the webcomponents polyfill
-		document._currentScript = document._currentScript || document.currentScript;
-
-		// importDoc references this import's document
-		var importDoc = document._currentScript.ownerDocument;
-
+	(function(namespace, thisDoc){
 		/* There is no longer a way to show the developer console on iOS devices, so make
 		 * it so errors become alerts.
 		 *
@@ -117,19 +110,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				"xerox-star"	: "xerox-star"
 			};
 			if(emulator == "xerox-star") {
-				$("#screen-area").hide();
+				document.querySelector("#screen-area").style.display = 'none';
 			}
 			var skin = document.getElementById("skin").loadByName(skins[emulator]);
 		}
 
 		function webComponentsReady() {
 			// Stamp the HTML inside the body of the main page
-			var template = importDoc.getElementById('retrowebTemplate');
+			var template = thisDoc.getElementById('retrowebTemplate');
 			var clone = document.importNode(template.content, true);
-			var host = document.getElementsByTagName("body")[0];
+			var host = document.querySelector("body");
 			host.appendChild(clone);
 
-			createNavigator(document.getElementById("sidebar"));
+			namespace.createNavigator(document.getElementById("sidebar"));
 			populateEmulatorList();
 
 			var whichEmulator = RetroWeb.query.emulator || chooseEmulator();
@@ -139,7 +132,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 			setBackground(whichEmulator);
 
-			emulator = createEmulator(
+			emulator = namespace.createEmulator(
 				document.getElementById("screen-area"),
 				whichEmulator
 			);
@@ -152,7 +145,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		window.addEventListener('WebComponentsReady', webComponentsReady);
 
 		namespace.addIOSErrorHandler(window);
-	})(window.RetroWeb = window.RetroWeb || {});
+	})(window.RetroWeb = window.RetroWeb || {}, (document._currentScript || document.currentScript).ownerDocument);
 </script>
 
 <!-- The following will enable Google Analytics if the .include file exists -->
