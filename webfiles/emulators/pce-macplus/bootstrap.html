@@ -64,17 +64,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		}
 
 		mountDisk(diskFile) {
-			console.log("Mounting " + diskFile);
-			var driveId = diskFile.match(/fd(\d)+/)[1];
-			this.prepareDisk(diskFile);
-			if(emuState.isFloppyMounted("fd" + driveId) && ifce.showEjectWarning) {
-				ifce.showEjectWarning = false;
-				popups.open("popup-mac-eject-disk");
-			}
-			if(emuState.isRunning()) {
-				emuState.floppyMounted("fd" + driveId);
-				macSetMessage ("emu.disk.insert", driveId + ":" + diskFile);
-				macSetMessage ("mac.insert", driveId);
+			var match = diskFile.match(/fd(\d)+/);
+			if(match) {
+				var driveId = match[1];
+				console.log("Mounting " + diskFile);
+				this.prepareDisk(diskFile);
+				if(emuState.isFloppyMounted("fd" + driveId) && ifce.showEjectWarning) {
+					ifce.showEjectWarning = false;
+					popups.open("popup-mac-eject-disk");
+				}
+				if(emuState.isRunning()) {
+					emuState.floppyMounted("fd" + driveId);
+					macSetMessage ("emu.disk.insert", driveId + ":" + diskFile);
+					macSetMessage ("mac.insert", driveId);
+				}
+			} else {
+				// Must be a hard disk, cannot insert hard disks after boot
+				alert("To boot from this disk, you will need to reload the page.");
 			}
 		}
 

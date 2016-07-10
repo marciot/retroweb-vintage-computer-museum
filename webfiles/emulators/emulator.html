@@ -95,7 +95,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		// Add tab index to ensure the canvas retains focus
 		var screen = document.querySelector("#screen");
 		screen.setAttribute("tabindex", "0");
-		screen.addEventListener('mousedown', function(){ $(this).focus(); return false; });
+		screen.addEventListener('mousedown', function(event){this.focus();});
 
 		// Ignore arrow keys and pageup/pagedown
 		window.addEventListener('keydown', function(e) {

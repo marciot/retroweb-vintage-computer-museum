@@ -47,9 +47,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		}
 
 		mountDisk(diskFile) {
-			console.log("Mounting " + diskFile);
-			var driveId = diskFile.match(/fd(\d)+/)[1];
-			stSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
+			var match = diskFile.match(/fd(\d)+/);
+			if(match) {
+				var driveId = match[1];
+				stSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
+			} else {
+				// Must be a hard disk, cannot insert hard disks after boot
+				alert("To boot from this disk, you will need to reload the page.");
+			}
 		}
 
 		reset() {
