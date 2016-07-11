@@ -20,10 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 var processEmulatorConfig = null;
 
 class EmulatorState {
-	constructor(emulator) {
+	constructor(emulator, popups) {
 		this.emulator     = emulator;
 		this.emuName      = null;
 		this.emuConfig    = null;
+		this.popups       = popups;
 
 		this.gotIfce      = false;
 		this.gotRoms      = false;
@@ -47,7 +48,7 @@ class EmulatorState {
 	}
 
 	setStatus(text) {
-		popups.setStatus(text);
+		this.popups.setStatus(text);
 	}
 
 	// Calls a callback and clears the callback so it won't be called multiple times.
@@ -69,9 +70,9 @@ class EmulatorState {
 		console.log("  gotBootMedia: ",        this.gotBootMedia);
 		console.log("  downloading: ",         this.downloading);*/
 		
-		popups.setVisibility("popup-rom-missing",     !this.gotRoms);
-		popups.setVisibility("popup-need-boot-media", !this.gotBootMedia);
-		popups.setVisibility("popup-status",          this.downloading || (this.started && !this.running));
+		this.popups.setVisibility("popup-rom-missing",     !this.gotRoms);
+		this.popups.setVisibility("popup-need-boot-media", !this.gotBootMedia);
+		this.popups.setVisibility("popup-status",          this.downloading || (this.started && !this.running));
 
 		if(!unsafeForCallbacks) {
 			/* Dispatch callbacks if it is safe to do so */
@@ -158,13 +159,14 @@ class EmulatorState {
 }
 
 class Emulator {
-	constructor(emulator) {
+	constructor(emulator, opts) {
 		this.onEmulatorConfigured  = function() {};
 		this.onEmulatorLoaded      = function() {};
 
-		this.state       = emuState    = new EmulatorState(this);
+		this.state       = emuState    = new EmulatorState(this, opts.popups);
 		this.fileManager = fileManager = new EmscriptenFileManager();
 		this.emuIfce     = null;
+		this.popups      = opts.popups;
 
 		/* Bootstrap the emulator by loading "bootstrap.html". This file will call
 		 * the global function processEmulatorConfig. We create this function here
@@ -331,7 +333,7 @@ class Emulator {
 	 * to select a file or floppy to upload. */
 
 	uploadFloppy(drive, isBootable) {
-		popups.askForFile("Select floppy disk image", function(file) {
+		this.popups.askForFile("Select floppy disk image", function(file) {
 			var dstName = this.getEmulatorInterface().getFileNameForDrive(drive, file.name);
 			this.expectMedia(dstName, isBootable);
 			this.fileManager.writeFileFromFile(dstName, file);
@@ -339,7 +341,7 @@ class Emulator {
 	}
 
 	uploadFile(dstName, what, isBootable) {
-		popups.askForFile("Please select a " + what, function(file) {
+		this.popups.askForFile("Please select a " + what, function(file) {
 			this.expectMedia(dstName, isBootable);
 			this.fileManager.writeFileFromFile(dstName, file);
 		});
