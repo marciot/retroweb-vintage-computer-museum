@@ -130,19 +130,19 @@ class EmulatorState {
 		}
 	}
 
-	isReadyToStart() {
+	get isReadyToStart() {
 		return this.gotRoms && this.gotBootMedia;
 	}
 
-	isStarted() {
+	get isStarted() {
 		return this.started;
 	}
 
-	isRunning() {
+	get isRunning() {
 		return this.running;
 	}
 
-	hasBootMedia() {
+	get hasBootMedia() {
 		return this.gotBootMedia;
 	}
 
@@ -163,7 +163,7 @@ class Emulator {
 		this.onEmulatorConfigured  = function() {};
 		this.onEmulatorLoaded      = function() {};
 
-		this.state       = emuState    = new EmulatorState(this, opts.popups);
+		this._state      = new EmulatorState(this, opts.popups);
 		this.fileManager = new EmscriptenFileManager();
 		this.emuIfce     = null;
 		this.popups      = opts.popups;
@@ -178,13 +178,13 @@ class Emulator {
 			};
 		}
 		createGlobalCallback(this);
-		this.state.setEmulator(emulator);
+		this._state.setEmulator(emulator);
 		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
 	}
 
 	setEmulatorInterface(ifce) {
 		this.emuIfce = ifce;
-		this.state.transitionToInterfaceLoaded();
+		this._state.transitionToInterfaceLoaded();
 	}
 
 	getEmulatorInterface() {
@@ -212,29 +212,29 @@ class Emulator {
 			var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
 			this.fileManager.writeFileFromUrl('/' + name, url);
 		}
-		this.state.transitionToRomsLoaded();
-		this.state.transitionToConfigLoaded(config);
+		this._state.transitionToRomsLoaded();
+		this._state.transitionToConfigLoaded(config);
 	}
 
 	preloadResources() {
 		console.log("Loading emulator resources");
-		var config = this.state.getConfig();
+		var config = this._state.getConfig();
 		for(var i = 0; i < config.pre.length; i++) {
 			loadResource(config.pre[i], true);
 		}
 	}
 
 	expectMedia(fileName, isBootable) {
-		this.state.transitionToDownloading(true);
+		this._state.transitionToDownloading(true);
 		var me = this;
 		var waitFunc = function(remaining, depName) {
 			if(isBootable && depName == fileName) {
 				me.state.transitionToBootMediaLoaded();
 			}
 			if(remaining == 0) {
-				if(me.state.isRunning()) {
+				if(me.state.isRunning) {
 					me.getEmulatorInterface().syncFileSystem(true);
-				} else if(me.state.hasBootMedia()) {
+				} else if(me.state.hasBootMedia) {
 					me.restart();
 				}
 				me.state.transitionToDownloading(false);
@@ -246,31 +246,31 @@ class Emulator {
 	/* Load the main emulator script(s). This will start the emulator execution. */
 	loadScriptsAndStart() {
 		console.log("Loading emulator scripts");
-		this.getEmulatorInterface().prepareToLoadAndStart(this.state);
-		var config = this.state.getConfig();
+		this.getEmulatorInterface().prepareToLoadAndStart(this._state);
+		var config = this._state.getConfig();
 		for(var i = 0; i < config.run.length; i++) {
 			loadResource(config.run[i], true);
 		}
 	}
 
 	restart() {
-		if (!this.state.isReadyToStart()) {
+		if (!this._state.isReadyToStart) {
 			return;
 		}
-		if (!this.state.isStarted()) {
+		if (!this._state.isStarted) {
 			this.loadScriptsAndStart();
-			this.state.transitionToStarted();
-		} else if(this.state.isRunning()) {
+			this._state.transitionToStarted();
+		} else if(this._state.isRunning) {
 			this.getEmulatorInterface().reset();
 		}
 	}
 
 	bootFromRom(opts) {
 		this.processBootOpts(opts);
-		if(this.state.isRunning()) {
+		if(this._state.isRunning) {
 			alert("Cannot change the boot source once the computer is running. Please reload the page to reset");
 		} else {
-			this.state.transitionToBootMediaLoaded();
+			this._state.transitionToBootMediaLoaded();
 			this.restart();
 		}
 	}
@@ -278,7 +278,7 @@ class Emulator {
 	/* The cassette actions allow you to play, record, rewind or append to the tape */
 
 	cassetteAction(action) {
-		if(!this.state.isRunning()) {
+		if(!this._state.isRunning) {
 			alert("The emulator must be running before you use this action.");
 			return;
 		}
@@ -287,7 +287,7 @@ class Emulator {
 
 	processBootOpts(opts) {
 		if(opts && "emulator-args" in opts) {
-			if(this.state.isRunning()) {
+			if(this._state.isRunning) {
 				console.log("WARNING: Ignoring request for command line arguments since computer is already running");
 			} else {
 				var args = opts["emulator-args"];
@@ -301,11 +301,11 @@ class Emulator {
 	/* This function lets you mount a file into the emulator from an URL */
 
 	mountDriveFromUrl(drive, url, isBootable, opts) {
-		if(!this.state.isRunning() && !isBootable) {
+		if(!this._state.isRunning && !isBootable) {
 			alert("Please boot the computer using a boot disk first");
 			return;
 		}
-		if(this.state.isRunning() && isBootable) {
+		if(this._state.isRunning && isBootable) {
 			alert("This disk will be inserted, but if you want to boot from it you will need to reload the web page to reset the computer.");
 		}
 
@@ -356,6 +356,14 @@ class Emulator {
 
 	downloadFile(file) {
 		saveFileToLocal(file);
+	}
+
+	get name() {
+		return this._state.getEmulator();
+	}
+
+	get state() {
+		return this._state;
 	}
 }
 

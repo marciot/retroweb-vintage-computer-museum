@@ -69,12 +69,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				var driveId = match[1];
 				console.log("Mounting " + diskFile);
 				this.prepareDisk(diskFile);
-				if(emuState.isFloppyMounted("fd" + driveId) && ifce.showEjectWarning) {
+				if(emulator.state.isFloppyMounted("fd" + driveId) && ifce.showEjectWarning) {
 					ifce.showEjectWarning = false;
 					popups.open("popup-mac-eject-disk");
 				}
-				if(emuState.isRunning()) {
-					emuState.floppyMounted("fd" + driveId);
+				if(emulator.state.isRunning) {
+					emulator.state.floppyMounted("fd" + driveId);
 					macSetMessage ("emu.disk.insert", driveId + ":" + diskFile);
 					macSetMessage ("mac.insert", driveId);
 				}

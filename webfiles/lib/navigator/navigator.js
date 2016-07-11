@@ -133,7 +133,7 @@ function renderWikiContent() {
 	var dstElement = document.getElementById("html-content");
 
 	/* Check whether the new page requires a change of emulator */
-	var altEmulator = needAlternativeEmulator(emuState.getEmulator());
+	var altEmulator = needAlternativeEmulator(emulator.name);
 	if(altEmulator) {
 		navTo("?emulator=" + altEmulator);
 		return;
@@ -151,7 +151,7 @@ function renderWikiContent() {
 		dstElement.innerHTML = '<pre>' + dstElement.innerHTML.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</pre>';
 	}
 
-	applyDynamicFormatting(dstElement, emuState.getEmulator());
+	applyDynamicFormatting(dstElement, emulator.name);
 	navAttachHandlersToAnchors(dstElement);
 
 	document.querySelector("#html-content").scrollTop = 0;
@@ -264,7 +264,7 @@ function parseQueryFromUrl(url) {
 }
 
 function navWithReload(url) {
-	if(emuState.isRunning() &&
+	if(emulator.state.isRunning &&
 		(!confirm("Following this link will shutdown the emulator and change the computer type."))) {
 			return false;
 	}
@@ -297,7 +297,7 @@ function navHide() {
 
 function navTo(url) {
 	var params = parseQueryFromUrl(url);
-	if(params.emulator && params.emulator != emuState.getEmulator()) {
+	if(params.emulator && params.emulator != emulator.name) {
 		/* If an emulator is specified, and it does not match what we are currently
 		   running, then we must do a full page reload (to reset the emulator) */
 		navWithReload(url);
