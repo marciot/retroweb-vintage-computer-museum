@@ -107,8 +107,8 @@ function navAttachHandlersToAnchors(el) {
 			el.addEventListener('click', clickHandler);
 		} else {
 			var href = el.getAttribute('href');
-			if(href.indexOf('http:') == 0) {
-				// Set target for external links so a new page gets opened
+			if(href.indexOf('http') == 0) {
+				// Set target for http or https links so a new page gets opened
 				el.setAttribute("target", "_blank");
 			} else if(href.indexOf('#') == 0) {
 				el.addEventListener('click', clickFootnote);
@@ -142,10 +142,7 @@ function renderWikiContent() {
 	dstElement.innerHTML = srcElement.innerHTML;
 
 	var trailingLinks = new TrailingLinks(dstElement);
-	dstElement.innerHTML = wikify(dstElement.innerHTML)
-		.replace(/\$EMULATOR/g, emuState.getEmulator())
-		.replace(/\$EMU_NAME/g, emuState.getConfig().name)
-		.replace(/\$EMU_PAGE/g, implicitUrlFromName(emuState.getConfig().name));
+	dstElement.innerHTML = wikify(dstElement.innerHTML);
 	processJSONContent(document, dstElement);
 	trailingLinks.substitute(dstElement);
 
