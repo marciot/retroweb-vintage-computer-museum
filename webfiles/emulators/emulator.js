@@ -53,8 +53,8 @@ class EmulatorState {
 
 	// Calls a callback and clears the callback so it won't be called multiple times.
 	callCallback(name) {
-		var callback = emulatorCallbacks[name];
-		emulatorCallbacks[name] = null;
+		var callback = this.emulator[name];
+		this.emulator[name] = null;
 		if(callback) callback();
 	}
 

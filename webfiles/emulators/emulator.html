@@ -82,7 +82,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	var Module;
 	var emuState;
 	var fileManager;
-	var emulatorCallbacks;
 	var emulator;
 
 (function(namespace, thisDoc){
@@ -109,9 +108,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		};
 
 		var emulatorButtons = document.getElementsByTagName("emulator-buttons")[0];
-		var emulatorObj = emulatorCallbacks = emulator = new Emulator(emulatorType, opts);
-		emulatorButtons.setRestartAction(function() {emulatorObj.restart();});
-		return emulatorObj;
+		emulator = new Emulator(emulatorType, opts);
+		emulatorButtons.setRestartAction(function() {emulator.restart();});
+		return emulator;
 	}
 })(window.RetroWeb = window.RetroWeb || {}, (document._currentScript || document.currentScript).ownerDocument);
 </script>
