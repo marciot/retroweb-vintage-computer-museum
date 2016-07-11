@@ -22,20 +22,16 @@ var processEmulatorConfig = null;
 class EmulatorState {
 	constructor(emulator, popups) {
 		this.emulator     = emulator;
-		this.emuConfig    = null;
 		this.popups       = popups;
 
 		this.gotIfce      = false;
 		this.gotRoms      = false;
+		this.gotConfig    = false;
 		this.gotBootMedia = false;
 		this.downloading  = false;
 		this.started      = false;
 		this.running      = false; // Emscripten preinit called. Okay to manipulate files
 		this.floppyDrives = new Array();
-	}
-
-	getConfig(emulator) {
-		return this.emuConfig;
 	}
 
 	setStatus(text) {
@@ -57,7 +53,7 @@ class EmulatorState {
 	stateChanged(unsafeForCallbacks) {
 		/*console.log("State transition:");
 		console.log("  gotRoms: ",             this.gotRoms);
-		console.log("  gotConfig: ",           this.emuConfig != false);
+		console.log("  gotConfig: ",           this.gotConfig != false);
 		console.log("  gotBootMedia: ",        this.gotBootMedia);
 		console.log("  downloading: ",         this.downloading);*/
 		
@@ -68,19 +64,18 @@ class EmulatorState {
 		if(!unsafeForCallbacks) {
 			/* Dispatch callbacks if it is safe to do so */
 
-			if(this.emuConfig) {
+			if(this.gotConfig) {
 				this.callCallback("onEmulatorConfigured");
 			}
 
-			if(this.gotRoms && this.emuConfig && this.gotIfce) {
+			if(this.gotRoms && this.gotConfig && this.gotIfce) {
 				this.callCallback("onEmulatorLoaded");
 			}
 		}
 	}
 
-	transitionToConfigLoaded(config) {
-		this.emuConfig = config;
-		this.emulator.preloadResources();
+	transitionToConfigLoaded() {
+		this.gotConfig = true;
 		this.stateChanged();
 	}
 
@@ -156,6 +151,7 @@ class Emulator {
 
 		this._name       = emulator;
 		this._state      = new EmulatorState(this, opts.popups);
+		this._config     = null;
 		this.fileManager = new EmscriptenFileManager();
 		this.emuIfce     = null;
 		this.popups      = opts.popups;
@@ -203,13 +199,16 @@ class Emulator {
 			var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
 			this.fileManager.writeFileFromUrl('/' + name, url);
 		}
+
+		this._config = config;
 		this._state.transitionToRomsLoaded();
-		this._state.transitionToConfigLoaded(config);
+		this.preloadResources();
+		this._state.transitionToConfigLoaded();
 	}
 
 	preloadResources() {
 		console.log("Loading emulator resources");
-		var config = this._state.getConfig();
+		var config = this._config;
 		for(var i = 0; i < config.pre.length; i++) {
 			loadResource(config.pre[i], true);
 		}
@@ -238,7 +237,7 @@ class Emulator {
 	loadScriptsAndStart() {
 		console.log("Loading emulator scripts");
 		this.getEmulatorInterface().prepareToLoadAndStart(this._state);
-		var config = this._state.getConfig();
+		var config = this._config;
 		for(var i = 0; i < config.run.length; i++) {
 			loadResource(config.run[i], true);
 		}
