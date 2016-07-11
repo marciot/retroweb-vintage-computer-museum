@@ -22,7 +22,6 @@ var processEmulatorConfig = null;
 class EmulatorState {
 	constructor(emulator, popups) {
 		this.emulator     = emulator;
-		this.emuName      = null;
 		this.emuConfig    = null;
 		this.popups       = popups;
 
@@ -33,14 +32,6 @@ class EmulatorState {
 		this.started      = false;
 		this.running      = false; // Emscripten preinit called. Okay to manipulate files
 		this.floppyDrives = new Array();
-	}
-
-	setEmulator(emulator) {
-		this.emuName = emulator;
-	}
-
-	getEmulator() {
-		return this.emuName;
 	}
 
 	getConfig(emulator) {
@@ -163,6 +154,7 @@ class Emulator {
 		this.onEmulatorConfigured  = function() {};
 		this.onEmulatorLoaded      = function() {};
 
+		this._name       = emulator;
 		this._state      = new EmulatorState(this, opts.popups);
 		this.fileManager = new EmscriptenFileManager();
 		this.emuIfce     = null;
@@ -178,7 +170,6 @@ class Emulator {
 			};
 		}
 		createGlobalCallback(this);
-		this._state.setEmulator(emulator);
 		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
 	}
 
@@ -359,7 +350,7 @@ class Emulator {
 	}
 
 	get name() {
-		return this._state.getEmulator();
+		return this._name;
 	}
 
 	get state() {
