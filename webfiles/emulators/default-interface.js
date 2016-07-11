@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *   http://joshgertzen.com/object-oriented-super-class-method-calling-with-javascript/
  */
 
+var Module;
+
 class EmulatorInterface {
 	constructor() {
 		this.arguments = {};
