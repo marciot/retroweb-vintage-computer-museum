@@ -68,6 +68,16 @@ class EmulatorInterface {
 		this.configModule(Module);
 	}
 
+	configModule(module) {
+		module.arguments = [];
+		for (var arg in this.arguments) {
+			module.arguments.push(arg);
+			if(this.arguments[arg] != '') {
+				module.arguments.push(this.arguments[arg]);
+			}
+		}
+	}
+
 	syncFileSystem(doMount) {
 		var filesWritten = emulator.fileManager.syncEmscriptenFS();
 		console.log("Preparing disks...");
@@ -75,16 +85,6 @@ class EmulatorInterface {
 			this.prepareDisk(filesWritten[i]);
 			if(doMount) {
 				this.mountDisk(filesWritten[i]);
-			}
-		}
-	}
-
-	configModule(module) {
-		module.arguments = [];
-		for (var arg in this.arguments) {
-			module.arguments.push(arg);
-			if(this.arguments[arg] != '') {
-				module.arguments.push(this.arguments[arg]);
 			}
 		}
 	}

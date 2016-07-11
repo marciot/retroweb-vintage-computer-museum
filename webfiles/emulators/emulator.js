@@ -38,13 +38,6 @@ class EmulatorState {
 		this.popups.setStatus(text);
 	}
 
-	// Calls a callback and clears the callback so it won't be called multiple times.
-	callCallback(name) {
-		var callback = this.emulator[name];
-		this.emulator[name] = null;
-		if(callback) callback();
-	}
-
 	/* This method should be called after one of the state variables has been
 	 * changed. The primary role for this method is to show/hide the status
 	 * dialog boxes. It may also invoke callbacks. In certain contexts, this
@@ -65,11 +58,11 @@ class EmulatorState {
 			/* Dispatch callbacks if it is safe to do so */
 
 			if(this.gotConfig) {
-				this.callCallback("onEmulatorConfigured");
+				this.emulator.callCallback("onEmulatorConfigured");
 			}
 
 			if(this.gotRoms && this.gotConfig && this.gotIfce) {
-				this.callCallback("onEmulatorLoaded");
+				this.emulator.callCallback("onEmulatorLoaded");
 			}
 		}
 	}
@@ -354,6 +347,13 @@ class Emulator {
 
 	get state() {
 		return this._state;
+	}
+
+	// Calls a callback and clears the callback so it won't be called multiple times.
+	callCallback(name) {
+		var callback = this[name];
+		this[name] = null;
+		if(callback) callback();
 	}
 }
 
