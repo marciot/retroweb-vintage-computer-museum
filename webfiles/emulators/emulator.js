@@ -20,13 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 var processEmulatorConfig = null;
 
 class EmulatorState {
-	constructor(emulator) {
+	constructor(emulator, popups) {
 		this.emulator     = emulator;
-		this.emuName      = null;
-		this.emuConfig    = null;
+		this.popups       = popups;
 
 		this.gotIfce      = false;
 		this.gotRoms      = false;
+		this.gotConfig    = false;
 		this.gotBootMedia = false;
 		this.downloading  = false;
 		this.started      = false;
@@ -34,26 +34,14 @@ class EmulatorState {
 		this.floppyDrives = new Array();
 	}
 
-	setEmulator(emulator) {
-		this.emuName = emulator;
-	}
-
-	getEmulator() {
-		return this.emuName;
-	}
-
-	getConfig(emulator) {
-		return this.emuConfig;
-	}
-
 	setStatus(text) {
-		popups.setStatus(text);
+		this.popups.setStatus(text);
 	}
 
 	// Calls a callback and clears the callback so it won't be called multiple times.
 	callCallback(name) {
-		var callback = emulatorCallbacks[name];
-		emulatorCallbacks[name] = null;
+		var callback = this.emulator[name];
+		this.emulator[name] = null;
 		if(callback) callback();
 	}
 
@@ -65,30 +53,29 @@ class EmulatorState {
 	stateChanged(unsafeForCallbacks) {
 		/*console.log("State transition:");
 		console.log("  gotRoms: ",             this.gotRoms);
-		console.log("  gotConfig: ",           this.emuConfig != false);
+		console.log("  gotConfig: ",           this.gotConfig != false);
 		console.log("  gotBootMedia: ",        this.gotBootMedia);
 		console.log("  downloading: ",         this.downloading);*/
 		
-		popups.setVisibility("popup-rom-missing",     !this.gotRoms);
-		popups.setVisibility("popup-need-boot-media", !this.gotBootMedia);
-		popups.setVisibility("popup-status",          this.downloading || (this.started && !this.running));
+		this.popups.setVisibility("popup-rom-missing",     !this.gotRoms);
+		this.popups.setVisibility("popup-need-boot-media", !this.gotBootMedia);
+		this.popups.setVisibility("popup-status",          this.downloading || (this.started && !this.running));
 
 		if(!unsafeForCallbacks) {
 			/* Dispatch callbacks if it is safe to do so */
 
-			if(this.emuConfig) {
+			if(this.gotConfig) {
 				this.callCallback("onEmulatorConfigured");
 			}
 
-			if(this.gotRoms && this.emuConfig && this.gotIfce) {
+			if(this.gotRoms && this.gotConfig && this.gotIfce) {
 				this.callCallback("onEmulatorLoaded");
 			}
 		}
 	}
 
-	transitionToConfigLoaded(config) {
-		this.emuConfig = config;
-		this.emulator.preloadResources();
+	transitionToConfigLoaded() {
+		this.gotConfig = true;
 		this.stateChanged();
 	}
 
@@ -129,19 +116,19 @@ class EmulatorState {
 		}
 	}
 
-	isReadyToStart() {
+	get isReadyToStart() {
 		return this.gotRoms && this.gotBootMedia;
 	}
 
-	isStarted() {
+	get isStarted() {
 		return this.started;
 	}
 
-	isRunning() {
+	get isRunning() {
 		return this.running;
 	}
 
-	hasBootMedia() {
+	get hasBootMedia() {
 		return this.gotBootMedia;
 	}
 
@@ -158,13 +145,16 @@ class EmulatorState {
 }
 
 class Emulator {
-	constructor(emulator) {
+	constructor(emulator, opts) {
 		this.onEmulatorConfigured  = function() {};
 		this.onEmulatorLoaded      = function() {};
 
-		this.state       = emuState    = new EmulatorState(this);
-		this.fileManager = fileManager = new EmscriptenFileManager();
+		this._name       = emulator;
+		this._state      = new EmulatorState(this, opts.popups);
+		this._config     = null;
+		this.fileManager = new EmscriptenFileManager();
 		this.emuIfce     = null;
+		this.popups      = opts.popups;
 
 		/* Bootstrap the emulator by loading "bootstrap.html". This file will call
 		 * the global function processEmulatorConfig. We create this function here
@@ -176,13 +166,12 @@ class Emulator {
 			};
 		}
 		createGlobalCallback(this);
-		this.state.setEmulator(emulator);
 		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
 	}
 
 	setEmulatorInterface(ifce) {
 		this.emuIfce = ifce;
-		this.state.transitionToInterfaceLoaded();
+		this._state.transitionToInterfaceLoaded();
 	}
 
 	getEmulatorInterface() {
@@ -210,65 +199,68 @@ class Emulator {
 			var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
 			this.fileManager.writeFileFromUrl('/' + name, url);
 		}
-		this.state.transitionToRomsLoaded();
-		this.state.transitionToConfigLoaded(config);
+
+		this._config = config;
+		this._state.transitionToRomsLoaded();
+		this.preloadResources();
+		this._state.transitionToConfigLoaded();
 	}
 
 	preloadResources() {
 		console.log("Loading emulator resources");
-		var config = this.state.getConfig();
+		var config = this._config;
 		for(var i = 0; i < config.pre.length; i++) {
 			loadResource(config.pre[i], true);
 		}
 	}
 
 	expectMedia(fileName, isBootable) {
-		this.state.transitionToDownloading(true);
+		this._state.transitionToDownloading(true);
 		var me = this;
 		var waitFunc = function(remaining, depName) {
 			if(isBootable && depName == fileName) {
 				me.state.transitionToBootMediaLoaded();
 			}
 			if(remaining == 0) {
-				if(me.state.isRunning()) {
+				if(me.state.isRunning) {
 					me.getEmulatorInterface().syncFileSystem(true);
-				} else if(me.state.hasBootMedia()) {
+				} else if(me.state.hasBootMedia) {
 					me.restart();
 				}
 				me.state.transitionToDownloading(false);
 			}
 		}
-		fileManager.setFileReadyCallback(waitFunc);
+		this.fileManager.setFileReadyCallback(waitFunc);
 	}
 
 	/* Load the main emulator script(s). This will start the emulator execution. */
 	loadScriptsAndStart() {
 		console.log("Loading emulator scripts");
-		this.getEmulatorInterface().prepareToLoadAndStart(this.state);
-		var config = this.state.getConfig();
+		this.getEmulatorInterface().prepareToLoadAndStart(this._state);
+		var config = this._config;
 		for(var i = 0; i < config.run.length; i++) {
 			loadResource(config.run[i], true);
 		}
 	}
 
 	restart() {
-		if (!this.state.isReadyToStart()) {
+		if (!this._state.isReadyToStart) {
 			return;
 		}
-		if (!this.state.isStarted()) {
+		if (!this._state.isStarted) {
 			this.loadScriptsAndStart();
-			this.state.transitionToStarted();
-		} else if(this.state.isRunning()) {
+			this._state.transitionToStarted();
+		} else if(this._state.isRunning) {
 			this.getEmulatorInterface().reset();
 		}
 	}
 
 	bootFromRom(opts) {
 		this.processBootOpts(opts);
-		if(this.state.isRunning()) {
+		if(this._state.isRunning) {
 			alert("Cannot change the boot source once the computer is running. Please reload the page to reset");
 		} else {
-			this.state.transitionToBootMediaLoaded();
+			this._state.transitionToBootMediaLoaded();
 			this.restart();
 		}
 	}
@@ -276,7 +268,7 @@ class Emulator {
 	/* The cassette actions allow you to play, record, rewind or append to the tape */
 
 	cassetteAction(action) {
-		if(!this.state.isRunning()) {
+		if(!this._state.isRunning) {
 			alert("The emulator must be running before you use this action.");
 			return;
 		}
@@ -285,7 +277,7 @@ class Emulator {
 
 	processBootOpts(opts) {
 		if(opts && "emulator-args" in opts) {
-			if(this.state.isRunning()) {
+			if(this._state.isRunning) {
 				console.log("WARNING: Ignoring request for command line arguments since computer is already running");
 			} else {
 				var args = opts["emulator-args"];
@@ -299,11 +291,11 @@ class Emulator {
 	/* This function lets you mount a file into the emulator from an URL */
 
 	mountDriveFromUrl(drive, url, isBootable, opts) {
-		if(!this.state.isRunning() && !isBootable) {
+		if(!this._state.isRunning && !isBootable) {
 			alert("Please boot the computer using a boot disk first");
 			return;
 		}
-		if(this.state.isRunning() && isBootable) {
+		if(this._state.isRunning && isBootable) {
 			alert("This disk will be inserted, but if you want to boot from it you will need to reload the web page to reset the computer.");
 		}
 
@@ -331,7 +323,7 @@ class Emulator {
 	 * to select a file or floppy to upload. */
 
 	uploadFloppy(drive, isBootable) {
-		popups.askForFile("Select floppy disk image", function(file) {
+		this.popups.askForFile("Select floppy disk image", function(file) {
 			var dstName = this.getEmulatorInterface().getFileNameForDrive(drive, file.name);
 			this.expectMedia(dstName, isBootable);
 			this.fileManager.writeFileFromFile(dstName, file);
@@ -339,7 +331,7 @@ class Emulator {
 	}
 
 	uploadFile(dstName, what, isBootable) {
-		popups.askForFile("Please select a " + what, function(file) {
+		this.popups.askForFile("Please select a " + what, function(file) {
 			this.expectMedia(dstName, isBootable);
 			this.fileManager.writeFileFromFile(dstName, file);
 		});
@@ -354,6 +346,14 @@ class Emulator {
 
 	downloadFile(file) {
 		saveFileToLocal(file);
+	}
+
+	get name() {
+		return this._name;
+	}
+
+	get state() {
+		return this._state;
 	}
 }
 

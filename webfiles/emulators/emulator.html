@@ -79,11 +79,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 <script>
 	// Global variables for emulator
-	var Module;
-	var emuState;
-	var fileManager;
-	var emulatorCallbacks;
-	var popups;
 	var emulator;
 
 (function(namespace, thisDoc){
@@ -105,12 +100,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 		}, false);
 
-		var emulatorButtons = document.getElementsByTagName("emulator-buttons")[0];
-		popups              = document.getElementsByTagName("emulator-popups" )[0];
+		var opts = {
+			popups: document.getElementsByTagName("emulator-popups" )[0]
+		};
 
-		var emulatorObj = emulatorCallbacks = emulator = new Emulator(emulatorType);
-		emulatorButtons.setRestartAction(function() {emulatorObj.restart();});
-		return emulatorObj;
+		var emulatorButtons = document.getElementsByTagName("emulator-buttons")[0];
+		emulator = new Emulator(emulatorType, opts);
+		emulatorButtons.setRestartAction(function() {emulator.restart();});
+		return emulator;
 	}
 })(window.RetroWeb = window.RetroWeb || {}, (document._currentScript || document.currentScript).ownerDocument);
 </script>

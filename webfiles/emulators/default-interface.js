@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *   http://joshgertzen.com/object-oriented-super-class-method-calling-with-javascript/
  */
 
+var Module;
+
 class EmulatorInterface {
 	constructor() {
 		this.arguments = {};
@@ -67,7 +69,7 @@ class EmulatorInterface {
 	}
 
 	syncFileSystem(doMount) {
-		var filesWritten = fileManager.syncEmscriptenFS();
+		var filesWritten = emulator.fileManager.syncEmscriptenFS();
 		console.log("Preparing disks...");
 		for(var i = 0; i < filesWritten.length; i++) {
 			this.prepareDisk(filesWritten[i]);
