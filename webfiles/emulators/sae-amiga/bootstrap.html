@@ -77,8 +77,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			var match = diskFile.match(/fd(\d)+/);
 			if(match) {
 				var driveId = match[1];
-				var data = fileManager.getFileBinaryData(diskFile);
-				saeInsertDisk(data, parseInt(driveId[1])-1);
+				var data = emulator.fileManager.getFileBinaryData(diskFile);
+				saeInsertDisk(data, parseInt(driveId)-1);
 			} else {
 				// Must be a hard disk, cannot insert hard disks after boot
 				alert("To boot from this disk, you will need to reload the page.");
@@ -153,7 +153,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		config.hooks.fps = func;
 		config.hooks.cpu = func; */
 
-		saeRoms(fileManager.getFileBinaryData("/sae.rom"));
+		saeRoms(emulator.fileManager.getFileBinaryData("/sae.rom"));
 
 		// Make fake Emscripten object
 		FS = {};

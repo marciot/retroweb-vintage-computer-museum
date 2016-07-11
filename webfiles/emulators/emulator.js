@@ -164,7 +164,7 @@ class Emulator {
 		this.onEmulatorLoaded      = function() {};
 
 		this.state       = emuState    = new EmulatorState(this, opts.popups);
-		this.fileManager = fileManager = new EmscriptenFileManager();
+		this.fileManager = new EmscriptenFileManager();
 		this.emuIfce     = null;
 		this.popups      = opts.popups;
 
@@ -240,7 +240,7 @@ class Emulator {
 				me.state.transitionToDownloading(false);
 			}
 		}
-		fileManager.setFileReadyCallback(waitFunc);
+		this.fileManager.setFileReadyCallback(waitFunc);
 	}
 
 	/* Load the main emulator script(s). This will start the emulator execution. */
