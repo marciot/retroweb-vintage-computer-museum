@@ -132,6 +132,10 @@ function renderWikiContent() {
 	var srcElement = document.getElementById("retroweb-markup");
 	var dstElement = document.getElementById("html-content");
 
+	/* Suppress initialization of custom elements until we are done rewriting the
+	 * contents */
+	dstElement.classList.remove("allowCustomElements");
+
 	/* Check whether the new page requires a change of emulator */
 	var altEmulator = needAlternativeEmulator(emulator.name);
 	if(altEmulator) {
@@ -140,6 +144,9 @@ function renderWikiContent() {
 	}
 
 	dstElement.innerHTML = srcElement.innerHTML;
+
+	/* Tell custom elements it is okay to initialize themselves */
+	dstElement.classList.add("allowCustomElements");
 
 	var trailingLinks = new TrailingLinks(dstElement);
 	dstElement.innerHTML = wikify(dstElement.innerHTML);
@@ -174,6 +181,7 @@ function fetchAndReplaceWikiContent(url) {
 				if(dataEmulator) {
 					target.setAttribute('data-emulators', dataEmulator);
 				}
+
 				/* Copy the contents of #retroweb-markup over */
 				target.innerHTML = srcElement.innerHTML;
 				renderWikiContent();

@@ -55,14 +55,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			fixVMacDisks(disk);
 		}
 
-		preRun() {
-			super.preRun();
-
-			// Poll for changes to the serial port files
-			registerFileObserver("ser_a.out");
-			registerFileObserver("ser_b.out");
-		}
-
 		mountDisk(diskFile) {
 			var match = diskFile.match(/fd(\d)+/);
 			if(match) {
@@ -97,24 +89,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		_macSetMessage(sim, msg, val);
 	}
 
-	/* Experimental code for detecting serial port data */
-	function registerFileObserver(file) {
-		var lastSize;
-
-		function pollFile() {
-			try {
-				var stat = FS.stat(file);
-				if(lastSize != stat.size) {
-					console.log("Size of " + file + " changed. New size:" , stat.size);
-					lastSize = stat.size;
-				}
-			} catch (e) {
-			}
-		}
-
-		setInterval(pollFile, 3000);
-	}
-	
 	/* VMac disks are DiskCopy 4.2 images that have been stripped of their
 	 * headers. PCE does not know how to deal with these types of images,
 	 * so the following will rewrite the headers to make them work.

@@ -48,7 +48,7 @@ class EmulatorInterface {
 		Module = {
 			preRun:  [function () {stateObj.transitionToRunning(); me.preRun();}],
 			postRun: [],
-			preInit: [function () {me.syncFileSystem(false);}],
+			preInit: [function () {me.syncFileSystem(false); emulator.dispatchEvent("emscriptenPreInit");}],
 			arguments: [],
 			noInitialRun: false,
 			print: function(text) {
