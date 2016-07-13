@@ -58,11 +58,11 @@ class EmulatorState {
 			/* Dispatch callbacks if it is safe to do so */
 
 			if(this.gotConfig) {
-				this.emulator.callCallback("onEmulatorConfigured");
+				this.emulator.dispatchEvent("emulatorConfigured");
 			}
 
 			if(this.gotRoms && this.gotConfig && this.gotIfce) {
-				this.emulator.callCallback("onEmulatorLoaded");
+				this.emulator.dispatchEvent("emulatorLoaded");
 			}
 		}
 	}
@@ -139,15 +139,17 @@ class EmulatorState {
 
 class Emulator {
 	constructor(emulator, opts) {
-		this.onEmulatorConfigured  = function() {};
-		this.onEmulatorLoaded      = function() {};
-
-		this._name       = emulator;
-		this._state      = new EmulatorState(this, opts.popups);
-		this._config     = null;
-		this.fileManager = new EmscriptenFileManager();
-		this.emuIfce     = null;
-		this.popups      = opts.popups;
+		this._name			= emulator;
+		this._state			= new EmulatorState(this, opts.popups);
+		this._config		= null;
+		this.fileManager	= new EmscriptenFileManager();
+		this.emuIfce		= null;
+		this.popups			= opts.popups;
+		this.listeners 		= {
+			emulatorConfigured:		[],
+			emulatorLoaded:			[],
+			emscriptenPreInit:		[]
+		}
 
 		/* Bootstrap the emulator by loading "bootstrap.html". This file will call
 		 * the global function processEmulatorConfig. We create this function here
@@ -350,10 +352,22 @@ class Emulator {
 	}
 
 	// Calls a callback and clears the callback so it won't be called multiple times.
-	callCallback(name) {
-		var callback = this[name];
-		this[name] = null;
-		if(callback) callback();
+	dispatchEvent(event) {
+		console.log("dispatchEventListeners called", event);
+		if(this.listeners.hasOwnProperty(event)) {
+			var callbacks = this.listeners[event];
+			for(var i = 0; i < callbacks.length; i++) {
+				callbacks[i]();
+			}
+			// Ensure we are not called multiple times
+			delete this.listeners[event];
+		}
+	}
+
+	addEventListener(event, callback) {
+		if(this.listeners.hasOwnProperty(event)) {
+			this.listeners[event].push(callback);
+		}
 	}
 }
 
