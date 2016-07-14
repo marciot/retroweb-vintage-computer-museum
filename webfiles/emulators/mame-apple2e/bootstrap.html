@@ -17,18 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
-	processEmulatorConfig(
-		{
-			"name" : "Apple IIe",
-			"pre" : [],
-			"run" : [],
-			"preload-files" : [
-				"/roms/a2diskii.zip",
-				"/roms/apple2ee.zip"
-			]
-		}
-	);
-	
+
 	/* Interface to RetroWeb Browser */
 
 	new class extends EmulatorInterface {
@@ -43,6 +32,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-nokeepaspect", "");
 			this.setArgument("-autoframeskip", "");
 			this.setArgument("-nosound", "");
+		}
+
+		preloadResources() {
 		}
 
 		loadScripts() {
@@ -65,6 +57,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 		}
 	}
+
+	processEmulatorConfig(
+		{
+			"name" : "Apple IIe",
+			"preload-files" : [
+				"/roms/a2diskii.zip",
+				"/roms/apple2ee.zip"
+			]
+		}
+	);
 
 	/* JSMESS specific glue code (not sure what this does) */
 

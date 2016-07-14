@@ -17,20 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
-	processEmulatorConfig(
-		{
-			"name" : "Apple Macintosh",
-			"pre" : [],
-			"preload-files" : [
-				"/emulators/pce-macplus/pce-config.cfg",
-				"/emulators/pce-macplus/pce-mac-128k.cfg",
-				"/roms/mac-plus-3.rom",
-				"/roms/macplus-pcex.rom",
-				"/roms/mac-128k.rom"
-			]
-		}
-	)
-
 	/* Interface to RetroWeb Browser */
 
 	new class extends EmulatorInterface {
@@ -40,6 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-r", "");
 
 			this.showEjectWarning = true;
+		}
+
+		preloadResources() {
 		}
 
 		loadScripts() {
@@ -83,6 +72,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			macSetMessage ("emu.reset", "");
 		}
 	}
+
+	processEmulatorConfig(
+		{
+			"name" : "Apple Macintosh",
+			"preload-files" : [
+				"/emulators/pce-macplus/pce-config.cfg",
+				"/emulators/pce-macplus/pce-mac-128k.cfg",
+				"/roms/mac-plus-3.rom",
+				"/roms/macplus-pcex.rom",
+				"/roms/mac-128k.rom"
+			]
+		}
+	)
 
 	/* Helper functions */
 

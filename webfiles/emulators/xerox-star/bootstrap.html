@@ -17,12 +17,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
+	/* Interface to RetroWeb Browser */
+
+	new class extends EmulatorInterface {
+		getDrives() {
+		}
+
+		preloadResources() {
+		}
+
+		loadScripts() {
+		}
+
+		mountDisk(diskFile) {
+		}
+	}
+
+
 	processEmulatorConfig(
 		/* This is a stub. There is no emulator for the Xerox Star */
 		{
 			"name" : "Xerox Star",
-			"pre"  : [],
-			"run"  : [],
 			"preload-files" : []
 		}
 	);

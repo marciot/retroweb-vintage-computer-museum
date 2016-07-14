@@ -28,37 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	 * SAE.
 	 */
 
-	processEmulatorConfig(
-		{
-			"name" : "Amiga 500",
-			"pre" : [
-				"/emulators/sae-amiga/sae/constants.js",
-				"/emulators/sae-amiga/sae/utils.js",
-				"/emulators/sae-amiga/sae/config.js",
-				"/emulators/sae-amiga/sae/memory.js",
-				"/emulators/sae-amiga/sae/expansion.js",
-				"/emulators/sae-amiga/sae/events.js",
-				"/emulators/sae-amiga/sae/input.js",
-				"/emulators/sae-amiga/sae/serial.js",
-				"/emulators/sae-amiga/sae/custom.js",
-				"/emulators/sae-amiga/sae/blitter.js",
-				"/emulators/sae-amiga/sae/copper.js",
-				"/emulators/sae-amiga/sae/playfield.js",
-				"/emulators/sae-amiga/sae/video.js",
-				"/emulators/sae-amiga/sae/audio.js",
-				"/emulators/sae-amiga/sae/cia.js",
-				"/emulators/sae-amiga/sae/disk.js",
-				"/emulators/sae-amiga/sae/rtc.js",
-				"/emulators/sae-amiga/sae/cpu.js",
-				"/emulators/sae-amiga/sae/amiga.js"
-			],
-			"mkdir" : [ "/cfg" ],
-			"preload-files" : [
-				"/roms/amiga-kickstart-v1.3-r34.5.rom -> sae.rom"
-			]
-		}
-	);
-
 	/* Interface to RetroWeb Browser */
 
 	new class extends EmulatorInterface {
@@ -68,6 +37,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				"fd1" : "fd1.disk",
 				"fd2" : "fd2.disk"
 			}
+		}
+
+		preloadResources() {
+			super.loadJavascript("/emulators/sae-amiga/sae/constants.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/utils.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/config.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/memory.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/expansion.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/events.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/input.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/serial.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/custom.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/blitter.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/copper.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/playfield.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/video.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/audio.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/cia.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/disk.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/rtc.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/cpu.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae/amiga.js", 'async');
+			super.loadJavascript("/emulators/sae-amiga/sae-amiga.js", 'async');
 		}
 
 		loadScripts() {
@@ -86,6 +78,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 		}
 	}
+
+	processEmulatorConfig(
+		{
+			"name" : "Amiga 500",
+			"mkdir" : [ "/cfg" ],
+			"preload-files" : [
+				"/roms/amiga-kickstart-v1.3-r34.5.rom -> sae.rom"
+			]
+		}
+	);
 
 	/* Helper functions */
 

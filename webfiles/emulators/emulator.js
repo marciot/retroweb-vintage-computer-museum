@@ -197,16 +197,8 @@ class Emulator {
 
 		this._config = config;
 		this._state.transitionToRomsLoaded();
-		this.preloadResources();
+		this.getEmulatorInterface().preloadResources();
 		this._state.transitionToConfigLoaded();
-	}
-
-	preloadResources() {
-		console.log("Loading emulator resources");
-		var config = this._config;
-		for(var i = 0; i < config.pre.length; i++) {
-			loadResource(config.pre[i], true);
-		}
 	}
 
 	expectMedia(fileName, isBootable) {

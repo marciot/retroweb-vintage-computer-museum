@@ -17,18 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
-	processEmulatorConfig(
-		{
-			"name" : "RC759 Piccoline",
-			"pre" : [],
-			"mkdir" : [ "/roms" ],
-			"preload-files" : [
-				"/emulators/pce-rc759/pce-config.cfg -> /roms/pce-config.cfg",
-				"/roms/rc759-1-2.1.rom"
-			]
-		}
-	);
-	
+
 	/* Interface to RetroWeb Browser */
 
 	new class extends EmulatorInterface {
@@ -36,6 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			super();
 			this.setArgument("-c", "pce-config.cfg");
 			this.setArgument("-r", "");
+		}
+
+		preloadResources() {
 		}
 
 		loadScripts() {
@@ -65,6 +57,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			rcSetMessage ("emu.reset", "");
 		}
 	}
+
+	processEmulatorConfig(
+		{
+			"name" : "RC759 Piccoline",
+			"mkdir" : [ "/roms" ],
+			"preload-files" : [
+				"/emulators/pce-rc759/pce-config.cfg -> /roms/pce-config.cfg",
+				"/roms/rc759-1-2.1.rom"
+			]
+		}
+	);
 
 	/* Helper functions */
 

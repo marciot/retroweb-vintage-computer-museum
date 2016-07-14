@@ -17,16 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
-	processEmulatorConfig(
-		{
-			"name" : "TRS-80 Model 1",
-			"pre" : [],
-			"mkdir" : [ "/cfg" ],
-			"preload-files" : [
-				"/roms/trs80l2.zip"
-			]
-		}
-	);
 	
 	/* Interface to RetroWeb Browser */
 
@@ -43,6 +33,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-autoframeskip", "");
 			this.setArgument("-nosound", "");
 			this.setArgument("-uimodekey", "ESC");
+		}
+
+		preloadResources() {
 		}
 
 		loadScripts() {
@@ -64,6 +57,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 		}
 	}
+
+	processEmulatorConfig(
+		{
+			"name" : "TRS-80 Model 1",
+			"mkdir" : [ "/cfg" ],
+			"preload-files" : [
+				"/roms/trs80l2.zip"
+			]
+		}
+	);
 
 	/* JSMESS Glue Code (not sure what this does) */
 

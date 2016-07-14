@@ -17,18 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
-	processEmulatorConfig(
-		{
-			"name" : "IBM PC Model 5150",
-			"pre" : [],
-			"preload-files" : [
-				"/emulators/pce-ibmpc/pce-config-5150.cfg          -> pce-config.cfg",
-				"/roms/ibm-pc-1981-10-19.rom",
-				"/roms/ibm-basic-1.00.rom",
-				"/roms/ibmpc-pcex.rom"
-			]
-		}
-	);
 
 	/* Interface to RetroWeb Browser */
 
@@ -38,6 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-c", "pce-config.cfg");
 			this.setArgument("-g", "cga");
 			this.setArgument("-r", "");
+		}
+
+		preloadResources() {
 		}
 
 		loadScripts() {
@@ -87,6 +78,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 		}
 	}
+
+	processEmulatorConfig(
+		{
+			"name" : "IBM PC Model 5150",
+			"preload-files" : [
+				"/emulators/pce-ibmpc/pce-config-5150.cfg          -> pce-config.cfg",
+				"/roms/ibm-pc-1981-10-19.rom",
+				"/roms/ibm-basic-1.00.rom",
+				"/roms/ibmpc-pcex.rom"
+			]
+		}
+	);
 
 	/* Helper functions */
 

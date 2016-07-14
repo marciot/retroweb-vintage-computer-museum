@@ -17,17 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
-	processEmulatorConfig(
-		{
-			"name" : "Commodore 64",
-			"pre" : [],
-			"mkdir" : [ "/cfg" ],
-			"preload-files" : [
-				"/roms/c64.zip",
-				"/emulators/mame-c64/jsmess-c64.cfg -> cfg/c64c.cfg"
-			]
-		}
-	);
 	
 	/* Interface to RetroWeb Browser */
 
@@ -43,6 +32,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-nokeepaspect", "");
 			this.setArgument("-autoframeskip", "");
 			this.setArgument("-nosound", "");
+		}
+
+		preloadResources() {
 		}
 
 		loadScripts() {
@@ -96,6 +88,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			return diskFile;
 		}
 	}
+
+	processEmulatorConfig(
+		{
+			"name" : "Commodore 64",
+			"mkdir" : [ "/cfg" ],
+			"preload-files" : [
+				"/roms/c64.zip",
+				"/emulators/mame-c64/jsmess-c64.cfg -> cfg/c64c.cfg"
+			]
+		}
+	);
 
 	/* JSMESS Glue Code (not sure what this does) */
 

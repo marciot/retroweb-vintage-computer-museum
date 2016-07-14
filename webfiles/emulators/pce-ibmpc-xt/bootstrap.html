@@ -17,28 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
-	processEmulatorConfig(
-		{
-			"name" : "IBM PC Model 5160",
-			"pre" : [],
-			"preload-files" : [
-				"/emulators/pce-ibmpc/pce-config-5160.cfg -> pce-config.cfg",
-				"/emulators/pce-ibmpc/pce-config-5160-early-msys-mouse.cfg",
-				"/emulators/pce-ibmpc/pce-config-5160-early-ser-mouse.cfg",
-				"/emulators/pce-ibmpc/pce-config-5160-later-ser-mouse.cfg",
-				"/emulators/pce-ibmpc/pce-config-5160-gem-1.2.cfg",
-				
-				"/roms/ibm-xt-1982-11-08.rom",
-				"/roms/ibm-basic-1.10.rom",
-				"/roms/ibm-hdc-1985.rom",
-				
-				"/roms/ibm-xt-1986-05-09.rom",
-				"/roms/ibm-mfm-1985-10-28.rom",
-				"/roms/ibm-ega-1984-09-13.rom",
-				"/roms/ibm-vga-1986-10-27.rom"
-			]
-		}
-	);
 
 	/* Interface to RetroWeb Browser */
 
@@ -48,6 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-c", "pce-config.cfg");
 			this.setArgument("-g", "cga");
 			this.setArgument("-r", "");
+		}
+
+		preloadResources() {
 		}
 
 		loadScripts() {
@@ -97,6 +78,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 		}
 	}
+
+	processEmulatorConfig(
+		{
+			"name" : "IBM PC Model 5160",
+			"preload-files" : [
+				"/emulators/pce-ibmpc/pce-config-5160.cfg -> pce-config.cfg",
+				"/emulators/pce-ibmpc/pce-config-5160-early-msys-mouse.cfg",
+				"/emulators/pce-ibmpc/pce-config-5160-early-ser-mouse.cfg",
+				"/emulators/pce-ibmpc/pce-config-5160-later-ser-mouse.cfg",
+				"/emulators/pce-ibmpc/pce-config-5160-gem-1.2.cfg",
+
+				"/roms/ibm-xt-1982-11-08.rom",
+				"/roms/ibm-basic-1.10.rom",
+				"/roms/ibm-hdc-1985.rom",
+
+				"/roms/ibm-xt-1986-05-09.rom",
+				"/roms/ibm-mfm-1985-10-28.rom",
+				"/roms/ibm-ega-1984-09-13.rom",
+				"/roms/ibm-vga-1986-10-27.rom"
+			]
+		}
+	);
 
 	/* Helper functions */
 
