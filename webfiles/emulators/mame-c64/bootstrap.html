@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		{
 			"name" : "Commodore 64",
 			"pre" : [],
-			"run" : ["/emulators/mame-c64/jsmess-c64.js"],
 			"mkdir" : [ "/cfg" ],
 			"preload-files" : [
 				"/roms/c64.zip",
@@ -44,6 +43,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-nokeepaspect", "");
 			this.setArgument("-autoframeskip", "");
 			this.setArgument("-nosound", "");
+		}
+
+		loadScripts() {
+			super.loadJavascript("/emulators/mame-c64/jsmess-c64.js", 'async');
 		}
 
 		createModule(module) {

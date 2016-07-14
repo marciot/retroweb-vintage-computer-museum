@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		{
 			"name" : "Apple Macintosh",
 			"pre" : [],
-			"run" : ["/emulators/pce-macplus/pce-macplus.js"],
 			"preload-files" : [
 				"/emulators/pce-macplus/pce-config.cfg",
 				"/emulators/pce-macplus/pce-mac-128k.cfg",
@@ -42,7 +41,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 			this.showEjectWarning = true;
 		}
-	
+
+		loadScripts() {
+			super.loadJavascript("/emulators/pce-macplus/pce-macplus.js", 'async');
+		}
+
 		getDrives() {
 			return {
 				"hd1" : "hd1.img",

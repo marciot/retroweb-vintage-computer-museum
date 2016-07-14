@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		{
 			"name" : "IBM PC Model 5150",
 			"pre" : [],
-			"run" : ["/emulators/pce-ibmpc/pce-ibmpc.js"],
 			"preload-files" : [
 				"/emulators/pce-ibmpc/pce-config-5150.cfg          -> pce-config.cfg",
 				"/roms/ibm-pc-1981-10-19.rom",
@@ -39,6 +38,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-c", "pce-config.cfg");
 			this.setArgument("-g", "cga");
 			this.setArgument("-r", "");
+		}
+
+		loadScripts() {
+			super.loadJavascript("/emulators/pce-ibmpc/pce-ibmpc.js", 'async');
 		}
 
 		getDrives() {

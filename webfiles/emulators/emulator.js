@@ -228,22 +228,13 @@ class Emulator {
 		this.fileManager.setFileReadyCallback(waitFunc);
 	}
 
-	/* Load the main emulator script(s). This will start the emulator execution. */
-	loadScriptsAndStart() {
-		console.log("Loading emulator scripts");
-		this.getEmulatorInterface().prepareToLoadAndStart(this._state);
-		var config = this._config;
-		for(var i = 0; i < config.run.length; i++) {
-			loadResource(config.run[i], true);
-		}
-	}
-
 	restart() {
 		if (!this._state.isReadyToStart) {
 			return;
 		}
 		if (!this._state.isStarted) {
-			this.loadScriptsAndStart();
+			/* Load the main emulator script(s). This will start the emulator execution. */
+			this.getEmulatorInterface().loadScriptsAndStart(this._state);
 			this._state.transitionToStarted();
 		} else if(this._state.isRunning) {
 			this.getEmulatorInterface().reset();

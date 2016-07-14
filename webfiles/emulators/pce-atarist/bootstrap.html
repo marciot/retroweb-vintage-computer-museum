@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		{
 			"name" : "Atari 1040ST",
 			"pre" : [], 
-			"run" : ["/emulators/pce-atarist/pce-atarist.js"],
 			"mkdir" : [ "/roms" ],
 			"preload-files" : [
 				"/emulators/pce-atarist/pce-config.cfg -> /roms/pce-config.cfg",
@@ -37,6 +36,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			super();
 			this.setArgument("-c", "pce-config.cfg");
 			this.setArgument("-r", "");
+		}
+
+		loadScripts() {
+			super.loadJavascript("/emulators/pce-atarist/pce-atarist.js", 'async');
 		}
 
 		getDrives() {

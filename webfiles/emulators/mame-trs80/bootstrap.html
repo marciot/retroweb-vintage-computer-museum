@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		{
 			"name" : "TRS-80 Model 1",
 			"pre" : [],
-			"run" : ["/emulators/mame-trs80/jsmess-trs80.js"],
 			"mkdir" : [ "/cfg" ],
 			"preload-files" : [
 				"/roms/trs80l2.zip"
@@ -44,6 +43,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-autoframeskip", "");
 			this.setArgument("-nosound", "");
 			this.setArgument("-uimodekey", "ESC");
+		}
+
+		loadScripts() {
+			super.loadJavascript("/emulators/mame-trs80/jsmess-trs80.js", 'async');
 		}
 
 		createModule(module) {

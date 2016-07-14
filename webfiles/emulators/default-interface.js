@@ -43,7 +43,17 @@ class EmulatorInterface {
 		console.log("Setting argument " + arg + " to " + value);
 	}
 
-	prepareToLoadAndStart(stateObj) {
+	loadJavascript(filename, async) {
+		var fileref = document.createElement('script')
+		fileref.setAttribute("type","text/javascript")
+		fileref.setAttribute("src", filename)
+		if(async == 'async') {
+			fileref.setAttribute("async", "async")
+		}
+		document.getElementsByTagName("head")[0].appendChild(fileref);
+	}
+
+	loadScriptsAndStart(stateObj) {
 		var me = this;
 		Module = {
 			preRun:  [function () {stateObj.transitionToRunning(); me.preRun();}],
@@ -66,6 +76,7 @@ class EmulatorInterface {
 		};
 		// Give the emulator subclasses a chance to modify the Emscripten module
 		this.configModule(Module);
+		this.loadScripts();
 	}
 
 	configModule(module) {

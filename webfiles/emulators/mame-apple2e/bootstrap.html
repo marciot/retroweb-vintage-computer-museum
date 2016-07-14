@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		{
 			"name" : "Apple IIe",
 			"pre" : [],
-			"run" : ["/emulators/mame-apple2e/jsmess-apple2e.js"],
+			"run" : [],
 			"preload-files" : [
 				"/roms/a2diskii.zip",
 				"/roms/apple2ee.zip"
@@ -43,6 +43,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			this.setArgument("-nokeepaspect", "");
 			this.setArgument("-autoframeskip", "");
 			this.setArgument("-nosound", "");
+		}
+
+		loadScripts() {
+			super.loadJavascript("/emulators/mame-apple2e/jsmess-apple2e.js", 'async');
 		}
 
 		configModule(module) {

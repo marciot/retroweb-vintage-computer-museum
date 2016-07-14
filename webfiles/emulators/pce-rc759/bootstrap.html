@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		{
 			"name" : "RC759 Piccoline",
 			"pre" : [],
-			"run" : ["/emulators/pce-rc759/pce-rc759.js"],
 			"mkdir" : [ "/roms" ],
 			"preload-files" : [
 				"/emulators/pce-rc759/pce-config.cfg -> /roms/pce-config.cfg",
@@ -37,6 +36,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			super();
 			this.setArgument("-c", "pce-config.cfg");
 			this.setArgument("-r", "");
+		}
+
+		loadScripts() {
+			super.loadJavascript("/emulators/pce-rc759/pce-rc759.js", 'async');
 		}
 
 		getDrives() {
