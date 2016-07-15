@@ -26,7 +26,6 @@ var Module;
 class EmulatorInterface {
 	constructor() {
 		this.arguments = {};
-		emulator.setEmulatorInterface(this);
 	}
 
 	getFileNameForDrive(drive, fileName) {
@@ -51,6 +50,17 @@ class EmulatorInterface {
 			fileref.setAttribute("async", "async")
 		}
 		document.getElementsByTagName("head")[0].appendChild(fileref);
+	}
+
+	preloadMakeDir(path) {
+		emulator.fileManager.makeDir(path);
+	}
+
+	preloadFromURL(url, dst) {
+		function filePart(path) {
+			return path.substr(path.lastIndexOf("/")+1);
+		}
+		emulator.fileManager.writeFileFromUrl('/' + (dst ? dst : filePart(url)), url);
 	}
 
 	loadScriptsAndStart(stateObj) {

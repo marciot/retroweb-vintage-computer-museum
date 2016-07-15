@@ -30,62 +30,55 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	/* Interface to RetroWeb Browser */
 
-	new class extends EmulatorInterface {
-		getDrives() {
-			return {
-				"hd1" : "hd1.img",
-				"fd1" : "fd1.disk",
-				"fd2" : "fd2.disk"
+	registerEmulatorInterface(
+		new class extends EmulatorInterface {
+			getDrives() {
+				return {
+					"hd1" : "hd1.img",
+					"fd1" : "fd1.disk",
+					"fd2" : "fd2.disk"
+				}
 			}
-		}
 
-		preloadResources() {
-			super.loadJavascript("/emulators/sae-amiga/sae/constants.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/utils.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/config.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/memory.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/expansion.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/events.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/input.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/serial.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/custom.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/blitter.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/copper.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/playfield.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/video.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/audio.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/cia.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/disk.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/rtc.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/cpu.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae/amiga.js", 'async');
-			super.loadJavascript("/emulators/sae-amiga/sae-amiga.js", 'async');
-		}
+			preloadResources() {
+				super.preloadFromURL("/roms/amiga-kickstart-v1.3-r34.5.rom", "sae.rom");
 
-		loadScripts() {
-			super.loadJavascript("/emulators/sae-amiga/sae-amiga.js", 'async');
-		}
-
-		mountDisk(diskFile) {
-			var match = diskFile.match(/fd(\d)+/);
-			if(match) {
-				var driveId = match[1];
-				var data = emulator.fileManager.getFileBinaryData(diskFile);
-				saeInsertDisk(data, parseInt(driveId)-1);
-			} else {
-				// Must be a hard disk, cannot insert hard disks after boot
-				alert("To boot from this disk, you will need to reload the page.");
+				super.loadJavascript("/emulators/sae-amiga/sae/constants.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/utils.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/config.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/memory.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/expansion.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/events.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/input.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/serial.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/custom.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/blitter.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/copper.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/playfield.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/video.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/audio.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/cia.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/disk.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/rtc.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/cpu.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/amiga.js", 'async');
 			}
-		}
-	}
 
-	processEmulatorConfig(
-		{
-			"name" : "Amiga 500",
-			"mkdir" : [ "/cfg" ],
-			"preload-files" : [
-				"/roms/amiga-kickstart-v1.3-r34.5.rom -> sae.rom"
-			]
+			loadScripts() {
+				super.loadJavascript("/emulators/sae-amiga/sae-amiga.js", 'async');
+			}
+
+			mountDisk(diskFile) {
+				var match = diskFile.match(/fd(\d)+/);
+				if(match) {
+					var driveId = match[1];
+					var data = emulator.fileManager.getFileBinaryData(diskFile);
+					saeInsertDisk(data, parseInt(driveId)-1);
+				} else {
+					// Must be a hard disk, cannot insert hard disks after boot
+					alert("To boot from this disk, you will need to reload the page.");
+				}
+			}
 		}
 	);
 

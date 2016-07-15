@@ -19,26 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <script type="text/javascript">
 	/* Interface to RetroWeb Browser */
 
-	new class extends EmulatorInterface {
-		getDrives() {
-		}
+	registerEmulatorInterface(
+		new class extends EmulatorInterface {
+			getDrives() {
+			}
 
-		preloadResources() {
-		}
+			preloadResources() {
+			}
 
-		loadScripts() {
-		}
+			loadScripts() {
+			}
 
-		mountDisk(diskFile) {
-		}
-	}
-
-
-	processEmulatorConfig(
-		/* This is a stub. There is no emulator for the Xerox Star */
-		{
-			"name" : "Xerox Star",
-			"preload-files" : []
+			mountDisk(diskFile) {
+			}
 		}
 	);
 </script>

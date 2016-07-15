@@ -20,83 +20,77 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
 	/* Interface to RetroWeb Browser */
 
-	new class extends EmulatorInterface {
-		constructor() {
-			super();
-			this.setArgument("c64", "");
-			this.setArgument("-verbose", "");
-			this.setArgument("-joystick", "");
-			this.setArgument("-rompath", ".");
-			this.setArgument("-window", "");
-			this.setArgument("-resolution", "1024x768");
-			this.setArgument("-nokeepaspect", "");
-			this.setArgument("-autoframeskip", "");
-			this.setArgument("-nosound", "");
-		}
-
-		preloadResources() {
-		}
-
-		loadScripts() {
-			super.loadJavascript("/emulators/mame-c64/jsmess-c64.js", 'async');
-		}
-
-		createModule(module) {
-			super.createModule(module);
-			
-			module.SDL_numSimultaneouslyQueuedBuffers = 5;
-			module.screenIsReadOnly = true;
-			module.canvas.width  = 1024;
-			module.canvas.height = 768;
-		}
-
-		getDrives() {
-			return {
-				"hd1" : null,
-				"fd1" : "fd1.prg"
+	registerEmulatorInterface(
+		new class extends EmulatorInterface {
+			constructor() {
+				super();
+				this.setArgument("c64", "");
+				this.setArgument("-verbose", "");
+				this.setArgument("-joystick", "");
+				this.setArgument("-rompath", ".");
+				this.setArgument("-window", "");
+				this.setArgument("-resolution", "1024x768");
+				this.setArgument("-nokeepaspect", "");
+				this.setArgument("-autoframeskip", "");
+				this.setArgument("-nosound", "");
 			}
-		}
 
-		getFileNameForDrive(drive, fileName) {
-			var extension = fileName.match(/\.[a-zA-Z0-9]+$/)[0];
-			var diskFile;
-			switch(extension) {
-				case ".tap":
-				case ".wav":
-					diskFile = "cass" + extension;
-					this.setArgument("-cass", diskFile);
-					break;
-				case ".crt":
-				case ".80":
-					diskFile = "cart1" + extension;
-					this.setArgument("-cart1", diskFile);
-					break;
-				case ".prg":
-				case ".t64":
-				case ".p00":
-					diskFile = "game" + extension;
-					this.setArgument("-quik", diskFile);
-					break;
-				case ".d64":
-				case ".g64":
-					diskFile = "fd1" + extension;
-					this.setArgument("-flop", diskFile);
-					break;
-				default:
-					alert("Cannot determine format for " + fileName);
+			preloadResources() {
+				super.preloadMakeDir("/cfg");
+				super.preloadFromURL("/roms/c64.zip");
+				super.preloadFromURL("/emulators/mame-c64/jsmess-c64.cfg","cfg/c64c.cfg");
 			}
-			return diskFile;
-		}
-	}
 
-	processEmulatorConfig(
-		{
-			"name" : "Commodore 64",
-			"mkdir" : [ "/cfg" ],
-			"preload-files" : [
-				"/roms/c64.zip",
-				"/emulators/mame-c64/jsmess-c64.cfg -> cfg/c64c.cfg"
-			]
+			loadScripts() {
+				super.loadJavascript("/emulators/mame-c64/jsmess-c64.js", 'async');
+			}
+
+			createModule(module) {
+				super.createModule(module);
+				
+				module.SDL_numSimultaneouslyQueuedBuffers = 5;
+				module.screenIsReadOnly = true;
+				module.canvas.width  = 1024;
+				module.canvas.height = 768;
+			}
+
+			getDrives() {
+				return {
+					"hd1" : null,
+					"fd1" : "fd1.prg"
+				}
+			}
+
+			getFileNameForDrive(drive, fileName) {
+				var extension = fileName.match(/\.[a-zA-Z0-9]+$/)[0];
+				var diskFile;
+				switch(extension) {
+					case ".tap":
+					case ".wav":
+						diskFile = "cass" + extension;
+						this.setArgument("-cass", diskFile);
+						break;
+					case ".crt":
+					case ".80":
+						diskFile = "cart1" + extension;
+						this.setArgument("-cart1", diskFile);
+						break;
+					case ".prg":
+					case ".t64":
+					case ".p00":
+						diskFile = "game" + extension;
+						this.setArgument("-quik", diskFile);
+						break;
+					case ".d64":
+					case ".g64":
+						diskFile = "fd1" + extension;
+						this.setArgument("-flop", diskFile);
+						break;
+					default:
+						alert("Cannot determine format for " + fileName);
+				}
+				return diskFile;
+			}
 		}
 	);
 

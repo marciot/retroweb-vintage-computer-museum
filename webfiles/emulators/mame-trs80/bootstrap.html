@@ -20,51 +20,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
 	/* Interface to RetroWeb Browser */
 
-	new class extends EmulatorInterface {
-		constructor() {
-			super();
-			this.setArgument("trs80l2", "");
-			this.setArgument("-verbose", "");
-			this.setArgument("-rompath", ".");
-			this.setArgument("-flop1", "fd1.DSK");
-			this.setArgument("-window", "");
-			this.setArgument("-resolution", "1024x768");
-			this.setArgument("-nokeepaspect", "");
-			this.setArgument("-autoframeskip", "");
-			this.setArgument("-nosound", "");
-			this.setArgument("-uimodekey", "ESC");
-		}
-
-		preloadResources() {
-		}
-
-		loadScripts() {
-			super.loadJavascript("/emulators/mame-trs80/jsmess-trs80.js", 'async');
-		}
-
-		createModule(module) {
-			super.configModule(module);
-			module.SDL_numSimultaneouslyQueuedBuffers = 5;
-			module.screenIsReadOnly = true;
-			module.canvas.width  = 1024;
-			module.canvas.height = 768;
-		}
-
-		getDrives() {
-			return {
-				"hd1" : null,
-				"fd1" : "fd1.DSK"
+	registerEmulatorInterface(
+		new class extends EmulatorInterface {
+			constructor() {
+				super();
+				this.setArgument("trs80l2", "");
+				this.setArgument("-verbose", "");
+				this.setArgument("-rompath", ".");
+				this.setArgument("-flop1", "fd1.DSK");
+				this.setArgument("-window", "");
+				this.setArgument("-resolution", "1024x768");
+				this.setArgument("-nokeepaspect", "");
+				this.setArgument("-autoframeskip", "");
+				this.setArgument("-nosound", "");
+				this.setArgument("-uimodekey", "ESC");
 			}
-		}
-	}
 
-	processEmulatorConfig(
-		{
-			"name" : "TRS-80 Model 1",
-			"mkdir" : [ "/cfg" ],
-			"preload-files" : [
-				"/roms/trs80l2.zip"
-			]
+			preloadResources() {
+				super.preloadMakeDir("/cfg");
+				super.preloadFromURL("/roms/trs80l2.zip");
+			}
+
+			loadScripts() {
+				super.loadJavascript("/emulators/mame-trs80/jsmess-trs80.js", 'async');
+			}
+
+			createModule(module) {
+				super.configModule(module);
+				module.SDL_numSimultaneouslyQueuedBuffers = 5;
+				module.screenIsReadOnly = true;
+				module.canvas.width  = 1024;
+				module.canvas.height = 768;
+			}
+
+			getDrives() {
+				return {
+					"hd1" : null,
+					"fd1" : "fd1.DSK"
+				}
+			}
 		}
 	);
 

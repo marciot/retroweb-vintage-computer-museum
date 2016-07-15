@@ -19,72 +19,66 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <script type="text/javascript">
 	/* Interface to RetroWeb Browser */
 
-	new class extends EmulatorInterface {
-		constructor() {
-			super();
-			this.setArgument("-c", "pce-config.cfg");
-			this.setArgument("-r", "");
+	registerEmulatorInterface(
+		new class extends EmulatorInterface {
+			constructor() {
+				super();
+				this.setArgument("-c", "pce-config.cfg");
+				this.setArgument("-r", "");
 
-			this.showEjectWarning = true;
-		}
+				this.showEjectWarning = true;
+			}
 
-		preloadResources() {
-		}
+			preloadResources() {
+				super.preloadFromURL("/emulators/pce-macplus/pce-config.cfg");
+				super.preloadFromURL("/emulators/pce-macplus/pce-mac-128k.cfg");
+				super.preloadFromURL("/roms/mac-plus-3.rom");
+				super.preloadFromURL("/roms/macplus-pcex.rom");
+				super.preloadFromURL("/roms/mac-128k.rom");
+			}
 
-		loadScripts() {
-			super.loadJavascript("/emulators/pce-macplus/pce-macplus.js", 'async');
-		}
+			loadScripts() {
+				super.loadJavascript("/emulators/pce-macplus/pce-macplus.js", 'async');
+			}
 
-		getDrives() {
-			return {
-				"hd1" : "hd1.img",
-				"fd1" : "fd1.disk",
-				"fd2" : "fd2.disk"
+			getDrives() {
+				return {
+					"hd1" : "hd1.img",
+					"fd1" : "fd1.disk",
+					"fd2" : "fd2.disk"
+				}
+			}
+
+			prepareDisk(disk) {
+				fixVMacDisks(disk);
+			}
+
+			mountDisk(diskFile) {
+				var match = diskFile.match(/fd(\d)+/);
+				if(match) {
+					var driveId = match[1];
+					console.log("Mounting " + diskFile);
+					this.prepareDisk(diskFile);
+					if(emulator.state.isFloppyMounted("fd" + driveId) && ifce.showEjectWarning) {
+						ifce.showEjectWarning = false;
+						popups.open("popup-mac-eject-disk");
+					}
+					if(emulator.state.isRunning) {
+						emulator.state.floppyMounted("fd" + driveId);
+						macSetMessage ("emu.disk.insert", driveId + ":" + diskFile);
+						macSetMessage ("mac.insert", driveId);
+					}
+				} else {
+					// Must be a hard disk, cannot insert hard disks after boot
+					alert("To boot from this disk, you will need to reload the page.");
+				}
+			}
+
+			reset() {
+				macSetMessage ("emu.reset", "");
 			}
 		}
-
-		prepareDisk(disk) {
-			fixVMacDisks(disk);
-		}
-
-		mountDisk(diskFile) {
-			var match = diskFile.match(/fd(\d)+/);
-			if(match) {
-				var driveId = match[1];
-				console.log("Mounting " + diskFile);
-				this.prepareDisk(diskFile);
-				if(emulator.state.isFloppyMounted("fd" + driveId) && ifce.showEjectWarning) {
-					ifce.showEjectWarning = false;
-					popups.open("popup-mac-eject-disk");
-				}
-				if(emulator.state.isRunning) {
-					emulator.state.floppyMounted("fd" + driveId);
-					macSetMessage ("emu.disk.insert", driveId + ":" + diskFile);
-					macSetMessage ("mac.insert", driveId);
-				}
-			} else {
-				// Must be a hard disk, cannot insert hard disks after boot
-				alert("To boot from this disk, you will need to reload the page.");
-			}
-		}
-
-		reset() {
-			macSetMessage ("emu.reset", "");
-		}
-	}
-
-	processEmulatorConfig(
-		{
-			"name" : "Apple Macintosh",
-			"preload-files" : [
-				"/emulators/pce-macplus/pce-config.cfg",
-				"/emulators/pce-macplus/pce-mac-128k.cfg",
-				"/roms/mac-plus-3.rom",
-				"/roms/macplus-pcex.rom",
-				"/roms/mac-128k.rom"
-			]
-		}
-	)
+	);
 
 	/* Helper functions */
 

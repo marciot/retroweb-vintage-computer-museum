@@ -19,51 +19,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <script type="text/javascript">
 	/* Interface to RetroWeb Browser */
 
-	new class extends EmulatorInterface {
-		constructor() {
-			super();
-			this.setArgument("-c", "pce-config.cfg");
-			this.setArgument("-r", "");
-		}
-
-		preloadResources() {
-		}
-
-		loadScripts() {
-			super.loadJavascript("/emulators/pce-atarist/pce-atarist.js", 'async');
-		}
-
-		getDrives() {
-			return {
-				"hd1" : "hd1.img",
-				"fd1" : "fd1.st"
+	registerEmulatorInterface(
+		new class extends EmulatorInterface {
+			constructor() {
+				super();
+				this.setArgument("-c", "pce-config.cfg");
+				this.setArgument("-r", "");
 			}
-		}
 
-		mountDisk(diskFile) {
-			var match = diskFile.match(/fd(\d)+/);
-			if(match) {
-				var driveId = match[1];
-				stSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
-			} else {
-				// Must be a hard disk, cannot insert hard disks after boot
-				alert("To boot from this disk, you will need to reload the page.");
+			preloadResources() {
+				super.preloadMakeDir("/roms");
+				super.preloadFromURL("/emulators/pce-atarist/pce-config.cfg","/roms/pce-config.cfg");
+				super.preloadFromURL("/roms/tos-1.04-us.rom");
 			}
-		}
 
-		reset() {
-			stSetMessage ("emu.reset", "");
-		}
-	}
+			loadScripts() {
+				super.loadJavascript("/emulators/pce-atarist/pce-atarist.js", 'async');
+			}
 
-	processEmulatorConfig(
-		{
-			"name" : "Atari 1040ST",
-			"mkdir" : [ "/roms" ],
-			"preload-files" : [
-				"/emulators/pce-atarist/pce-config.cfg -> /roms/pce-config.cfg",
-				"/roms/tos-1.04-us.rom"
-			]
+			getDrives() {
+				return {
+					"hd1" : "hd1.img",
+					"fd1" : "fd1.st"
+				}
+			}
+
+			mountDisk(diskFile) {
+				var match = diskFile.match(/fd(\d)+/);
+				if(match) {
+					var driveId = match[1];
+					stSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
+				} else {
+					// Must be a hard disk, cannot insert hard disks after boot
+					alert("To boot from this disk, you will need to reload the page.");
+				}
+			}
+
+			reset() {
+				stSetMessage ("emu.reset", "");
+			}
 		}
 	);
 

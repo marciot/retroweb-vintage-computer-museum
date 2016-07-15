@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-var processEmulatorConfig = null;
+var registerEmulatorInterface = null;
 
 class EmulatorState {
 	constructor(emulator, popups) {
@@ -26,7 +26,6 @@ class EmulatorState {
 
 		this.gotIfce      = false;
 		this.gotRoms      = false;
-		this.gotConfig    = false;
 		this.gotBootMedia = false;
 		this.downloading  = false;
 		this.started      = false;
@@ -46,7 +45,6 @@ class EmulatorState {
 	stateChanged(unsafeForCallbacks) {
 		/*console.log("State transition:");
 		console.log("  gotRoms: ",             this.gotRoms);
-		console.log("  gotConfig: ",           this.gotConfig != false);
 		console.log("  gotBootMedia: ",        this.gotBootMedia);
 		console.log("  downloading: ",         this.downloading);*/
 		
@@ -57,19 +55,14 @@ class EmulatorState {
 		if(!unsafeForCallbacks) {
 			/* Dispatch callbacks if it is safe to do so */
 
-			if(this.gotConfig) {
-				this.emulator.dispatchEvent("emulatorConfigured");
-			}
-
-			if(this.gotRoms && this.gotConfig && this.gotIfce) {
+			if(this.gotIfce) {
 				this.emulator.dispatchEvent("emulatorLoaded");
 			}
-		}
-	}
 
-	transitionToConfigLoaded() {
-		this.gotConfig = true;
-		this.stateChanged();
+			if(this.gotRoms && this.gotIfce) {
+				this.emulator.dispatchEvent("emulatorReady");
+			}
+		}
 	}
 
 	transitionToRomsLoaded() {
@@ -141,23 +134,25 @@ class Emulator {
 	constructor(emulator, opts) {
 		this._name			= emulator;
 		this._state			= new EmulatorState(this, opts.popups);
-		this._config		= null;
 		this.fileManager	= new EmscriptenFileManager();
 		this.emuIfce		= null;
 		this.popups			= opts.popups;
 		this.listeners 		= {
-			emulatorConfigured:		[],
 			emulatorLoaded:			[],
+			emulatorReady:			[],
 			emscriptenPreInit:		[]
 		}
 
 		/* Bootstrap the emulator by loading "bootstrap.html". This file will call
-		 * the global function processEmulatorConfig. We create this function here
+		 * the global function registerEmulatorInterface. We create this function here
 		 * and bind it to this object.
 		 */
+		var me = this;
 		function createGlobalCallback(emulator) {
-			processEmulatorConfig = function(config) {
-				emulator.processConfig(config);
+			registerEmulatorInterface = function(ifce) {
+				me.setEmulatorInterface(ifce);
+				me.getEmulatorInterface().preloadResources();
+				me._state.transitionToRomsLoaded();
 			};
 		}
 		createGlobalCallback(this);
@@ -171,34 +166,6 @@ class Emulator {
 
 	getEmulatorInterface() {
 		return this.emuIfce;
-	}
-
-	processConfig(config) {
-		var dirsToMake = config["mkdir"];
-		if(dirsToMake) {
-			for (var i = 0; i < dirsToMake.length; ++i) {
-				var path = dirsToMake[i];
-				this.fileManager.makeDir(path);
-			}
-		}
-
-		function filePart(path) {
-			return path.substr(path.lastIndexOf("/")+1);
-		}
-
-		var filesToMount = config["preload-files"];
-		for (var i = 0; i < filesToMount.length; ++i) {
-			if (filesToMount[i].charAt(0) == '#') continue;
-			var parts = filesToMount[i].split(/\s+->\s+/);
-			var url = parts[0];
-			var name = (parts.length > 1) ? parts[1] : filePart(parts[0]);
-			this.fileManager.writeFileFromUrl('/' + name, url);
-		}
-
-		this._config = config;
-		this._state.transitionToRomsLoaded();
-		this.getEmulatorInterface().preloadResources();
-		this._state.transitionToConfigLoaded();
 	}
 
 	expectMedia(fileName, isBootable) {

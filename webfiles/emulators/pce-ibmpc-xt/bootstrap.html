@@ -20,84 +20,78 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	/* Interface to RetroWeb Browser */
 
-	new class extends EmulatorInterface {
-		constructor() {
-			super();
-			this.setArgument("-c", "pce-config.cfg");
-			this.setArgument("-g", "cga");
-			this.setArgument("-r", "");
-		}
-
-		preloadResources() {
-		}
-
-		loadScripts() {
-			super.loadJavascript("/emulators/pce-ibmpc/pce-ibmpc.js", 'async');
-		}
-
-		getDrives() {
-			return {
-				"hd1" : "hd1.img",
-				"fd1" : "fd1.disk",
-				"fd2" : "fd2.disk"
+	registerEmulatorInterface(
+		new class extends EmulatorInterface {
+			constructor() {
+				super();
+				this.setArgument("-c", "pce-config.cfg");
+				this.setArgument("-g", "cga");
+				this.setArgument("-r", "");
 			}
-		}
 
-		mountDisk(diskFile) {
-			var match = diskFile.match(/fd(\d)+/);
-			if(match) {
-				var driveId = match[1];
-				console.log("Mounting " + diskFile);
-				pcSetMessage ("emu.disk.insert", (driveId[1] - 1) + ":" + diskFile);
-			} else {
-				// Must be a hard disk, cannot insert hard disks after boot
-				alert("To boot from this disk, you will need to reload the page.");
+			preloadResources() {
+				super.preloadFromURL("/emulators/pce-ibmpc/pce-config-5160.cfg","pce-config.cfg");
+				super.preloadFromURL("/emulators/pce-ibmpc/pce-config-5160-early-msys-mouse.cfg");
+				super.preloadFromURL("/emulators/pce-ibmpc/pce-config-5160-early-ser-mouse.cfg");
+				super.preloadFromURL("/emulators/pce-ibmpc/pce-config-5160-later-ser-mouse.cfg");
+				super.preloadFromURL("/emulators/pce-ibmpc/pce-config-5160-gem-1.2.cfg");
+
+				super.preloadFromURL("/roms/ibm-xt-1982-11-08.rom");
+				super.preloadFromURL("/roms/ibm-basic-1.10.rom");
+				super.preloadFromURL("/roms/ibm-hdc-1985.rom");
+
+				super.preloadFromURL("/roms/ibm-xt-1986-05-09.rom");
+				super.preloadFromURL("/roms/ibm-mfm-1985-10-28.rom");
+				super.preloadFromURL("/roms/ibm-ega-1984-09-13.rom");
+				super.preloadFromURL("/roms/ibm-vga-1986-10-27.rom");
 			}
-		}
 
-		reset() {
-			pcSetMessage ("emu.reset", "");
-		}
-
-		cassetteAction(action) {
-			switch(action) {
-				case "record":
-					pcSetMessage ("emu.tape.save", "end");
-					break;
-				case "playback":
-					pcSetMessage ("emu.tape.load", "0");
-					break;
-				case "rewind":
-					pcSetMessage ("emu.tape.rewind", "");
-					break;
-				case "append":
-					pcSetMessage ("emu.tape.append", "");
-					break;
-				default:
-					alert("Unknown action: " + action);
+			loadScripts() {
+				super.loadJavascript("/emulators/pce-ibmpc/pce-ibmpc.js", 'async');
 			}
-		}
-	}
 
-	processEmulatorConfig(
-		{
-			"name" : "IBM PC Model 5160",
-			"preload-files" : [
-				"/emulators/pce-ibmpc/pce-config-5160.cfg -> pce-config.cfg",
-				"/emulators/pce-ibmpc/pce-config-5160-early-msys-mouse.cfg",
-				"/emulators/pce-ibmpc/pce-config-5160-early-ser-mouse.cfg",
-				"/emulators/pce-ibmpc/pce-config-5160-later-ser-mouse.cfg",
-				"/emulators/pce-ibmpc/pce-config-5160-gem-1.2.cfg",
+			getDrives() {
+				return {
+					"hd1" : "hd1.img",
+					"fd1" : "fd1.disk",
+					"fd2" : "fd2.disk"
+				}
+			}
 
-				"/roms/ibm-xt-1982-11-08.rom",
-				"/roms/ibm-basic-1.10.rom",
-				"/roms/ibm-hdc-1985.rom",
+			mountDisk(diskFile) {
+				var match = diskFile.match(/fd(\d)+/);
+				if(match) {
+					var driveId = match[1];
+					console.log("Mounting " + diskFile);
+					pcSetMessage ("emu.disk.insert", (driveId[1] - 1) + ":" + diskFile);
+				} else {
+					// Must be a hard disk, cannot insert hard disks after boot
+					alert("To boot from this disk, you will need to reload the page.");
+				}
+			}
 
-				"/roms/ibm-xt-1986-05-09.rom",
-				"/roms/ibm-mfm-1985-10-28.rom",
-				"/roms/ibm-ega-1984-09-13.rom",
-				"/roms/ibm-vga-1986-10-27.rom"
-			]
+			reset() {
+				pcSetMessage ("emu.reset", "");
+			}
+
+			cassetteAction(action) {
+				switch(action) {
+					case "record":
+						pcSetMessage ("emu.tape.save", "end");
+						break;
+					case "playback":
+						pcSetMessage ("emu.tape.load", "0");
+						break;
+					case "rewind":
+						pcSetMessage ("emu.tape.rewind", "");
+						break;
+					case "append":
+						pcSetMessage ("emu.tape.append", "");
+						break;
+					default:
+						alert("Unknown action: " + action);
+				}
+			}
 		}
 	);
 

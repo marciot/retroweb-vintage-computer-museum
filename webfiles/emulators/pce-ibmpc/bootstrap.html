@@ -20,74 +20,68 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	/* Interface to RetroWeb Browser */
 
-	new class extends EmulatorInterface {
-		constructor() {
-			super();
-			this.setArgument("-c", "pce-config.cfg");
-			this.setArgument("-g", "cga");
-			this.setArgument("-r", "");
-		}
-
-		preloadResources() {
-		}
-
-		loadScripts() {
-			super.loadJavascript("/emulators/pce-ibmpc/pce-ibmpc.js", 'async');
-		}
-
-		getDrives() {
-			return {
-				"hd1" : "hd1.img",
-				"fd1" : "fd1.disk",
-				"fd2" : "fd2.disk"
+	registerEmulatorInterface(
+		new class extends EmulatorInterface {
+			constructor() {
+				super();
+				this.setArgument("-c", "pce-config.cfg");
+				this.setArgument("-g", "cga");
+				this.setArgument("-r", "");
 			}
-		}
 
-		mountDisk(diskFile) {
-			var match = diskFile.match(/fd(\d)+/);
-			if(match) {
-				var driveId = match[1];
-				console.log("Mounting " + diskFile);
-				pcSetMessage ("emu.disk.insert", (driveId[1] - 1) + ":" + diskFile);
-			} else {
-				// Must be a hard disk, cannot insert hard disks after boot
-				alert("To boot from this disk, you will need to reload the page.");
+			preloadResources() {
+				super.preloadFromURL("/emulators/pce-ibmpc/pce-config-5150.cfg","pce-config.cfg");
+				super.preloadFromURL("/roms/ibm-pc-1981-10-19.rom");
+				super.preloadFromURL("/roms/ibm-basic-1.00.rom");
+				super.preloadFromURL("/roms/ibmpc-pcex.rom");
 			}
-		}
 
-		reset() {
-			pcSetMessage ("emu.reset", "");
-		}
-
-		cassetteAction(action) {
-			switch(action) {
-				case "record":
-					pcSetMessage ("emu.tape.save", "end");
-					break;
-				case "playback":
-					pcSetMessage ("emu.tape.load", "0");
-					break;
-				case "rewind":
-					pcSetMessage ("emu.tape.rewind", "");
-					break;
-				case "append":
-					pcSetMessage ("emu.tape.append", "");
-					break;
-				default:
-					alert("Unknown action: " + action);
+			loadScripts() {
+				super.loadJavascript("/emulators/pce-ibmpc/pce-ibmpc.js", 'async');
 			}
-		}
-	}
 
-	processEmulatorConfig(
-		{
-			"name" : "IBM PC Model 5150",
-			"preload-files" : [
-				"/emulators/pce-ibmpc/pce-config-5150.cfg          -> pce-config.cfg",
-				"/roms/ibm-pc-1981-10-19.rom",
-				"/roms/ibm-basic-1.00.rom",
-				"/roms/ibmpc-pcex.rom"
-			]
+			getDrives() {
+				return {
+					"hd1" : "hd1.img",
+					"fd1" : "fd1.disk",
+					"fd2" : "fd2.disk"
+				}
+			}
+
+			mountDisk(diskFile) {
+				var match = diskFile.match(/fd(\d)+/);
+				if(match) {
+					var driveId = match[1];
+					console.log("Mounting " + diskFile);
+					pcSetMessage ("emu.disk.insert", (driveId[1] - 1) + ":" + diskFile);
+				} else {
+					// Must be a hard disk, cannot insert hard disks after boot
+					alert("To boot from this disk, you will need to reload the page.");
+				}
+			}
+
+			reset() {
+				pcSetMessage ("emu.reset", "");
+			}
+
+			cassetteAction(action) {
+				switch(action) {
+					case "record":
+						pcSetMessage ("emu.tape.save", "end");
+						break;
+					case "playback":
+						pcSetMessage ("emu.tape.load", "0");
+						break;
+					case "rewind":
+						pcSetMessage ("emu.tape.rewind", "");
+						break;
+					case "append":
+						pcSetMessage ("emu.tape.append", "");
+						break;
+					default:
+						alert("Unknown action: " + action);
+				}
+			}
 		}
 	);
 

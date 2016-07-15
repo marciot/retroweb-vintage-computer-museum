@@ -20,52 +20,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	/* Interface to RetroWeb Browser */
 
-	new class extends EmulatorInterface {
-		constructor() {
-			super();
-			this.setArgument("-c", "pce-config.cfg");
-			this.setArgument("-r", "");
-		}
-
-		preloadResources() {
-		}
-
-		loadScripts() {
-			super.loadJavascript("/emulators/pce-rc759/pce-rc759.js", 'async');
-		}
-
-		getDrives() {
-			return {
-				"hd1" : "h1.img",
-				"fd1" : "fd1.disk",
-				"fd2" : "fd2.disk"		
+	registerEmulatorInterface(
+		new class extends EmulatorInterface {
+			constructor() {
+				super();
+				this.setArgument("-c", "pce-config.cfg");
+				this.setArgument("-r", "");
 			}
-		}
 
-		mountDisk(diskFile) {
-			var match = diskFile.match(/fd(\d)+/);
-			if(match) {
-				var driveId = match[1];
-				rcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
-			} else {
-				// Must be a hard disk, cannot insert hard disks after boot
-				alert("To boot from this disk, you will need to reload the page.");
+			preloadResources() {
+				super.preloadMakeDir("/roms");
+				super.preloadFromURL("/emulators/pce-rc759/pce-config.cfg","/roms/pce-config.cfg");
+				super.preloadFromURL("/roms/rc759-1-2.1.rom");
 			}
-		}
 
-		reset() {
-			rcSetMessage ("emu.reset", "");
-		}
-	}
+			loadScripts() {
+				super.loadJavascript("/emulators/pce-rc759/pce-rc759.js", 'async');
+			}
 
-	processEmulatorConfig(
-		{
-			"name" : "RC759 Piccoline",
-			"mkdir" : [ "/roms" ],
-			"preload-files" : [
-				"/emulators/pce-rc759/pce-config.cfg -> /roms/pce-config.cfg",
-				"/roms/rc759-1-2.1.rom"
-			]
+			getDrives() {
+				return {
+					"hd1" : "h1.img",
+					"fd1" : "fd1.disk",
+					"fd2" : "fd2.disk"		
+				}
+			}
+
+			mountDisk(diskFile) {
+				var match = diskFile.match(/fd(\d)+/);
+				if(match) {
+					var driveId = match[1];
+					rcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
+				} else {
+					// Must be a hard disk, cannot insert hard disks after boot
+					alert("To boot from this disk, you will need to reload the page.");
+				}
+			}
+
+			reset() {
+				rcSetMessage ("emu.reset", "");
+			}
 		}
 	);
 
