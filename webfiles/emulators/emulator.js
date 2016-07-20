@@ -268,17 +268,19 @@ class Emulator {
 	 * to select a file or floppy to upload. */
 
 	uploadFloppy(drive, isBootable) {
+		var me = this;
 		this.popups.askForFile("Select floppy disk image", function(file) {
-			var dstName = this.getEmulatorInterface().getFileNameForDrive(drive, file.name);
-			this.expectMedia(dstName, isBootable);
-			this.fileManager.writeFileFromFile(dstName, file);
+			var dstName = me.getEmulatorInterface().getFileNameForDrive(drive, file.name);
+			me.expectMedia(dstName, isBootable);
+			me.fileManager.writeFileFromFile(dstName, file);
 		});
 	}
 
 	uploadFile(dstName, what, isBootable) {
+		var me = this;
 		this.popups.askForFile("Please select a " + what, function(file) {
-			this.expectMedia(dstName, isBootable);
-			this.fileManager.writeFileFromFile(dstName, file);
+			me.expectMedia(dstName, isBootable);
+			me.fileManager.writeFileFromFile(dstName, file);
 		});
 	}
 
