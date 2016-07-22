@@ -153,10 +153,21 @@ class Emulator {
 				me.setEmulatorInterface(ifce);
 				me.getEmulatorInterface().preloadResources();
 				me._state.transitionToRomsLoaded();
+				if(me.serialCharacterAvailableCallback) {
+					me.serialInterface = ifce.getSerialDevice(me.serialCharacterAvailableCallback);
+				}
 			};
 		}
 		createGlobalCallback(this);
 		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
+	}
+
+	setSerialCallback(characterAvailableCallback) {
+		this.serialCharacterAvailableCallback = characterAvailableCallback;
+	}
+
+	sendSerialDataToEmulator(data) {
+		this.serialInterface.sendSerialDataToEmulator(data);
 	}
 
 	setEmulatorInterface(ifce) {

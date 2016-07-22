@@ -26,6 +26,7 @@ var Module;
 class EmulatorInterface {
 	constructor() {
 		this.arguments = {};
+		this.serialInterface = null;
 	}
 
 	getFileNameForDrive(drive, fileName) {
@@ -89,6 +90,10 @@ class EmulatorInterface {
 		this.loadScripts();
 	}
 
+	getSerialDevice(characterAvailableCallback) {
+		return new EmscriptenSerialDevice(characterAvailableCallback);
+	}
+
 	configModule(module) {
 		module.arguments = [];
 		for (var arg in this.arguments) {
@@ -126,5 +131,61 @@ class EmulatorInterface {
 
 	cassetteAction(action) {
 		alert( "This emulator does not support the cassette interface." );
+	}
+}
+
+/* In order to get data in and out of the emulator, we create a virtual character device
+ * in the Emscripten filesystem. We then have the PCE emulator use the posix character
+ * driver to read and write to that file.
+ */
+class EmscriptenSerialDevice {
+	constructor(characterAvailableCallback) {
+		this.characterAvailableCallback = characterAvailableCallback;
+		this.availableData = "";
+		var me = this;
+		emulator.addEventListener("emscriptenPreInit", function() {
+			me.createFile("ser_a.io");
+		});
+	}
+
+	sendSerialDataToEmulator(data) {
+		this.availableData += data;
+	}
+
+	createFile(file) {
+		var me = this;
+		function serialWrite(stream, buffer, offset, length, position) {
+			for(var i = 0; i < length; i++) {
+				var data = buffer[offset+i];
+				me.characterAvailableCallback(String.fromCharCode(data));
+			}
+			return length;
+		}
+
+		function serialRead(stream, buffer, offset, length, position) {
+			if(me.availableData.length) {
+				if(length > me.availableData.length) {
+					length = me.availableData.length;
+				}
+				for(var i = 0; i < length; i++) {
+					buffer[offset+i] = me.availableData.charCodeAt(i);
+				}
+				me.availableData = "";
+				return length;
+			} else {
+				return 0;
+			}
+		}
+
+		console.log("Created serial device file", file);
+
+		var ops = {
+			read:   serialRead,
+			write:  serialWrite
+		};
+
+		var id = FS.makedev(64, 0);
+		FS.registerDevice(id, ops);
+		FS.mkdev(file, id);
 	}
 }

@@ -18,6 +18,146 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
 
+	var saeSerialDevice;
+
+	var availableData = new class RingBuffer {
+		constructor() {
+			this.buf      = new Uint8Array(1024);
+			this.writePos = 0;
+			this.readPos  = 0;
+		}
+
+		writeByte(val) {
+			this.buf[this.writePos] = val;
+			this.writePos = (this.writePos+1) % this.buf.length;
+		}
+
+		writeStr(str) {
+			for(var i = 0; i < str.length; i++) {
+				this.writeByte(str.charCodeAt(i));
+			}
+		}
+
+		readByte() {
+			if(this.hasData) {
+				var val = this.buf[this.readPos];
+				this.readPos = (this.readPos+1) % this.buf.length;
+				return val;
+			} else {
+				return null;
+			}
+		}
+
+		get hasData() {
+			return this.readPos != this.writePos;
+		}
+	}
+
+	/* Replacement for sae-amiga/serial.js */
+
+	class Serial {
+		constructor() {
+			this.reset();
+		}
+
+		// Constants
+		static get SERDATR_TBE() {return 0x2000};  // Transmit Buffer Empty (Bit 13, mirrored from INTREQ)
+		static get SERDATR_RBF() {return 0x4000};  // Receive Buffer Full   (Bit 14, mirrored from INTREQ)
+
+		static get INTREQ_TBE()  {return 0x0001};  // Transmit Buffer Empty (Bit 0)
+		static get INTREQ_RBF()  {return 0x0800};  // Receive Buffer Full  (Bit 11)
+
+		reset() {
+			this.dtr     = false;
+			this.serper  = 0;
+			this.serdatr = Serial.SERDATR_TBE;
+		}
+
+		readStatus() {
+			//ciabpra |= 0x20; //Push up Carrier Detect line
+			//ciabpra |= 0x08; //DSR ON
+			return 0;
+		}
+
+		writeStatus(old, nw) {
+			if ((old & 0x80) == 0x80 && (nw & 0x80) == 0x00) this.dtr = true;
+			if ((old & 0x80) == 0x00 && (nw & 0x80) == 0x80) this.dtr = false;
+			return nw;
+		}
+
+		SERPER(v) {
+			if (this.serper != v) {
+				this.serper = v;
+			}
+		}
+
+		/* SERDAT is a write-only register for data that is to be transmitted. When the register
+		 * is ready to receive another byte, the TBE flag is set in both SERDATR and INTREQ. */
+
+		SERDAT(v) {
+			console.log("SERDAT called");
+			//BUG.info('SERDAT $%04x', v);
+			if (AMIGA.config.serial.enabled) {
+				console.log("Sent byte", v);
+				saeSerialDevice.sendByteFromEmulator(v & 0xff);
+			}
+			this.serdatr |= Serial.SERDATR_TBE;
+			/* Set TBE in the SERDATR ... */
+			AMIGA.intreq |= Serial.INTREQ_TBE;
+			/* ... and in INTREQ register */
+			console.log("SERDAT exiting");
+		}
+
+		/* SERDATR is a read-only register that contains incoming data and status bits.
+		 * The RBF bits in SERDATR and INTREQ indicate that data is available.
+		*/
+		SERDATR() {
+			console.log("SERDATR called");
+			var data = 0;
+			if(availableData.hasData) {
+				data = availableData.readByte();
+				console.log("Received byte", data);
+			}
+			Serial.dataAvailable = availableData.hasData;
+			//BUG.info('SERDATR $%04x', serdatr);
+			console.log("SERDATR exiting");
+			return data | this.serdatr;
+		}
+
+		static set dataAvailable(serialDataAvailable) {
+			console.log("dataAvailable called", serialDataAvailable);
+			if(serialDataAvailable) {
+				this.serdatr |= Serial.SERDATR_RBF;
+				if(AMIGA) {
+					AMIGA.intreq |= Serial.INTREQ_RBF;
+				}
+			} else {
+				this.serdatr &= ~Serial.SERDATR_RBF;
+				if(AMIGA) {
+					AMIGA.intreq &= ~Serial.INTREQ_RBF;
+				}
+			}
+		}
+	}
+
+	class SAESerialDevice {
+		constructor(characterAvailableCallback) {
+			this.characterAvailableCallback = characterAvailableCallback;
+		}
+
+		sendByteFromEmulator(val) {
+			this.characterAvailableCallback(String.fromCharCode(val));
+		}
+
+		sendSerialDataToEmulator(data) {
+			availableData.writeStr(data);
+			Serial.dataAvailable = true;
+		}
+
+		initialize() {
+		}
+	}
+
 	/* SAE is not an Emscripten based emulator, so right now we pretend that it
 	 * is by creating a fake Enscripten environment consisting of a dummy FS
 	 * object.
@@ -43,29 +183,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			preloadResources() {
 				super.preloadFromURL("/roms/amiga-kickstart-v1.3-r34.5.rom", "sae.rom");
 
-				super.loadJavascript("/emulators/sae-amiga/sae/constants.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/utils.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/config.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/memory.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/expansion.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/events.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/input.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/serial.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/custom.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/blitter.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/copper.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/playfield.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/video.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/audio.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/cia.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/disk.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/rtc.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/cpu.js", 'async');
-				super.loadJavascript("/emulators/sae-amiga/sae/amiga.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae/constants.js", 'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/utils.js",     'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/config.js",    'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/memory.js",    'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/expansion.js", 'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/events.js",    'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/input.js",     'sync');
+				//super.loadJavascript("/emulators/sae-amiga/sae/serial.js",  'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/custom.js",    'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/blitter.js",   'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/copper.js",    'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/playfield.js", 'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/video.js",     'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/audio.js",     'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/cia.js",       'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/disk.js",      'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/rtc.js",       'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/cpu.js",       'sync');
+				super.loadJavascript("/emulators/sae-amiga/sae/amiga.js",     'sync');
 			}
 
 			loadScripts() {
-				super.loadJavascript("/emulators/sae-amiga/sae-amiga.js", 'async');
+				super.loadJavascript("/emulators/sae-amiga/sae-amiga.js", 'sync');
 			}
 
 			mountDisk(diskFile) {
@@ -78,6 +218,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					// Must be a hard disk, cannot insert hard disks after boot
 					alert("To boot from this disk, you will need to reload the page.");
 				}
+			}
+
+			getSerialDevice(characterAvailableCallback) {
+				console.log("Initializing serial port capture");
+				saeSerialDevice = new SAESerialDevice(characterAvailableCallback);
+				return saeSerialDevice;
+			}
+
+			reset() {
+				SAE({cmd:'reset'});
 			}
 		}
 	);
@@ -140,7 +290,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		config.mouse.scaleX = 1.5;
 		config.mouse.scaleY = 1.5;
 
-		config.serial.enabled = false;
+		config.serial.enabled = true;
 
 		/*config.hooks.error = func;
 		config.hooks.power_led = func;
