@@ -94,7 +94,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 		// Ignore arrow keys and pageup/pagedown
 		window.addEventListener('keydown', function(e) {
-			console.log(e.keyCode);
 			if([32, 33, 34,  37, 38, 39, 40].indexOf(e.keyCode) > -1) {
 				e.preventDefault();
 			}
