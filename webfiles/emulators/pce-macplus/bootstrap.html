@@ -32,9 +32,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			preloadResources() {
 				super.preloadFromURL("/emulators/pce-macplus/pce-config.cfg");
 				super.preloadFromURL("/emulators/pce-macplus/pce-mac-128k.cfg");
+				super.preloadFromURL("/emulators/pce-macplus/pce-dual-hd.cfg");
 				super.preloadFromURL("/roms/mac-plus-3.rom");
 				super.preloadFromURL("/roms/macplus-pcex.rom");
 				super.preloadFromURL("/roms/mac-128k.rom");
+				super.preloadFromURL("/disks/mac-marcio's-boot-1.0.qed","/boot.qed");
 			}
 
 			loadScripts() {
@@ -88,23 +90,106 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		_macSetMessage(sim, msg, val);
 	}
 
+	function computeDC42Checksum(data) {
+		var checksum = 0;
+		for(i = 0; i < data.length;) {
+			var word = (data[i++] << 8) + data[i++];
+			checksum = checksum + word;
+			var carry = (checksum & 0x1) << 31;
+			checksum = (checksum >>> 1) | carry;
+		}
+		return {
+			value: checksum,
+			byte_0x48: (checksum >>> 24) & 0xFF,
+			byte_0x49: (checksum >>> 16) & 0xFF,
+			byte_0x4A: (checksum >>> 8 ) & 0xFF,
+			byte_0x4B: (checksum       ) & 0xFF
+		};
+	}
+
+	/* PCE is very particular about Disk Copy images. If the checksum is incorrect, it
+	 * will not load it. Some emulators, such as Basillisk II, do not update the checksum,
+	 * so we will correct it here if needed.
+	 */
+	function verifyDC42Image(disk) {
+		var header = new Uint8Array(84);
+
+		var stream = FS.open(disk, 'r');
+		FS.read(stream, header, 0, header.length);
+
+		/* Check the magic byte */
+		if(header[0x52] != 0x01 || header[0x53] != 0x00) {
+			FS.close(stream);
+			console.log("verifyDC42Image: Cannot find magic bytes, not a DC42 disk image.");
+			return;
+		}
+
+		/* Check the disk size */
+		var disk_size = (header[0x40] << 24) + (header[0x41] << 16) + (header[0x42] << 8) + header[0x43];
+		switch(disk_size) {
+			case 409600:
+				console.log("verifyDC42Image: Detected 400k GCR disk");
+				break;
+			case 819200:
+				console.log("verifyDC42Image: Detected 800k GCR disk");
+				break;
+			case 737280:
+				console.log("verifyDC42Image: Detected 720k MFM disk");
+				break;
+			case 1474560:
+				console.log("verifyDC42Image: Detected 1440k MFM disk");
+				break;
+			default:
+				FS.close(stream);
+				console.log("verifyDC42Image: Unrecognized disk.");
+				break;
+		}
+
+		/* Check the checksum */
+		var data = new Uint8Array(disk_size);
+		FS.read(stream, data, 0, disk_size);
+		FS.close(stream);
+		var checksum = computeDC42Checksum(data);
+		if( header[0x48] == checksum.byte_0x48 &&
+			header[0x49] == checksum.byte_0x49 &&
+			header[0x4A] == checksum.byte_0x4A &&
+			header[0x4B] == checksum.byte_0x4B) {
+			console.log("verifyDC42Image: Checksum OK");
+		} else {
+			console.log("verifyDC42Image: Checksum bad, fixing.");
+			header[0x48] = checksum.byte_0x48;
+			header[0x49] = checksum.byte_0x49;
+			header[0x4A] = checksum.byte_0x4A;
+			header[0x4B] = checksum.byte_0x4B;
+			
+			var stream = FS.open(disk, 'w');
+			FS.write(stream, header, 0, header.length);
+			FS.write(stream, data,   0, data.length);
+			FS.close(stream);
+		}
+	}
+
 	/* VMac disks are DiskCopy 4.2 images that have been stripped of their
 	 * headers. PCE does not know how to deal with these types of images,
 	 * so the following will rewrite the headers to make them work.
+	 *
+	 * Specifications: https://wiki.68kmla.org/DiskCopy_4.2_format_specification
 	 */
 	function fixVMacDisks(disk) {
-		
+
 		var stat = FS.stat(disk);
 		if (!stat) {
 			return;
 		}
-		
+
 		var disk_size = stat.size;
 		var disk_size_byte_1;
 		var disk_size_byte_2;
 		var disk_encoding;
 		var disk_format;
-		
+
+		console.log("fixVMacDisks size: ", disk_size);
+
 		switch(disk_size) {
 			case 400 * 1024:
 				disk_size_byte_1 = 0x06;
@@ -118,14 +203,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				disk_size_byte_2 = 0x80;
 				disk_encoding    = 0x01; /* Set encoding to GCR CLV dsdd (800k) */
 				disk_format      = 0x22; /* Set format to Mac 800k */
+				console.log("This disk is a Macintosh 800K disk");
 				break;
 			default:
 				// Not a vMac disk that we need to worry about
+				verifyDC42Image(disk);
 				return;
 		}
 
 		/* Fill out all the fields in the DC42 header */
-		 
+
 		var header = new Uint8Array(84);
 		for(var i = 0; i < 84; i++) {
 			header[i]=0x00;
@@ -138,24 +225,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		header[0x51] = disk_format;
 		header[0x52] = 0x01; /* Magic byte */
 		header[0x53] = 0x00; /* Magic byte */
-		
+
 		console.log("Re-writing vMac disk with DC42 header");
-		
+
 		var data = FS.readFile(disk, {encoding: 'binary'});
-		
+
 		// Compute the data checksum
-		var checksum = 0;
-		for(i = 0; i < data.length;) {
-			var word = (data[i++] << 8) + data[i++];
-			checksum = checksum + word;
-			var carry = (checksum & 0x1) << 31;
-			checksum = (checksum >>> 1) | carry;
-		}
-		header[0x48] = (checksum >>> 24) & 0xFF;
-		header[0x49] = (checksum >>> 16) & 0xFF;
-		header[0x4A] = (checksum >>> 8 ) & 0xFF;
-		header[0x4B] = (checksum       ) & 0xFF;
-		
+		var checksum = computeDC42ChecksumBytes(data);
+		header[0x48] = checksum.byte_0x48;
+		header[0x49] = checksum.byte_0x49;
+		header[0x4A] = checksum.byte_0x4A;
+		header[0x4B] = checksum.byte_0x4B;
+
 		var stream = FS.open(disk, 'w');
 		FS.write(stream, header, 0, header.length);
 		FS.write(stream, data,   0, data.length);

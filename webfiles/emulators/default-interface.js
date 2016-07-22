@@ -103,8 +103,8 @@ class EmulatorInterface {
 		var filesWritten = emulator.fileManager.syncEmscriptenFS();
 		console.log("Preparing disks...");
 		for(var i = 0; i < filesWritten.length; i++) {
-			this.prepareDisk(filesWritten[i]);
 			if(doMount) {
+				this.prepareDisk(filesWritten[i]);
 				this.mountDisk(filesWritten[i]);
 			}
 		}
