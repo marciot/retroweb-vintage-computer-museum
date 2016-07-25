@@ -510,16 +510,18 @@ function Keyboard() {
        document.onkeyup = function (e) {
        AMIGA.input.keyboard.keydownup(e, false);
        }*/
-      window.document.addEventListener('keydown', _onkeydown, false);
-      window.document.addEventListener('keyup', _onkeyup, false);
+	  var canvas = document.getElementById(AMIGA.config.video.id) || window.document; /* Added by MLT */
+      canvas.addEventListener('keydown', _onkeydown, false);
+      canvas.addEventListener('keyup', _onkeyup, false);
    };
 
 	this.cleanup = function () {
       //BUG.info('Keyboard.cleanup()');
       //document.onkeydown = null;
       //document.onkeyup = null;
-      window.document.removeEventListener('keydown', _onkeydown, false);
-      window.document.removeEventListener('keyup', _onkeyup, false);
+	  var canvas = document.getElementById(AMIGA.config.video.id) || window.document; /* Added by MLT */
+      canvas.document.removeEventListener('keydown', _onkeydown, false);
+      canvas.document.removeEventListener('keyup', _onkeyup, false);
    };
 
 	this.reset = function () {
