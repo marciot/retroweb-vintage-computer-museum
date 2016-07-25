@@ -9,36 +9,62 @@
 	<link rel="stylesheet" type="text/css"        href="/lib/nojs.css">
 </head>
 <body>
-<div id="retroweb-markup" data-emulators="sae-amiga">
+<div id="retroweb-markup" data-emulators="sae-amiga pce-macplus">
 
-== Try it Out! ==
+= Battle Chess =
 
+Battle Chess was the first game independently developed and released by Interplay in 1988[1] and the start of a franchise that continues to this day. Featuring chess pieces that came to life in battle, it received critical acclaim for its clever graphics and animation.
+
+After its debut on the Commodore Amiga in 1988, Battle Chess was ported to the many personal computers of the time. Most versions included modem play, which in the era before the Internet, allowed people to play head-to-head with one another.
+ 
+|!2                The Long History of Battle Chess                                        |
+|> 1988            | Interplay releases Battle Chess for the Amiga and PC DOS              |
+|> 1989            | Battle Chess released for Atari ST, Apple II, Commodore 64            |
+|> 1990            | Battle Chess released for Apple IIgs, NES                             |
+|> 1991            | A B&amp;W version of Battle Chess is released for the Apple Macintosh |
+|> March 16, 2014  | "Battle Chess: Game of Kings" released on Steam                       |
+
+== Try a demo of Battle Chess ==
+
+<div class="sae-amiga hidden">
 { "icons" : [
 		["Start Computer", "boot-rom", "", {"className": "power"}],
 		["Battle Chess",   "floppy",   "/disks/amiga-battle-chess.adf"]
 	]
 }
 
-This page emulates a Amiga with a modem and allows you to play Battle Chess with others. 
+This page emulates a Amiga with a modem and allows you see what Battle Chess was like in 1988.
+
+You can also try the black and white version of Battle Chess that was released for the [[Apple Macintosh]] in 1991.
+</div>
+
+<div class="pce-macplus hidden">
+{ "icons" : [
+		["BattleChess",   "boot-hd",      "/disks/mac-battlechess-1.0.2.img", {"emulator-args" : {"-c" : "pce-dual-hd.cfg"} }]
+	]
+}
+
+This page emulates an Apple Macintosh Plus with a modem and allows you see what Battle Chess was like in 1991.
+
+You can also try the color version of Battle Chess that was released for the [[Commodore Amiga]] in 1981.
+</div>
 
 <br style="clear: both;">
 
 <serial-modem class="with-dialer"></serial-modem>
 
-== NComm ==
+== Current Version of Battle Chess ==
 
-Or, use NComm to interact with the modem, chat with one another, or transfer files the primitive way!
+A modern sequel to Battle Chess is available from Interplay on the Steam network. You may also obtain "Battle Chess: Special Edition" on GOG.
 
-{ "icons" : [
-		["Start Computer",        "boot-rom", "", {"className": "power"}],
-		["Workbench V1.3 Boot",   "floppy",       "/disks/amiga-workbench-v1.3-rev-34.20-workbench.adf"],
-		["NComm 3.06",            "floppy",       "/disks/amiga-ncomm306.adf", {"drive" : "fd2"}]
-	]
-}
+* http://www.interplay.com/games/battlechess.php
+* http://store.steampowered.com/app/200150/
+* https://www.gog.com/game/battle_chess_special_edition
 
 === See also: ===
 
-* [[History of the GUI]]
+* [[Historic Software]]
+* [[Online Games]]
 
 == About the Emulator ==
 
@@ -50,11 +76,15 @@ Or, use NComm to interact with the modem, chat with one another, or transfer fil
 
 The Amiga emulator used here is a slightly modified version of Rupert Hausberger's [[SAE (Scriped Amiga Emulator)]], which is itself based on [[WinUAE]]
 
-== References ==
+=== References ===
 
-# http://en.wikipedia.org/wiki/Amiga_1000
-# http://en.wikipedia.org/wiki/Amiga_500
+# https://en.wikipedia.org/wiki/Battle_Chess
 
+<a href="Battle-Chess.html?emulator=pce-macplus">Apple Macintosh</a>
+<a href="Battle-Chess.html?emulator=sae-amiga">Commodore Amiga</a>
+
+<a href="Online-Games.html">Online Games</a>
+<a href="Historic-Software.html">Historic Software</a>
 <a href="http://scriptedamigaemulator.net">SAE (Scriped Amiga Emulator)</a>
 <a href="http://winuae.net/">WinUAE</a>
 

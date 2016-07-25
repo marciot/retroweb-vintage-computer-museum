@@ -94,7 +94,8 @@ class EmulatorInterface {
 			canvas:    document.getElementById('screen'),
 			setStatus: function(status) {},
 			totalDependencies: 0,
-			monitorRunDependencies: function(left) {}
+			monitorRunDependencies: function(left) {},
+			keyboardListeningElement: document.getElementById('screen')
 		};
 		// Give the emulator subclasses a chance to modify the Emscripten module
 		this.configModule(Module);
