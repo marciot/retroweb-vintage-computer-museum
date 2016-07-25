@@ -55,6 +55,19 @@ function Mouse() {
       e = e || window.event;
       if (!e || !AMIGA.video) return;
 
+      /* Added by MLT for handling pointerLock */
+      var movementX = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
+      var movementY = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
+      if(movementX) {
+         cx = e.clientX;
+		 lx = cx - movementX;
+      }
+      if(movementY) {
+         cy = e.clientY;
+		 ly = cy - movementY;
+      }
+      /* End of added by MLT for handling pointerLock */
+
       if (e.pageX || e.pageY) {
          cx = e.pageX;
          cy = e.pageY;

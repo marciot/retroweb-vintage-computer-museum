@@ -172,6 +172,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	registerEmulatorInterface(
 		new class extends EmulatorInterface {
+			constructor() {
+				super();
+				super.enablePointerLock();
+			}
+
 			getDrives() {
 				return {
 					"hd1" : "hd1.img",
@@ -253,8 +258,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 		info = SAE({cmd:'getInfo'});
 		config = SAE({cmd:'getConfig'});
-
-		config.video.id = 'screen-div';
 
 		config.cpu.speed = SAEV_Config_CPU_Speed_Original;
 		config.cpu.compatible = true;

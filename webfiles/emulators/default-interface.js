@@ -29,6 +29,17 @@ class EmulatorInterface {
 		this.serialInterface = null;
 	}
 
+	enablePointerLock() {
+		var element = document.getElementById("screen");
+		element.addEventListener('click', function(event){
+			element.requestPointerLock = element.requestPointerLock ||
+			     element.mozRequestPointerLock ||
+			     element.webkitRequestPointerLock;
+				// Ask the browser to lock the pointer
+				element.requestPointerLock();
+		});
+	}
+
 	getFileNameForDrive(drive, fileName) {
 		if( typeof this.getDrives == "function" ) {
 			var fileName = this.getDrives()[drive];
