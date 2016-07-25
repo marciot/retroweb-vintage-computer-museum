@@ -231,7 +231,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		var data = FS.readFile(disk, {encoding: 'binary'});
 
 		// Compute the data checksum
-		var checksum = computeDC42ChecksumBytes(data);
+		var checksum = computeDC42Checksum(data);
 		header[0x48] = checksum.byte_0x48;
 		header[0x49] = checksum.byte_0x49;
 		header[0x4A] = checksum.byte_0x4A;
