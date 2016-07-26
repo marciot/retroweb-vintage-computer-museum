@@ -18,311 +18,318 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
  DIV.docs {
-	margin-top: 20px;
-	margin-bottom: 100px;
-	font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+	margin-top:				20px;
+	margin-bottom:			100px;
+	font-family:			"Gill Sans", "Gill Sans MT", Calibri, sans-serif;
 }
 
 .docs TD, .docs TH {
-	box-shadow: 1px 1px 2px rgba(0,0,0,0.45);
+	box-shadow:				1px 1px 2px rgba(0,0,0,0.45);
 }
 
 .docs TABLE, .docs TD, .docs TH {
-	margin: 10px auto;
-	border-spacing: 3px;
-	border-collapse: separate;
-	padding: 5px;
+	margin:					10px auto;
+	border-spacing:			3px;
+	border-collapse:		separate;
+	padding: 				5px;
 }
 
 .docs TH {
-	border: 1px solid;
-	background: #ccc;
-	color: #555;
+	border:					1px solid;
+	background:				#ccc;
+	color:					#555;
 }
 
 .docs TD {
-	border: 1px solid #555;
-	background: #ccf;
+	border:					1px solid #555;
+	background:				#ccf;
 }
 
 TD.docs .centered {
-  text-align: center;
+  text-align:				center;
 }
 
 .docs H1, .docs H2, .docs  H3, .docs H4, .docs H5, .docs H6 {
-	border-bottom-style: solid;
-	border-width: 1px;
-	border-color: #555;
-	color: #555;
-	clear: both;
+	border-bottom-style:	solid;
+	border-width:			1px;
+	border-color:			#555;
+	color:					#555;
+	clear:					both;
 }
 
 .docs OL .docs LI {
-	padding-top: 4px;
-	padding-bottom: 4px;
+	padding-top:			4px;
+	padding-bottom:			4px;
 }
 
 .docs UL:not([class]) {
-    list-style: none;
-    padding-left:1em;
-    margin: 20px 0
+    list-style:				none;
+    padding-left:			1em;
+    margin:					20px 0;
 }
 
 .docs UL:not([class]) LI {
-    padding: 3px 1em;
+    padding:				3px 1em;
 }
 
 .docs UL:not([class]) LI:before {
-    content: "\25A0 ";
-    color: #777;
-	padding-right:7px;
-	font-size: larger;
+    content:				"\25A0 ";
+    color:					#777;
+	padding-right:			7px;
+	font-size:				larger;
 }
 
 .docs DT {
-	float:       left;
-	clear:       left;
-	font-weight: bold;
-	width:       100px;
-	text-align:  right;
-	color:       #777;
+	float:					left;
+	clear:					left;
+	font-weight:			bold;
+	width:					100px;
+	text-align:				right;
+	color:					#777;
 }
 
 .docs DT:after {
-    content: ":";
+    content:				":";
 }
 
 .docs DD {
-	margin-left: 110px;
-	padding-bottom: 0.5em;
+	margin-left:			110px;
+	padding-bottom:			0.5em;
 }
 
 .docs DD:after {
-	content: '';
-	clear: left;
-	display: block;
+	content:				'';
+	clear:					left;
+	display:				block;
 }
 
 .docs .wide DT {
-	width: 30%;
+	width:					30%;
 }
 
 .docs .wide DD {
-	margin-left: 30%;
-	padding-left: 5px;
+	margin-left:			30%;
+	padding-left:			5px;
 }
 
 .docs CITE {
-	text-decoration: underline;
+	text-decoration:		underline;
 }
 
 .docs HR {
-	max-width: 5%;
-	border: none;
-	border-top: 4px double #bbc;
-	margin: 30px auto;
+	max-width:				5%;
+	border:					none;
+	border-top:				4px double #bbc;
+	margin:					30px auto;
 }
 
 .clear-both {
-	clear: both;
+	clear:					both;
 }
 
 /* Special styles */
 
 .no-select {
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
+	-webkit-touch-callout:	none;
+	-webkit-user-select:	none;
+	-khtml-user-select:		none;
+	-moz-user-select:		none;
+	-ms-user-select:		none;
+	user-select:			none;
 }
 
 /* Text bubbles */
 
 .docs .bubble SPAN.bubble-body {
-	position: absolute;
-	display: none;
-    bottom:  30px;
-    left:   -20px;
-    padding:  7px 14px 7px 14px;
-	text-wrap: none;
-	white-space: nowrap;
-	
-    background: #444;	
-	color: #ddd;
-	font-style: normal;
-    border-radius: 10px;
-	box-shadow: 3px 3px 3px rgba(0,0,0,0.45);
+	position:				absolute;
+	display:				none;
+	bottom:					30px;
+	left:					-20px;
+	padding:				7px 14px 7px 14px;
+	text-wrap:				none;
+	white-space:			nowrap;
+
+	background:				#444;
+	color:					#ddd;
+	font-style:				normal;
+	border-radius:			10px;
+	box-shadow:				3px 3px 3px rgba(0,0,0,0.45);
 }
 
 .docs SPAN.bubble-tail
 {
-	position: absolute;
-	width:    0;
-	height:   0;
-	left:     0px;
-	bottom:   10px;
-	border:   10px solid;
-	border-color: #444 transparent transparent transparent;
-	display: none;
+	position:				absolute;
+	width:					0;
+	height:					0;
+	left:					0px;
+	bottom:					10px;
+	border:					10px solid;
+	border-color:			#444 transparent transparent transparent;
+	display:				none;
 }
 
 .docs .bubble {
-	position: relative;
-	font-style: italic;
+	position:				relative;
+	font-style:				italic;
 }
 
 .docs .bubble:hover SPAN {
-    display: inline;
+    display:				inline;
 }
 
 .docs .reference {
-	vertical-align: super;
-	font-size: smaller;
-	font-style: normal;
-	text-decoration: none;
+	vertical-align:			super;
+	font-size:				smaller;
+	font-style:				normal;
+	text-decoration:		none;
 }
 
 .docs P.tagline {
-	font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
+	font-family:			Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
 }
 
-.docs .trivia UL,.docs .hints UL {
-	padding: 0px;
-	margin: 0px;
-	list-style-type: none;
+.docs DIV.trivia, .docs DIV.hints {
+	overflow:				hidden;
+	text-align:				center;
 }
 
-.docs .trivia LI,.hints LI {
-	font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
-	font-style: italic;
-	//color: green;
-	display: none;
-	padding: 10px;
-	list-style-type: none;
+.docs .trivia OL,.docs .hints OL {
+	display:				inline-block;
+	text-align:				left;
+	list-style-type:		none;
+	padding:				10px 1em;
+	margin:					0 1em;
 
-	border-width: 3px;
-	border-top:    solid #99C;
-	border-bottom: solid #557;
-	border-left:   solid #99C;
-	border-right:  solid #557;
-	border-radius: 10px;
-	margin-right: 50px;
-	background: #ccf;
+	border-width:			3px;
+	border-top:				solid #99C;
+	border-bottom:			solid #557;
+	border-left:			solid #99C;
+	border-right:			solid #557;
+	border-radius:			10px;
+	background:				#ccf;
+}
+
+.docs .trivia LI, .docs .hints LI {
+	font-style:				italic;
+	display:				none;
+	margin-right:			0px;
+	margin-left:			0px;
+}
+
+.docs .trivia LI.visible, .docs .hints LI.visible {
+	display:				block;
 }
 
 .docs .trivia INPUT, .docs .hints INPUT {
-	float: right;
-	margin-left: 20px;
-	margin-right: 70px;
-	margin-top: 1em;
+	float:					right;
+	margin-left:			1em;
+	margin-bottom:			10px;
 }
 
 .docs SPAN.highlight {
-	text-decoration:underline;
+	text-decoration:		underline;
 }
 
 .docs TD.align-center {
-  text-align: center;
+  text-align:				center;
 }
 
 .docs TD.align-right {
-  text-align: right;
+  text-align:				right;
 }
 
 .docs IMG.float-right {
-	float: right;
-	margin: 0px 0px 10px 10px;
+	float:					right;
+	margin:					0px 0px 10px 10px;
 }
 
 .docs IMG.float-left {
-	float: left;
-	margin: 0px 10px 10px 0px;
+	float:					left;
+	margin:					0px 10px 10px 0px;
 }
 
 .docs IMG.center {
-	margin: 0 auto;
-	display: block;
+	margin:					0 auto;
+	display:				block;
 }
 
 .docs IMG.inline {
-	height: 1em;
-	width: 1em;
-	vertical-align: text-bottom;
+	height:					1em;
+	width:					1em;
+	vertical-align:			text-bottom;
 }
 
 .docs FIGURE.screenshot IMG {
-	border: solid 1px black;
-	max-width: 100%;
-	display: block;
-	margin: 0 auto;
+	border:					solid 1px black;
+	max-width:				100%;
+	display:				block;
+	margin:					0 auto;
 }
 
 .docs FIGURE.screenshot FIGCAPTION {
-	font-size: smaller;
-	font-style: italic;
-	font-weight: bold;
-	padding-top: 5px;
-	max-width: 100%;
+	font-size:				smaller;
+	font-style:				italic;
+	font-weight:			bold;
+	padding-top:			5px;
+	max-width:				100%;
 }
 
 .docs FIGURE.screenshot {
-	width:intrinsic; /* For Safari, see https://developer.mozilla.org/en-US/docs/CSS/width */
-    width:-moz-fit-content;
-    width:-webkit-fit-content;
-    width:fit-content;
+	width:					intrinsic; /* For Safari, see https://developer.mozilla.org/en-US/docs/CSS/width */
+    width:					-moz-fit-content;
+    width:					-webkit-fit-content;
+    width:					fit-content;
 
-    margin: 20px auto;
-	padding: 10px 10px;
-	border: solid 1px #bbc;
-	max-width: 75%;
+    margin:					20px auto;
+	padding:				10px 10px;
+	border:					solid 1px #bbc;
+	max-width:				75%;
 }
 
 .docs FIGURE.float-right IMG, FIGURE.float-left IMG {
-	display: block;
-	max-width: 100%;
+	display:				block;
+	max-width:				100%;
 }
 
 .docs FIGURE.float-right FIGCAPTION, FIGURE.float-left FIGCAPTION {
-	font-size: smaller;
-	font-style: italic;
-	font-weight: bold;
-	padding-top: 5px;
-	max-width: 90%;
+	font-size:				smaller;
+	font-style:				italic;
+	font-weight:			bold;
+	padding-top:			5px;
+	max-width:				90%;
 }
 
 .docs FIGURE.float-right {
-	float: right;
-	padding: 10px 10px;
-	margin: 0 20px 20px 20px;
-	border: solid 1px #bbc;
-	max-width: 40%;
+	float:					right;
+	padding:				10px 10px;
+	margin:					0 20px 20px 20px;
+	border:					solid 1px #bbc;
+	max-width:				40%;
 }
 
 .docs FIGURE.float-left {
-	float: left;
-	padding: 10px 10px;
-	margin: 0 20px 20px 20px;
-	border: solid 1px #bbc;
-	max-width: 40%;
+	float:					left;
+	padding:				10px 10px;
+	margin:					0 20px 20px 20px;
+	border:					solid 1px #bbc;
+	max-width:				40%;
 }
 
 .docs .float-right {
-	float: right;
-	padding: 0px 20px;
+	float:					right;
+	padding:				0px 20px;
 }
 
 .docs .float-left {
-	float: left;
-	padding: 0px 20px;
+	float:					left;
+	padding:				0px 20px;
 }
 
 .docs PRE {
-	font-family: monospace;
-    white-space: pre-wrap;
-	color: DarkGreen;
-	margin-left: 25px;
+	font-family:			monospace;
+    white-space:			pre-wrap;
+	color:					DarkGreen;
+	margin-left:			25px;
 }
 
 .docs a[href^="http"]:after {
@@ -330,32 +337,32 @@ TD.docs .centered {
 }
 
 .docs .hidden {
-	display: none;
+	display:				none;
 }
 
 .docs .header {
-	text-align: center;
+	text-align:				center;
 }
 
 .docs .license {
-	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+	font-family:			"Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 }
 
 .docs .typedCommand {
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
-	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
-	white-space: pre-wrap;
+	border-style:			solid;
+	border-width:			1px;
+	border-color:			black;
+	font-family:			"Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+	white-space:			pre-wrap;
 }
 
 .docs #happy-mac {
-	width:64px;
-	height:64px;
-	margin: 10px auto;
-	display: block;
+	width:					64px;
+	height:					64px;
+	margin:					10px auto;
+	display:				block;
 }
 
 .docs > :last-child {
-	margin-bottom: 3em;
+	margin-bottom:			3em;
 }

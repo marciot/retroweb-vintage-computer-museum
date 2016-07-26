@@ -144,23 +144,25 @@ class HintManager {
 		this.element = element;
 
 		element.hintManager = this;
-		element.querySelector("LI").style.display = 'block';
+		element.querySelector("LI").classList.add('visible');
 
 		if(this.element.querySelectorAll("LI").length > 1) {
 			var title = (element.className == "trivia") ? "More trivia" : "More hints";
 			var btn   = document.createElement('input');
 			btn.type  = 'button';
 			btn.value = title;
-			btn.addEventListener('click',function() {this.parentNode.hintManager.nextHint();});
-			element.insertBefore(btn, element.firstChild);
+			btn.addEventListener('click',function() {element.hintManager.nextHint();});
+
+			var listEl = element.querySelector("ol");
+			listEl.insertBefore(btn, listEl.firstChild);
 		}
 	}
 
 	nextHint() {
 		var hints = this.element.querySelectorAll("LI");
-		hints[this.curHint].style.display = 'none';
+		hints[this.curHint].classList.remove('visible');
 		this.curHint = (this.curHint + 1) % hints.length;
-		hints[this.curHint].style.display = 'block';
+		hints[this.curHint].classList.add('visible');
 	}
 }
 
