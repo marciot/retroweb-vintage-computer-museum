@@ -77,7 +77,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 
 			reset() {
+				this.flushDiskFiles();
 				macSetMessage ("emu.reset", "");
+			}
+
+			flushDiskFiles() {
+				macSetMessage ("emu.disk.commit", "all");
 			}
 		}
 	);

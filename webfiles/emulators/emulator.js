@@ -298,11 +298,13 @@ class Emulator {
 	/* The download actions allow you to download modified files to your local computer. */
 
 	downloadFloppy(drive) {
+		this.getEmulatorInterface().flushDiskFiles();
 		var fileName = this.getEmulatorInterface().getFileNameForDrive(drive, null);
 		saveFileToLocal(fileName);
 	}
 
 	downloadFile(file) {
+		this.getEmulatorInterface().flushDiskFiles();
 		saveFileToLocal(file);
 	}
 

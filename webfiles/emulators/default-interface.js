@@ -141,6 +141,10 @@ class EmulatorInterface {
 		alert( "This functionality is not available for this emulator. Refresh the page to restart the emulator." );
 	}
 
+	flushDiskFiles() {
+		console.log("flushDiskFiles: not implemented for this emulator");
+	}
+
 	cassetteAction(action) {
 		alert( "This emulator does not support the cassette interface." );
 	}
