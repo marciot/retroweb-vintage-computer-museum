@@ -233,12 +233,12 @@ TD.docs .centered {
 
 .docs IMG.float-right {
 	float: right;
-	margin: 0px 20px 10px 20px;
+	margin: 0px 0px 10px 10px;
 }
 
 .docs IMG.float-left {
 	float: left;
-	margin: 0px 20px 10px 20px;
+	margin: 0px 10px 10px 0px;
 }
 
 .docs IMG.center {
