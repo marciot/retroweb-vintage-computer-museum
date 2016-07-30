@@ -51,8 +51,11 @@ class EmscriptenEmulatorInterface extends EmulatorInterface {
 		super.loadScriptsAndStart(stateObj);
 	}
 
-	setSerialDataAvailableCallback(characterAvailableCallback) {
-		this.serialDevice = new EmscriptenSerialDevice(characterAvailableCallback);
+	setSerialDataAvailableCallback(callback) {
+		if(!this.serialDevice) {
+			this.serialDevice = new EmscriptenSerialDevice();
+		}
+		this.serialDevice.setSerialDataAvailableCallback(callback);
 	}
 
 	sendSerialDataToEmulator(data) {
@@ -75,8 +78,7 @@ class EmscriptenEmulatorInterface extends EmulatorInterface {
  * driver to read and write to that file.
  */
 class EmscriptenSerialDevice {
-	constructor(characterAvailableCallback) {
-		this.characterAvailableCallback = characterAvailableCallback;
+	constructor() {
 		this.availableData = "";
 		var me = this;
 		emulator.addEventListener("emscriptenPreInit", function() {
@@ -123,5 +125,9 @@ class EmscriptenSerialDevice {
 		var id = FS.makedev(64, 0);
 		FS.registerDevice(id, ops);
 		FS.mkdev(file, id);
+	}
+
+	setSerialDataAvailableCallback(callback) {
+		this.characterAvailableCallback = callback;
 	}
 }
