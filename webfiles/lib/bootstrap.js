@@ -57,8 +57,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	   me see the error in Google's search dashboard, but I am unable to make it work.
 	   */
 	window.onerror = function(error) {
-		//document.write(error);
-		style.remove();
+		document.write(error);
+		//style.remove();
 	};
 })(window.RetroWeb = window.RetroWeb || {});
 

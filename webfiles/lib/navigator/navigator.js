@@ -24,63 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  
 /* ************************** Content layout ***********************************/
 
-class TrailingLinks {
-	/* At construction, gather trailing anchors and remove them from DOM */
-	constructor(el) {
-		this.links = this.findTrailingAnchors(el);
-		for(var i = 0; i < this.links.length; i++) {
-			this.links[i].remove();
-		}
-	}
-
-	/* Walk from the lastChild of el backwards skipping over whitespace nodes and
-	 * and gathering up all anchors into a list. Stop at first non-whitespace or
-	 * non-anchor element */
-	findTrailingAnchors(el) {
-		var anchors = [];
-		var node = el.lastChild;
-		while(node) {
-			if(node.nodeType == 3 && !/^\s+$/.test(node.nodeValue)) {
-				// Found text node that isn't whitespace
-				break;
-			}
-			if(node.nodeType == 1) {
-				if(node.tagName == "A") {
-					anchors.push(node);
-				} else  {
-					// Found an element of another type
-					break;
-				}
-			}
-			node = node.previousSibling;
-		}
-		return anchors;
-	}
-	
-	/* Looks up an anchor by content */
-	lookup(content) {
-		var found;
-		for(var i = 0; i < this.links.length; i++) {
-			if(content == this.links[i].innerHTML) {
-				found = this.links[i].getAttribute("href");;
-			}
-		}
-		return found;
-	}
-	
-	/* For all anchors without an href, lookup a new value */
-	substitute(el) {
-		var that = this;
-		var els = el.querySelectorAll('A:not([href])');
-		for(var i = 0; i < els.length; i++) {
-			var href = that.lookup(els[i].innerHTML);
-			if(href) {
-				els[i].setAttribute("href", href);
-			}
-		}
-	}
-}
-
 function navAttachHandlersToAnchors(el) {
 	function clickHandler(event) {
 		navProcessIconClick(
@@ -137,10 +80,12 @@ function renderWikiContent() {
 	dstElement.classList.remove("allowCustomElements");
 
 	/* Check whether the new page requires a change of emulator */
+	if(emulator) {
 	var altEmulator = needAlternativeEmulator(emulator.name);
-	if(altEmulator) {
-		navTo("?emulator=" + altEmulator);
-		return;
+		if(altEmulator) {
+			navTo("?emulator=" + altEmulator);
+			return;
+		}
 	}
 
 	dstElement.innerHTML = srcElement.innerHTML;
@@ -148,17 +93,23 @@ function renderWikiContent() {
 	/* Tell custom elements it is okay to initialize themselves */
 	dstElement.classList.add("allowCustomElements");
 
-	var trailingLinks = new TrailingLinks(dstElement);
+	var trailingLinks;
+	if(typeof TrailingLinks !== 'undefined') {
+		/* HACK: Googlebot does not know how to work with classes */
+		trailingLinks = new TrailingLinks(dstElement);
+	}
 	dstElement.innerHTML = wikify(dstElement.innerHTML);
 	processJSONContent(document, dstElement);
-	trailingLinks.substitute(dstElement);
+	if(typeof TrailingLinks !== 'undefined') {
+		trailingLinks.substitute(dstElement);
+	}
 
 	if(RetroWeb.query.debug == "html") {
 		// If ?debug=html is present in the query, then show the transformed wiki source
 		dstElement.innerHTML = '<pre>' + dstElement.innerHTML.replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + '</pre>';
 	}
 
-	applyDynamicFormatting(dstElement, emulator.name);
+	applyDynamicFormatting(dstElement, emulator ? emulator.name : "");
 	navAttachHandlersToAnchors(dstElement);
 
 	document.querySelector("#html-content").scrollTop = 0;

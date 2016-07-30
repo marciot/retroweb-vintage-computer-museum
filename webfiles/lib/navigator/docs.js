@@ -136,36 +136,6 @@ function setVisibility(element, visibility) {
 	}
 }
 
-/* This object manages hints on a webpage
- */
-class HintManager {
-	constructor(element) {
-		this.curHint = 0;
-		this.element = element;
-
-		element.hintManager = this;
-		element.querySelector("LI").classList.add('visible');
-
-		if(this.element.querySelectorAll("LI").length > 1) {
-			var title = (element.className == "trivia") ? "More trivia" : "More hints";
-			var btn   = document.createElement('input');
-			btn.type  = 'button';
-			btn.value = title;
-			btn.addEventListener('click',function() {element.hintManager.nextHint();});
-
-			var listEl = element.querySelector("ol");
-			listEl.insertBefore(btn, listEl.firstChild);
-		}
-	}
-
-	nextHint() {
-		var hints = this.element.querySelectorAll("LI");
-		hints[this.curHint].classList.remove('visible');
-		this.curHint = (this.curHint + 1) % hints.length;
-		hints[this.curHint].classList.add('visible');
-	}
-}
-
 function implicitClassNames(el) {
 	var lists = el.querySelectorAll('ol');
 	for(var i = 0; i < lists.length; i++) {
@@ -208,6 +178,8 @@ function applyDynamicFormatting(el, emulator) {
 	
 	// Adjust bubbles does not works when the bubbles are hidden,
 	// so show the DIV before calling it
-	showEmulatorDiv(el, emulator);
+	if(emulator) {
+		showEmulatorDiv(el, emulator);
+	}
 	adjustBubbles();
 }

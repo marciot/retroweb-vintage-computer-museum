@@ -339,7 +339,3 @@ class Emulator {
 
 
 
-
-
-
-
