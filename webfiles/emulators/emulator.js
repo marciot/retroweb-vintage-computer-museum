@@ -134,7 +134,7 @@ class Emulator {
 	constructor(emulator, opts) {
 		this._name			= emulator;
 		this._state			= new EmulatorState(this, opts.popups);
-		this.fileManager	= new EmscriptenFileManager();
+		this.fileManager	= new EmulatorFileSystem();
 		this.emuIfce		= null;
 		this.popups			= opts.popups;
 		this.listeners 		= {
@@ -179,6 +179,17 @@ class Emulator {
 		return this.emuIfce;
 	}
 
+	syncFileSystem(doMount) {
+		var filesWritten = this.fileManager.syncFileSystem();
+		console.log("Preparing disks...");
+		for(var i = 0; i < filesWritten.length; i++) {
+			this.getEmulatorInterface().prepareDisk(filesWritten[i]);
+			if(doMount) {
+				this.getEmulatorInterface().mountDisk(filesWritten[i]);
+			}
+		}
+	}
+
 	expectMedia(fileName, isBootable) {
 		this._state.transitionToDownloading(true);
 		var me = this;
@@ -188,7 +199,7 @@ class Emulator {
 			}
 			if(remaining == 0) {
 				if(me.state.isRunning) {
-					me.getEmulatorInterface().syncFileSystem(true);
+					me.syncFileSystem(true);
 				} else if(me.state.hasBootMedia) {
 					me.restart();
 				}
@@ -300,12 +311,12 @@ class Emulator {
 	downloadFloppy(drive) {
 		this.getEmulatorInterface().flushDiskFiles();
 		var fileName = this.getEmulatorInterface().getFileNameForDrive(drive, null);
-		saveFileToLocal(fileName);
+		this.fileManager.saveFileToLocal(fileName);
 	}
 
 	downloadFile(file) {
 		this.getEmulatorInterface().flushDiskFiles();
-		saveFileToLocal(file);
+		this.fileManager.saveFileToLocal(file);
 	}
 
 	get name() {
@@ -336,6 +347,237 @@ class Emulator {
 	}
 }
 
+/* This object enqueues Emscripten file system operations to allow
+ * resources to be loaded from various sources asynchronously. This
+ * object allows the calling code to prepare resources even before
+ * initializing Emscripten.
+ *
+ * The calling code should use the EmulatorFileSystem as follows:
+ *
+ *   1 - Create an EmulatorFileSystem object
+ *   2 - Register a fileReady callback with setFileReadyCallback
+ *   3 - Call one of more routines to enqueue file system operations:
+ *         - makeDir
+ *         - writeFileFromBinaryData
+ *         - writeFileFromUrl
+ *         - writeFileFromFile
+ *         - waitForCallback (block until user action)
+ *   4 - When the fileReady callback indicates all resources are ready,
+ *       the emulator code can be launched.
+ *   5 - From the preInit callback, call syncFileSystem to playback
+ *       file system operations into the actual Emscripten FS.
+ */
+class EmulatorFileSystem {
+	constructor() {
+		this.dirs  = new Array();
+		this.files = new Array();
+		this.remainingFiles = 0;
+		this.print = function(text) {console.log(text)};
+	}
 
+	setPrintCallback(callback) {
+		this.print = callback;
+	}
+
+	/* Registers a callback that will be called each time
+	 * a file is successfully retrieved from an asynchronous
+	 * source (an URL or an interactive selection) and is ready
+	 * to be written to the Emscripten FS. The callback
+	 * will receive two argument, the number of files
+	 * remaining to retrieve, and the file which is now ready.
+	 *
+	 * Note: This callback does not indicate that the files were
+	 * written to the Emscripten FS, it merely indicates that they
+	 * are ready to be written using syncEmscriptenFS. A value
+	 * of zero indicates that it is a good time to launch
+	 * the emulator and call "syncEmscriptenFS" from preInit.
+	 */
+	setFileReadyCallback(callback) {
+		this.fileReadyCallback = callback;
+	}
+
+	/* The following function performs enqueued file operations
+	 * on an Emscripten FS object. It should be called during
+	 * or after Emscripten's preInit phase.
+	 */
+	syncFileSystem() {
+		var filesWritten = [];
+
+		// Create subdirectories
+		for (var i = 0; i < this.dirs.length; ++i) {
+			var d = this.dirs[i];
+			if(!d.written) {
+				if(typeof FS != 'undefined') {
+					this.print("Creating directory /" + d.path + " in the Emscripten FS");
+					FS.mkdir (d.path);
+				}
+				d.written = true;
+			}
+		}
+
+		// Write files
+		for (var i = 0; i < this.files.length; ++i) {
+			var f = this.files[i];
+			if(!f.written) {
+				if(typeof FS != 'undefined') {
+					this.print("Writing file " + f.name + " to the Emscripten FS");
+					var stream = FS.open(f.name, 'w');
+					FS.write(stream, f.data, 0, f.data.length, 0);
+					FS.close(stream);
+				}
+				f.written = true;
+				filesWritten.push(f.name);
+			}
+		}
+
+		return filesWritten;
+	}
+
+	_fileRef(fileName) {
+		for(var i = 0; i < this.files.length; i++) {
+			if(this.files[i].name == fileName) {
+				return this.files[i];
+			}
+		}
+		var newRef = {
+			"name" : fileName,
+			"data" : null,
+			"written" : false
+		};
+		this.files.push(newRef);
+		return newRef;
+	}
+
+	_incrementCounter() {
+		this.remainingFiles++;
+	}
+
+	_decrementCounter(depName) {
+		this.remainingFiles--;
+		if(typeof this.fileReadyCallback == 'function') {
+			this.fileReadyCallback(this.remainingFiles, depName);
+		}
+	}
+
+	/* The following functions enqueue operations for playback using
+	   syncEmscriptenFS. The reason for this is that it is often
+	   useful to begin populating the file system before Emscripten
+	   is actually started.
+	 */
+
+	makeDir(dirPath) {
+		this.dirs.push({"path" : dirPath, "written" : false});
+	}
+
+	/* Prepares to write binary data the Emscripten FS
+	 *
+	 *   dstFileName : Name used to write file to the Emscripten FS
+	 *   srcUrl :      URL for the resource
+	 */
+	writeFileFromBinaryData(dstFileName, srcData) {
+		var ref = this._fileRef(dstFileName);
+		ref.data = new Uint8Array(srcData);
+		ref.written = false;
+	}
+
+	/* Causes a file to be retrieved via HTTP from a URL and prepares
+	 * it to be written to the Emscripten FS
+	 *
+	 *   dstFileName : Name used to write file to the Emscripten FS
+	 *   srcUrl :      URL for the resource
+	 */
+	writeFileFromUrl(dstFileName, srcUrl) {
+		this._incrementCounter();
+		var me = this;
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", srcUrl, true);
+		xhr.responseType = "arraybuffer";
+		xhr.onreadystatechange = function(e) {
+			if (xhr.readyState == 4) {
+				switch(xhr.status) {
+					case 200: // OK
+						me.print("Downloading " + srcUrl);
+						me.writeFileFromBinaryData(dstFileName, xhr.response);
+						me._decrementCounter(dstFileName);
+						break;
+					case 404:
+						me.print("Downloading " + srcUrl + "... Failed, file not found");
+						break;
+					default:
+						me.print("Downloading " + srcUrl + "... Failed, status:" + status);
+						break;
+				}
+			}
+		};
+		xhr.send();
+	}
+
+	/* Copies data from a File object and prepares it to be written
+	 * to the Emscripten FS
+	 *
+	 *   dstFileName : Name used to write file to the Emscripten FS
+	 *   srcFile :     Exiting file object
+	 */
+	writeFileFromFile(dstName, srcFile) {
+		var me = this;
+		this._incrementCounter();
+		var reader = new FileReader();
+		reader.onload = function(evt) {
+			if(evt.target.readyState != 2) return;
+			if(evt.target.error) {
+				me.print('Error while reading file');
+				return;
+			}
+			var name = dstName || srcFile.name;
+			me.writeFileFromBinaryData(name, evt.target.result);
+			me._decrementCounter(name);
+		}
+		reader.readAsArrayBuffer(srcFile);
+	};
+
+	/* Wraps a callback in such a way that the callback is treated
+	 * as a dependency.
+	 */
+
+	waitForCallback(callback, depName) {
+		var me = this;
+		this._incrementCounter();
+		return function(arg1, arg2, arg3) {
+			callback(arg1, arg2, arg3);
+			me._decrementCounter(depName);
+		}
+	}
+
+	getFileBinaryData(fileName) {
+		var ref = this._fileRef(fileName);
+		return ref.data;
+	}
+
+	/* Shows a dialog box allowing the user to save a file to their hard disk
+	 */
+	static saveFile(content, filename, contentType)
+	{
+		if(!contentType) {
+			contentType = 'application/octet-stream';
+		}
+		var blob = new Blob([content], {'type':contentType});
+		var a = document.createElement('a');
+		a.href = window.URL.createObjectURL(blob);
+		a.download = filename;
+		a.click();
+	}
+
+	/* Shows a dialog box allowing the user to write a file from the Emscripten
+	 * file system to their hard disk
+	 */
+	saveFileToLocal(srcFileName) {
+		if(typeof FS == 'undefined') {
+			alert("The emulator must be initialized");
+			return;
+		}
+		var contents = FS.readFile(srcFileName, { encoding: 'binary' });
+		EmulatorFileSystem.saveFile(contents, srcFileName);
+	}
+}
 
 

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	/* Interface to RetroWeb Browser */
 
 	registerEmulatorInterface(
-		new class extends EmulatorInterface {
+		new class extends EmscriptenEmulatorInterface {
 			constructor() {
 				super();
 				this.setArgument("apple2ee", "");

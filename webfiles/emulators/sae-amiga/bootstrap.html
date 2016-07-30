@@ -303,18 +303,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		config.hooks.cpu = func; */
 
 		saeRoms(emulator.fileManager.getFileBinaryData("/sae.rom"));
-
-		// Make fake Emscripten object
-		FS = {};
-		FS.mkdir = function() {};
-		FS.write = function() {};
-		FS.close = function() {};
-		FS.open = function() {};
 	}
 
 	function saeStart() {
 		SAE({cmd:'start'});
-		emulator.getEmulatorInterface().syncFileSystem(false);
+		emulator.syncFileSystem(false);
 		emulator.state.transitionToRunning();
 	}
 
