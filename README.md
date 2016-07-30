@@ -1,5 +1,8 @@
-retroweb-vintage-computer-museum
+
+Retroweb Vintage Computer Museum
 ================================
+
+![An Apple Macintosh][macintosh.png]
 
 This JavaScript framework allows you to easily develop content-rich, fully-interactive
 websites that make use of JavaScript computer emulators to teach your visitors about
@@ -11,11 +14,18 @@ The text for all articles in the museum are included in this repository, but the
 emulators and disk files are not included.
 
 This framework has been written generally enough that it may be modified for use by any
-JavaScript emulator and the currrent release comes with support for the following emulators:
+JavaScript emulator. The currrent release comes with the following emulators:
 
 * PCE (http://www.hampa.ch/pce)
+	* Apple Macintosh Plus
+	* IBM PC Model 5150 and 516o
+	* Regnecentralen RC759 Piccoline
 * JSMESS (http://jsmess.textfiles.com)
+	* Apple //e
+	* Commodore 64
+	* Tandy TRS-80 Model I
 * Scripted AMIGA Emulator (http://scriptedamigaemulator.net)
+	* Commodore Amiga 500
 
 ## Highlights of this framework:
 
@@ -29,11 +39,12 @@ JavaScript emulator and the currrent release comes with support for the followin
 
 ## What libraries and technologies does this project use?
 
-It uses WebComponents written in pure ECMA 6 JavaScript and will work natively in Chrome. For other browsers, a <a href="http://webcomponents.org/">WebComponents polyfill</a> is needed and is provided. The code will work on the latest versions of Chrome, Firefox and Safari.
+It uses WebComponents written in pure ECMA 6 JavaScript and will work natively in Chrome. For other browsers, a <a href="http://webcomponents.org/">WebComponents polyfill</a> is needed and is provided. With the polyfill, the code will work on
+the latest versions of Chrome, Firefox and Safari.
 
 ## Why aren't you using Polymer or some other JavaScript framework?
 
-Because I didn't learn with them and now I prefer to continue without them. Benjamin Farrell provides some good reasons in his blog post <a href="http://www.benfarrell.com/2015/10/26/es6-web-components-part-1-a-man-without-a-framework/">ES6 Web Components: A Man Without a Framework</a>
+I didn't learn with them and now I prefer to continue without them. Benjamin Farrell provides some good reasons in his blog post <a href="http://www.benfarrell.com/2015/10/26/es6-web-components-part-1-a-man-without-a-framework/">ES6 Web Components: A Man Without a Framework</a>
 
 ## Where are the build scripts or minimized source code?
 
