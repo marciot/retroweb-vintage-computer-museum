@@ -2,7 +2,7 @@
 Retroweb Vintage Computer Museum
 ================================
 
-![An Apple Macintosh][macintosh.png]
+![alt text][logo]
 
 This JavaScript framework allows you to easily develop content-rich, fully-interactive
 websites that make use of JavaScript computer emulators to teach your visitors about
@@ -56,3 +56,4 @@ Several components that comprise this project have been packaged into separate W
 These components are available in the [RetroWeb Components](https://github.com/marciot/retroweb-components)
 repository.
 
+[logo]: https://github.com/marciot/retroweb-vintage-computer-museum/raw/master/webfiles/artwork/dragon.jpg "A fractal on a computer screen"
