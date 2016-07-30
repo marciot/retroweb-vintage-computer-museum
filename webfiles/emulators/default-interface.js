@@ -17,10 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* Reference:
- *   http://joshgertzen.com/object-oriented-super-class-method-calling-with-javascript/
- */
-
 class EmulatorInterface {
 	constructor() {
 		this.arguments = {};
@@ -76,8 +72,12 @@ class EmulatorInterface {
 		this.loadScripts();
 	}
 
-	getSerialDevice(characterAvailableCallback) {
-		console.log("getSerialDevice: not implemented for this emulator");
+	setSerialDataAvailableCallback(characterAvailableCallback) {
+		console.log("setSerialDataAvailableCallback: not implemented for this emulator");
+	}
+
+	sendSerialDataToEmulator(data) {
+		console.log("sendSerialDataToEmulator: not implemented for this emulator");
 	}
 
 	preRun() {

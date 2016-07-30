@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <script type="text/javascript">
 
-	var saeSerialDevice;
+	var saeCharacterAvailableCallback;
 
 	var availableData = new class RingBuffer {
 		constructor() {
@@ -99,7 +99,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			//BUG.info('SERDAT $%04x', v);
 			if (AMIGA.config.serial.enabled) {
 				console.log("Sent byte", v);
-				saeSerialDevice.sendByteFromEmulator(v & 0xff);
+				saeCharacterAvailableCallback(String.fromCharCode(v & 0xff));
 			}
 			this.serdatr |= Serial.SERDATR_TBE;
 			/* Set TBE in the SERDATR ... */
@@ -137,24 +137,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					AMIGA.intreq &= ~Serial.INTREQ_RBF;
 				}
 			}
-		}
-	}
-
-	class SAESerialDevice {
-		constructor(characterAvailableCallback) {
-			this.characterAvailableCallback = characterAvailableCallback;
-		}
-
-		sendByteFromEmulator(val) {
-			this.characterAvailableCallback(String.fromCharCode(val));
-		}
-
-		sendSerialDataToEmulator(data) {
-			availableData.writeStr(data);
-			Serial.dataAvailable = true;
-		}
-
-		initialize() {
 		}
 	}
 
@@ -225,10 +207,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				}
 			}
 
-			getSerialDevice(characterAvailableCallback) {
-				console.log("Initializing serial port capture");
-				saeSerialDevice = new SAESerialDevice(characterAvailableCallback);
-				return saeSerialDevice;
+			setSerialDataAvailableCallback(characterAvailableCallback) {
+				saeCharacterAvailableCallback = characterAvailableCallback;
+			}
+
+			sendSerialDataToEmulator(data) {
+				availableData.writeStr(data);
+				Serial.dataAvailable = true;
 			}
 
 			reset() {
@@ -240,7 +225,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	/* Helper functions */
 
 	var config;
-	var FS;
 
 	/* The following function is called from sae-amiga.js. The reason for that file
 	 * is that the loader expects to be able to startup the emulator by loading a

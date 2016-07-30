@@ -17,10 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* Reference:
- *   http://joshgertzen.com/object-oriented-super-class-method-calling-with-javascript/
- */
-
 var Module;
 
 class EmscriptenEmulatorInterface extends EmulatorInterface {
@@ -55,8 +51,12 @@ class EmscriptenEmulatorInterface extends EmulatorInterface {
 		super.loadScriptsAndStart(stateObj);
 	}
 
-	getSerialDevice(characterAvailableCallback) {
-		return new EmscriptenSerialDevice(characterAvailableCallback);
+	setSerialDataAvailableCallback(characterAvailableCallback) {
+		this.serialDevice = new EmscriptenSerialDevice(characterAvailableCallback);
+	}
+
+	sendSerialDataToEmulator(data) {
+		this.serialDevice.sendSerialDataToEmulator(data);
 	}
 
 	configModule(module) {

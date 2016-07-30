@@ -153,8 +153,8 @@ class Emulator {
 				me.setEmulatorInterface(ifce);
 				me.getEmulatorInterface().preloadResources();
 				me._state.transitionToRomsLoaded();
-				if(me.serialCharacterAvailableCallback) {
-					me.serialInterface = ifce.getSerialDevice(me.serialCharacterAvailableCallback);
+				if(me.deferredSerialCallback) {
+					me.setSerialDataAvailableCallback(me.deferredSerialCallback);
 				}
 			};
 		}
@@ -162,12 +162,16 @@ class Emulator {
 		loadResource("/emulators/" + emulator + "/bootstrap.html", true);
 	}
 
-	setSerialCallback(characterAvailableCallback) {
-		this.serialCharacterAvailableCallback = characterAvailableCallback;
+	setSerialDataAvailableCallback(callback) {
+		if(this.emuIfce) {
+			this.emuIfce.setSerialDataAvailableCallback(callback);
+		} else {
+			this.deferredSerialCallback = callback;
+		}
 	}
 
 	sendSerialDataToEmulator(data) {
-		this.serialInterface.sendSerialDataToEmulator(data);
+		this.getEmulatorInterface().sendSerialDataToEmulator(data);
 	}
 
 	setEmulatorInterface(ifce) {
