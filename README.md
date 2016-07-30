@@ -56,4 +56,4 @@ Several components that comprise this project have been packaged into separate W
 These components are available in the [RetroWeb Components](https://github.com/marciot/retroweb-components)
 repository.
 
-[logo]: https://github.com/marciot/retroweb-vintage-computer-museum/raw/master/webfiles/artwork/dragon.jpg "A fractal on a computer screen"
+[logo]: https://github.com/marciot/retroweb-vintage-computer-museum/raw/master/webfiles/artwork/amiga-os.png "The screen of an emulated Amiga"
