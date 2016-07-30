@@ -8681,6 +8681,7 @@ function copyTempDouble(ptr) {
       SDL.initFlags = initFlags;
   
       // capture all key events. we just keep down and up, but also capture press to prevent default actions
+      if (!Module['doNotCaptureKeyboard']) {
         var keyboardListeningElement = Module['keyboardListeningElement'] || document;
         keyboardListeningElement.addEventListener("keydown", SDL.receiveEvent);
         keyboardListeningElement.addEventListener("keyup", SDL.receiveEvent);
