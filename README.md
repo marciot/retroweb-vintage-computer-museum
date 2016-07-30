@@ -18,7 +18,8 @@ JavaScript emulator. The currrent release comes with the following emulators:
 
 * PCE (http://www.hampa.ch/pce)
 	* Apple Macintosh Plus
-	* IBM PC Model 5150 and 516o
+	* IBM PC Model 5150 and 5160
+	* Atari 1040ST
 	* Regnecentralen RC759 Piccoline
 * JSMESS (http://jsmess.textfiles.com)
 	* Apple //e
@@ -39,21 +40,21 @@ JavaScript emulator. The currrent release comes with the following emulators:
 
 ## What libraries and technologies does this project use?
 
-It uses WebComponents written in pure ECMA 6 JavaScript and will work natively in Chrome. For other browsers, a <a href="http://webcomponents.org/">WebComponents polyfill</a> is needed and is provided. With the polyfill, the code will work on
-the latest versions of Chrome, Firefox and Safari.
+It uses WebComponents written in pure ECMA 6 JavaScript and will work natively in Chrome. For other browsers, a <a href="http://webcomponents.org/">WebComponents polyfill</a> is needed and is included. With the polyfill, the code will work on
+recent versions of Chrome, Firefox and Safari.
 
 ## Why aren't you using Polymer or some other JavaScript framework?
 
-I didn't learn with them and now I prefer to continue without them. Benjamin Farrell provides some good reasons in his blog post <a href="http://www.benfarrell.com/2015/10/26/es6-web-components-part-1-a-man-without-a-framework/">ES6 Web Components: A Man Without a Framework</a>
+I didn't learn with them and now I prefer to continue without them. Benjamin Farrell provides some good reasons why in his blog post <a href="http://www.benfarrell.com/2015/10/26/es6-web-components-part-1-a-man-without-a-framework/">ES6 Web Components: A Man Without a Framework</a>
 
 ## Where are the build scripts or minimized source code?
 
-There are none. This project does not have a build step. I upload the files to my webserver as is; the only tools I have used in development are a text editor, a web server and a web browser. In the future I may look into providing minimized source code.
+There are none. This project does not have a build step; I upload the files to my webserver as is. The only tools I have used in development are a text editor, a web server and a web browser. In the future I may look into providing minimized source code.
 
-## For developers
+## Would it be easy to reuse some of the interface elements you have developed for this website in other projects?
  
-Several components that comprise this project have been packaged into separate WebComponents that can be used in other projects.
-These components are available in the [RetroWeb Components](https://github.com/marciot/retroweb-components)
-repository.
+Yes, several interface components that make up this web app have been made into WebComponents that can easily be
+incorporated in other projects. These components are available in the [RetroWeb Components](https://marciot.github.io/retroweb-components)
+project.
 
 [logo]: https://github.com/marciot/retroweb-vintage-computer-museum/raw/master/webfiles/artwork/amiga-os.png "The screen of an emulated Amiga"
