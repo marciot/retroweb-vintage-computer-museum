@@ -81,32 +81,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	// Global variables for emulator
 	var emulator;
 
-(function(namespace, thisDoc){
-	namespace.createEmulator = function(host, emulatorType) {
-		var template = thisDoc.getElementById('emulatorTemplate');
-		var clone = document.importNode(template.content, true);
-		host.appendChild(clone);
-
-		// Add tab index to ensure the canvas retains focus
-		var screen = document.querySelector("#screen");
-		screen.setAttribute("tabindex", "0");
-		screen.addEventListener('mousedown', function(event){this.focus();});
-
-		// Ignore arrow keys and pageup/pagedown
-		window.addEventListener('keydown', function(e) {
-			if([32, 33, 34,  37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-				e.preventDefault();
-			}
-		}, false);
-
-		var opts = {
-			popups: document.getElementsByTagName("emulator-popups" )[0]
-		};
-
-		var emulatorButtons = document.getElementsByTagName("emulator-buttons")[0];
-		emulator = new Emulator(emulatorType, opts);
-		emulatorButtons.setRestartAction(function() {emulator.restart();});
-		return emulator;
+	function emulatorAnchorHrefHandler(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		navTo(event.target.getAttribute("href"));
 	}
-})(window.RetroWeb = window.RetroWeb || {}, (document._currentScript || document.currentScript).ownerDocument);
+
+	(function(namespace, thisDoc){
+		namespace.createEmulator = function(host, emulatorType) {
+			var template = thisDoc.getElementById('emulatorTemplate');
+			var clone = document.importNode(template.content, true);
+			host.appendChild(clone);
+
+			// Add tab index to ensure the canvas retains focus
+			var screen = document.querySelector("#screen");
+			screen.setAttribute("tabindex", "0");
+			screen.addEventListener('mousedown', function(event){this.focus();});
+
+			// Ignore arrow keys and pageup/pagedown
+			window.addEventListener('keydown', function(e) {
+				if([32, 33, 34,  37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+					e.preventDefault();
+				}
+			}, false);
+
+			var opts = {
+				popups: document.getElementsByTagName("emulator-popups" )[0]
+			};
+
+			var emulatorButtons = document.getElementsByTagName("emulator-buttons")[0];
+			emulator = new Emulator(emulatorType, opts);
+			emulatorButtons.setRestartAction(function() {emulator.restart();});
+			emulator.addEventListener("emulatorLoaded", function() {
+				emulatorButtons.setByline(emulator.byline +
+					'<br>Click <a href="/articles/Emulators.html" onclick="emulatorAnchorHrefHandler(event);">here</a> to learn more');
+			});
+
+			return emulator;
+		}
+	})(window.RetroWeb = window.RetroWeb || {}, (document._currentScript || document.currentScript).ownerDocument);
 </script>

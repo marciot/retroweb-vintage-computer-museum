@@ -101,4 +101,8 @@ class EmulatorInterface {
 	cassetteAction(action) {
 		alert( "This emulator does not support the cassette interface." );
 	}
+
+	get byline() {
+		return "This emulator is missing a byline";
+	}
 }

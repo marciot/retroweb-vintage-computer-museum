@@ -331,6 +331,10 @@ class Emulator {
 		return this._state;
 	}
 
+	get byline() {
+		return this.getEmulatorInterface().byline;
+	}
+
 	// Calls a callback and clears the callback so it won't be called multiple times.
 	dispatchEvent(event) {
 		console.log("dispatchEventListeners called", event);
