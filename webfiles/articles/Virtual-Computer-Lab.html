@@ -28,12 +28,12 @@ This page demonstrates how the JMESS and PCE emulators, along with my RetroWeb B
 <div class="pce-macplus hidden">
 {
 	"icons" : [
-		["System 6.0 Boot",        "boot-hd",          "/disks/mac-marcio's-boot-1.0.qed"],
-		["Mac Programming Tools",  "floppy",           "/disks/mac-programming.image"],
-		["PowerPoint V1.0",        "floppy",           "/disks/mac-powerpoint-1.0.image"],
-		["Blank Floppy",           "floppy",           "/disks/mac-blank-800k.img"],
-		["Upload Floppy",          "upload-floppy"],
-		["Save Floppy",            "download-floppy"]
+		["System 6.0 Boot",            "boot-hd",          "/disks/mac-marcio's-boot-1.0.qed"],
+		["Mac Programming Tools",      "floppy",           "/disks/mac-programming.image"],
+		["Forethough PowerPoint V1.0", "floppy",           "/disks/mac-powerpoint-1.0.image"],
+		["Blank Floppy",               "floppy",           "/disks/mac-blank-800k.img"],
+		["Upload Floppy",              "upload-floppy"],
+		["Save Floppy",                "download-floppy"]
 	]
 }
 </div>
@@ -51,10 +51,9 @@ This page demonstrates how the JMESS and PCE emulators, along with my RetroWeb B
 <div class="pce-ibmpc-xt hidden">
 {
 	"icons" : [
-		["Upload Floppy",           "upload-floppy"],
-		["Download Floppy",         "download-floppy"],
-		["Windows 1.01 Boot Disk",     "boot-hd",   "/disks/ibmpc-win101-hd.img",
-			{"emulator-args" : {"-c" : "pce-config-5160-ser-mouse.cfg", "-g" : "vga"} } ],
+		["Upload Floppy",          "upload-floppy"],
+		["Download Floppy",        "download-floppy"],
+		["IBM PC-DOS 2.00",        "boot-hd",    "/disks/ibmpc-dos-2.0.pimg"],
 		["VisiCalc Program Disk",  "floppy",     "/disks/ibmpc-visicalc.raw.gz"]
 	]
 }
@@ -109,18 +108,17 @@ There is no productivity software available for this machine.
 
 === Other vintage computers: ===
 
-|! Computer              |! Disk insertion<br>(after boot) |! Save disks |! Productivity Software                     |
-| [[IBM PC Model 5160]]  | Yes             | No             | Windows 1.0, VisiCalc                                   |
-| [[Apple Macintosh]]    | Yes             | No             | MacWrite, TeachText, PowerPoint, Macintosh Pascal, Microsoft Basic, Hypercard  |
-| [[Atari 1040ST]]       | Yes             | No             | None                                                    |
-| [[Apple II]]           | No              | Yes            | VisiCalc                                                |
-| [[Commodore 64]]       | No              | Yes            | None                                                    |
-| [[RadioShack TRS-80]]  | No              | Yes            | None                                                    |
-| [[RC759 Piccoline]]    | Yes             | No             | None                                                    |
+|! Computer              |! Disk insertion<br>(after boot) |! Save disks |! Productivity Software                  |
+| [[IBM PC Model 5160]]  | Yes                             | No          | Yes                                     |
+| [[Apple Macintosh]]    | Yes                             | Yes         | Yes                                     |
+| [[Atari 1040ST]]       | Yes                             | No          | None                                    |
+| [[Apple II]]           | No                              | Yes         | Yes                                     |
+| [[Commodore 64]]       | No                              | Yes         | None                                    |
+| [[RadioShack TRS-80]]  | No                              | Yes         | None                                    |
+| [[RC759 Piccoline]]    | Yes                             | No          | None                                    |
 
 
 * The PCE-based emulators support insertion of one or more floppy disks once running, but currently my interface limits this to the first floppy disk drive.
-* Saving disks from PCE seems to only result in a blank disk being saved.
 * JSMESS saves disks okay, but does not support changing disks after boot.
 
 <a href="IBM-PC-Model-5160.html">IBM PC Model 5160</a>
