@@ -29,7 +29,7 @@ class EmscriptenEmulatorInterface extends EmulatorInterface {
 		Module = {
 			preRun:  [function () {stateObj.transitionToRunning(); me.preRun();}],
 			postRun: [],
-			preInit: [function () {emulator.syncFileSystem(false); emulator.dispatchEvent("emscriptenPreInit");}],
+			preInit: [function () {emulator.syncFileSystem(); emulator.dispatchEvent("emscriptenPreInit");}],
 			arguments: [],
 			noInitialRun: false,
 			print: function(text) {

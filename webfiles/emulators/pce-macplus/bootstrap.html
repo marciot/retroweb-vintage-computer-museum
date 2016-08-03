@@ -32,11 +32,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			preloadResources() {
 				super.preloadFromURL("/emulators/pce-macplus/pce-config.cfg");
 				super.preloadFromURL("/emulators/pce-macplus/pce-mac-128k.cfg");
-				super.preloadFromURL("/emulators/pce-macplus/pce-dual-hd.cfg");
 				super.preloadFromURL("/roms/mac-plus-3.rom");
 				super.preloadFromURL("/roms/macplus-pcex.rom");
 				super.preloadFromURL("/roms/mac-128k.rom");
-				super.preloadFromURL("/disks/mac-marcio's-boot-1.0.qed","/boot.qed");
 			}
 
 			loadScripts() {
@@ -46,6 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			getDrives() {
 				return {
 					"hd1" : "hd1.img",
+					"hd2" : "hd2.img",
 					"fd1" : "fd1.disk",
 					"fd2" : "fd2.disk"
 				}
@@ -61,12 +60,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 					var driveId = match[1];
 					console.log("Mounting " + diskFile);
 					this.prepareDisk(diskFile);
-					if(emulator.state.isFloppyMounted("fd" + driveId) && this.showEjectWarning) {
+					if(emulator.state.isDriveMounted("fd" + driveId) && this.showEjectWarning) {
 						this.showEjectWarning = false;
 						emulator.popups.setVisibility("popup-mac-eject-disk", true);
 					}
 					if(emulator.state.isRunning) {
-						emulator.state.floppyMounted("fd" + driveId);
 						macSetMessage ("emu.disk.insert", driveId + ":" + diskFile);
 						macSetMessage ("mac.insert", driveId);
 					}

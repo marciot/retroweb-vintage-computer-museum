@@ -30,7 +30,7 @@ class EmulatorState {
 		this.downloading  = false;
 		this.started      = false;
 		this.running      = false; // Emscripten preinit called. Okay to manipulate files
-		this.floppyDrives = new Array();
+		this.drives       = new Array();
 	}
 
 	setStatus(text) {
@@ -118,15 +118,15 @@ class EmulatorState {
 		return this.gotBootMedia;
 	}
 
-	floppyMounted(fname) {
-		if( !(fname in this.floppyDrives)) {
-			this.floppyDrives[fname] = {};
+	driveMounted(drive) {
+		if( !(drive in this.drives)) {
+			this.drives[drive] = {};
 		}
-		this.floppyDrives[fname].mounted = true;
+		this.drives[drive].mounted = true;
 	}
 
-	isFloppyMounted(fname) {
-		return this.floppyDrives.hasOwnProperty(fname) ? this.floppyDrives[fname].mounted : false;
+	isDriveMounted(drive) {
+		return this.drives.hasOwnProperty(drive) ? this.drives[drive].mounted : false;
 	}
 }
 
@@ -183,34 +183,42 @@ class Emulator {
 		return this.emuIfce;
 	}
 
-	syncFileSystem(doMount) {
-		var filesWritten = this.fileManager.syncFileSystem();
-		console.log("Preparing disks...");
-		for(var i = 0; i < filesWritten.length; i++) {
-			this.getEmulatorInterface().prepareDisk(filesWritten[i]);
-			if(doMount) {
-				this.getEmulatorInterface().mountDisk(filesWritten[i]);
+	_fileWrittenFunction(name, meta) {
+		if(meta && "drive" in meta) {
+			this.getEmulatorInterface().prepareDisk(name);
+			if(this.state.isRunning) {
+				this.getEmulatorInterface().mountDisk(name);
 			}
+			emulator.state.driveMounted(meta.drive);
+		}
+	}
+
+	syncFileSystem() {
+		if(this._state.isStarted) {
+			this.fileManager.syncFileSystem(this._fileWrittenFunction.bind(this));
+		}
+	}
+
+	_diskReadyFunc(remaining, depName) {
+		if(depName == this.expectedBootDisk) {
+			this.state.transitionToBootMediaLoaded();
+		}
+		if(remaining == 0) {
+			if(this.state.isRunning) {
+				this.syncFileSystem();
+			} else if(this.state.hasBootMedia) {
+				this.restart();
+			}
+			this.state.transitionToDownloading(false);
 		}
 	}
 
 	expectMedia(fileName, isBootable) {
-		this._state.transitionToDownloading(true);
-		var me = this;
-		var waitFunc = function(remaining, depName) {
-			if(isBootable && depName == fileName) {
-				me.state.transitionToBootMediaLoaded();
-			}
-			if(remaining == 0) {
-				if(me.state.isRunning) {
-					me.syncFileSystem(true);
-				} else if(me.state.hasBootMedia) {
-					me.restart();
-				}
-				me.state.transitionToDownloading(false);
-			}
+		if(isBootable) {
+			this.expectedBootDisk = fileName;
 		}
-		this.fileManager.setFileReadyCallback(waitFunc);
+		this._state.transitionToDownloading(true);
+		this.fileManager.setFileReadyCallback(this._diskReadyFunc.bind(this));
 	}
 
 	restart() {
@@ -219,6 +227,7 @@ class Emulator {
 		}
 		if (!this._state.isStarted) {
 			/* Load the main emulator script(s). This will start the emulator execution. */
+			this.syncFileSystem();
 			this.getEmulatorInterface().loadScriptsAndStart(this._state);
 			this._state.transitionToStarted();
 		} else if(this._state.isRunning) {
@@ -227,7 +236,7 @@ class Emulator {
 	}
 
 	bootFromRom(opts) {
-		this.processBootOpts(opts);
+		this.processOptionalEmuArgs(opts);
 		if(this._state.isRunning) {
 			alert("Cannot change the boot source once the computer is running. Please reload the page to reset");
 		} else {
@@ -246,15 +255,12 @@ class Emulator {
 		this.getEmulatorInterface().cassetteAction(action);
 	}
 
-	processBootOpts(opts) {
+	/* This is a separate function since it is used by both mountDriveFromUrl and bootFromRom */
+	processOptionalEmuArgs(opts) {
 		if(opts && "emulator-args" in opts) {
-			if(this._state.isRunning) {
-				console.log("WARNING: Ignoring request for command line arguments since computer is already running");
-			} else {
-				var args = opts["emulator-args"];
-				for(var arg in args) {
-					this.getEmulatorInterface().setArgument(arg, args[arg]);
-				}
+			var args = opts["emulator-args"];
+			for(var arg in args) {
+				this.getEmulatorInterface().setArgument(arg, args[arg]);
 			}
 		}
 	}
@@ -271,15 +277,33 @@ class Emulator {
 		}
 
 		if(opts) {
-			// Override the drive id if opts.drive exists
-			drive = ("drive" in opts) ? opts.drive : drive;
-			// Add command line switches in opts.emulator-args prior to starting emulator
-			this.processBootOpts(opts);
+			/* Add command line switches in opts.emulator-args prior to starting emulator */
+			this.processOptionalEmuArgs(opts);
+			/* If a "boot-hd" or "boot-fd" is present, it causes a separate boot disk to be
+			   used along with this disk */
+			if("boot-hd" in opts) {
+				if(drive == "hd1") {
+					drive = "hd2";
+				}
+				this.mountDriveFromUrl("hd1", opts["boot-hd"], true);
+				isBootable = false;
+			}
+			if("boot-fd" in opts) {
+				if(drive == "fd1") {
+					drive = "fd2";
+				}
+				this.mountDriveFromUrl("fd1", opts["boot-fd"], true);
+				isBootable = false;
+			}
+			/* Override the drive id if opts.drive exists */
+			if("drive" in opts) {
+				drive = opts.drive;
+			}
 		}
 
 		var dstName = this.getEmulatorInterface().getFileNameForDrive(drive, url);
 		this.expectMedia(dstName, isBootable);
-		this.fileManager.writeFileFromUrl(dstName, url);
+		this.fileManager.writeFileFromUrl(dstName, url, {"drive": drive});
 	}
 
 	/* This function lets you load a file into the emulator from an URL */
@@ -298,7 +322,7 @@ class Emulator {
 		this.popups.askForFile("Select floppy disk image", function(file) {
 			var dstName = me.getEmulatorInterface().getFileNameForDrive(drive, file.name);
 			me.expectMedia(dstName, isBootable);
-			me.fileManager.writeFileFromFile(dstName, file);
+			me.fileManager.writeFileFromFile(dstName, file, {"drive": drive});
 		});
 	}
 
@@ -407,10 +431,11 @@ class EmulatorFileSystem {
 	/* The following function performs enqueued file operations
 	 * on an Emscripten FS object. It should be called during
 	 * or after Emscripten's preInit phase.
+	 *
+	 * Option: fileWrittenFunc if provided, will be called for
+	 * each file that is written
 	 */
-	syncFileSystem() {
-		var filesWritten = [];
-
+	syncFileSystem(fileWrittenFunc) {
 		// Create subdirectories
 		for (var i = 0; i < this.dirs.length; ++i) {
 			var d = this.dirs[i];
@@ -434,11 +459,11 @@ class EmulatorFileSystem {
 					FS.close(stream);
 				}
 				f.written = true;
-				filesWritten.push(f.name);
+				if(fileWrittenFunc) {
+					fileWrittenFunc(f.name, f.meta);
+				}
 			}
 		}
-
-		return filesWritten;
 	}
 
 	_fileRef(fileName) {
@@ -481,10 +506,12 @@ class EmulatorFileSystem {
 	 *
 	 *   dstFileName : Name used to write file to the Emscripten FS
 	 *   srcUrl :      URL for the resource
+	 *   meta:         Optional metadata to associate with file
 	 */
-	writeFileFromBinaryData(dstFileName, srcData) {
-		var ref = this._fileRef(dstFileName);
-		ref.data = new Uint8Array(srcData);
+	writeFileFromBinaryData(dstFileName, srcData, meta) {
+		var ref     = this._fileRef(dstFileName);
+		ref.data    = new Uint8Array(srcData);
+		ref.meta    = meta;
 		ref.written = false;
 	}
 
@@ -493,8 +520,9 @@ class EmulatorFileSystem {
 	 *
 	 *   dstFileName : Name used to write file to the Emscripten FS
 	 *   srcUrl :      URL for the resource
+	 *   meta:         Optional meta data for the file
 	 */
-	writeFileFromUrl(dstFileName, srcUrl) {
+	writeFileFromUrl(dstFileName, srcUrl, meta) {
 		this._incrementCounter();
 		var me = this;
 		var xhr = new XMLHttpRequest();
@@ -505,7 +533,7 @@ class EmulatorFileSystem {
 				switch(xhr.status) {
 					case 200: // OK
 						me.print("Downloading " + srcUrl);
-						me.writeFileFromBinaryData(dstFileName, xhr.response);
+						me.writeFileFromBinaryData(dstFileName, xhr.response, meta);
 						me._decrementCounter(dstFileName);
 						break;
 					case 404:
@@ -525,8 +553,9 @@ class EmulatorFileSystem {
 	 *
 	 *   dstFileName : Name used to write file to the Emscripten FS
 	 *   srcFile :     Exiting file object
+	 *   meta:         Optional meta data for the file
 	 */
-	writeFileFromFile(dstName, srcFile) {
+	writeFileFromFile(dstName, srcFile, meta) {
 		var me = this;
 		this._incrementCounter();
 		var reader = new FileReader();
@@ -537,7 +566,7 @@ class EmulatorFileSystem {
 				return;
 			}
 			var name = dstName || srcFile.name;
-			me.writeFileFromBinaryData(name, evt.target.result);
+			me.writeFileFromBinaryData(name, evt.target.result, meta);
 			me._decrementCounter(name);
 		}
 		reader.readAsArrayBuffer(srcFile);
