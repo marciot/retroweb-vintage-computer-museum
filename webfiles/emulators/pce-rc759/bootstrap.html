@@ -26,16 +26,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				super();
 				this.setArgument("-c", "pce-config.cfg");
 				this.setArgument("-r", "");
+				this.setArgument("-v", "");
 			}
 
 			preloadResources() {
-				super.preloadMakeDir("/roms");
-				super.preloadFromURL("/emulators/pce-rc759/pce-config.cfg","/roms/pce-config.cfg");
+				super.preloadFromURL("/emulators/pce-rc759/pce-config.cfg");
 				super.preloadFromURL("/roms/rc759-1-2.1.rom");
 			}
 
 			loadScripts() {
 				super.loadJavascript("/emulators/pce-rc759/pce-rc759.js", 'async');
+			}
+
+			configModule(module) {
+				super.configModule(module);
+				Module.memoryInitializerPrefixURL = "/emulators/pce-rc759/";
 			}
 
 			getDrives() {
@@ -71,7 +76,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	function rcSetMessage(msg,val) {
 		var sim = _rc759_get_sim();
-		var _rcSetMessage = Module.cwrap('rc759_set_msg', 'int', ['int','string', 'string']);
+		var _rcSetMessage = Module.cwrap('rc759_set_msg', 'number', ['number','string', 'string']);
 		_rcSetMessage(sim, msg, val);
 	}
 </script>

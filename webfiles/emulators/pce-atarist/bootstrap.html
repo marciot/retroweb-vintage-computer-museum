@@ -26,16 +26,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				super.enablePointerLock();
 				this.setArgument("-c", "pce-config.cfg");
 				this.setArgument("-r", "");
+				this.setArgument("-v", "");
 			}
 
 			preloadResources() {
-				super.preloadMakeDir("/roms");
-				super.preloadFromURL("/emulators/pce-atarist/pce-config.cfg","/roms/pce-config.cfg");
+				super.preloadFromURL("/emulators/pce-atarist/pce-config.cfg", "pce-config.cfg");
 				super.preloadFromURL("/roms/tos-1.04-us.rom");
 			}
 
 			loadScripts() {
 				super.loadJavascript("/emulators/pce-atarist/pce-atarist.js", 'async');
+			}
+
+			configModule(module) {
+				super.configModule(module);
+				Module.memoryInitializerPrefixURL = "/emulators/pce-atarist/";
 			}
 
 			getDrives() {
@@ -70,7 +75,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	function stSetMessage(msg,val) {
 		var sim = _st_get_sim();
-		var _stSetMessage = Module.cwrap('st_set_msg', 'int', ['int','string', 'string']);
+		var _stSetMessage = Module.cwrap('st_set_msg', 'number', ['number', 'string', 'string']);
 		_stSetMessage(sim, msg, val);
 	}
 </script>

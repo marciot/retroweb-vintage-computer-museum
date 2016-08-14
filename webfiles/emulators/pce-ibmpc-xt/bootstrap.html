@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				this.setArgument("-c", "pce-config.cfg");
 				this.setArgument("-g", "cga");
 				this.setArgument("-r", "");
+				this.setArgument("-v", "");
 			}
 
 			preloadResources() {
@@ -49,6 +50,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 			loadScripts() {
 				super.loadJavascript("/emulators/pce-ibmpc/pce-ibmpc.js", 'async');
+			}
+
+			configModule(module) {
+				super.configModule(module);
+				Module.memoryInitializerPrefixURL = "/emulators/pce-ibmpc/";
 			}
 
 			getDrives() {
@@ -104,7 +110,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	function pcSetMessage(msg,val) {
 		var sim = _pc_get_sim();
-		var _pcSetMessage = Module.cwrap('pc_set_msg', 'int', ['int','string', 'string']);
+		var _pcSetMessage = Module.cwrap('pc_set_msg', 'number', ['number','string', 'string']);
 		_pcSetMessage(sim, msg, val);
 	}
 </script>

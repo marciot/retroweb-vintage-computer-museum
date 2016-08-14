@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 				super();
 				this.setArgument("-c", "pce-config.cfg");
 				this.setArgument("-r", "");
+				this.setArgument("-v", "");
+				this.setArgument("-t", "sdl");
 
 				this.showEjectWarning = true;
 			}
@@ -39,6 +41,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 			loadScripts() {
 				super.loadJavascript("/emulators/pce-macplus/pce-macplus.js", 'async');
+			}
+
+			configModule(module) {
+				super.configModule(module);
+				Module.memoryInitializerPrefixURL = "/emulators/pce-macplus/";
 			}
 
 			getDrives() {
@@ -93,7 +100,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	function macSetMessage(msg,val) {
 		var sim = _mac_get_sim();
-		var _macSetMessage = Module.cwrap('mac_set_msg', 'int', ['int','string', 'string']);
+		var _macSetMessage = Module.cwrap('mac_set_msg', 'number', ['number','string', 'string']);
 		_macSetMessage(sim, msg, val);
 	}
 

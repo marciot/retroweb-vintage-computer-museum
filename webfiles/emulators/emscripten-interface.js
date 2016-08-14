@@ -53,7 +53,7 @@ class EmscriptenEmulatorInterface extends EmulatorInterface {
 
 	setSerialDataAvailableCallback(callback) {
 		if(!this.serialDevice) {
-			this.serialDevice = new EmscriptenSerialDevice();
+			this.serialDevice = new EmscriptenSerialDevice("ser_a.io");
 		}
 		this.serialDevice.setSerialDataAvailableCallback(callback);
 	}
@@ -78,11 +78,11 @@ class EmscriptenEmulatorInterface extends EmulatorInterface {
  * driver to read and write to that file.
  */
 class EmscriptenSerialDevice {
-	constructor() {
+	constructor(filename) {
 		this.availableData = "";
 		var me = this;
 		emulator.addEventListener("emscriptenPreInit", function() {
-			me.createFile("ser_a.io");
+			me.createFile(filename);
 		});
 	}
 
@@ -90,11 +90,24 @@ class EmscriptenSerialDevice {
 		this.availableData += data;
 	}
 
+	/* The following functions are necessary because the values read from the Emscripten device
+	 * are signed ints from -128 to 127, which do not behave correctly when converted to characters.
+	 * These two functions properly convert the signed quantities into unsigned values from 0 through
+	 * 255, which are reversible when passed fromCharCode and charCodeAt.
+	 */
+	static fromInt8ToCharCode(i) {
+		return i & 0xFF;
+	}
+
+	static fromCharCodeToInt8(i) {
+		return (i << 24) >> 24;
+	}
+
 	createFile(file) {
 		var me = this;
 		function serialWrite(stream, buffer, offset, length, position) {
 			for(var i = 0; i < length; i++) {
-				var data = buffer[offset+i];
+				var data = EmscriptenSerialDevice.fromInt8ToCharCode(buffer[offset+i]);
 				me.characterAvailableCallback(String.fromCharCode(data));
 			}
 			return length;
@@ -106,9 +119,9 @@ class EmscriptenSerialDevice {
 					length = me.availableData.length;
 				}
 				for(var i = 0; i < length; i++) {
-					buffer[offset+i] = me.availableData.charCodeAt(i);
+					buffer[offset+i] = EmscriptenSerialDevice.fromCharCodeToInt8(me.availableData.charCodeAt(i));
 				}
-				me.availableData = "";
+				me.availableData = me.availableData.substr(length);
 				return length;
 			} else {
 				return 0;
@@ -130,4 +143,29 @@ class EmscriptenSerialDevice {
 	setSerialDataAvailableCallback(callback) {
 		this.characterAvailableCallback = callback;
 	}
+}
+
+function _SDL_CreateRGBSurfaceFrom(pixels, width, height, depth, pitch, rmask, gmask, bmask, amask) {
+	// TODO: Actually fill pixel data to created surface.
+	// TODO: Take into account depth and pitch parameters.
+	// console.log('TODO: Partially unimplemented SDL_CreateRGBSurfaceFrom called!');
+	var surface = SDL.makeSurface(width, height, 0, false, 'CreateRGBSurfaceFrom', rmask, gmask, bmask, amask);
+
+	var surfaceData = SDL.surfaces[surface];
+	var surfaceImageData = surfaceData.ctx.getImageData(0, 0, width, height);
+	var surfacePixelData = surfaceImageData.data;
+
+	// Fill pixel data to created surface.
+	// Supports SDL_PIXELFORMAT_RGBA8888 and SDL_PIXELFORMAT_RGB888
+	var channels = amask ? 4 : 3; // RGBA8888 or RGB888
+	for (var pixelOffset = 0; pixelOffset < width*height; pixelOffset++) {
+		surfacePixelData[pixelOffset*4+0] = HEAPU8[pixels + (pixelOffset*channels+0)]; // R
+		surfacePixelData[pixelOffset*4+1] = HEAPU8[pixels + (pixelOffset*channels+1)]; // G
+		surfacePixelData[pixelOffset*4+2] = HEAPU8[pixels + (pixelOffset*channels+2)]; // B
+		surfacePixelData[pixelOffset*4+3] = amask ? HEAPU8[pixels + (pixelOffset*channels+3)] : 0xff; // A
+	};
+
+	surfaceData.ctx.putImageData(surfaceImageData, 0, 0);
+
+	return surface;
 }
