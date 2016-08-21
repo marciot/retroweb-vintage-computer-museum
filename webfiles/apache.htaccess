@@ -56,7 +56,7 @@ RewriteEngine on
 # a .gz appended, then rewrite the request to the .gz file
 RewriteCond %{HTTP:Accept-Encoding} gzip
 RewriteCond %{REQUEST_FILENAME}.gz -f
-RewriteRule (.*\.(css|js|image|img|pimg|qed|pfdc|st|dsk|raw|prg|psi|adf|cas))$ $1\.gz [L]
+RewriteRule (.*\.(css|js|mem|image|img|pimg|qed|pfdc|st|dsk|raw|prg|psi|adf|cas))$ $1\.gz [L]
 
 #Set content type to JavaScript and the encoding to gzip
 <FilesMatch ".*\.js\.gz$">
