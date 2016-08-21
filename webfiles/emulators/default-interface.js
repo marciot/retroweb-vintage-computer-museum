@@ -24,13 +24,10 @@ class EmulatorInterface {
 
 	enablePointerLock() {
 		var element = document.getElementById("screen");
-		element.addEventListener('click', function(event){
-			element.requestPointerLock = element.requestPointerLock ||
-			     element.mozRequestPointerLock ||
-			     element.webkitRequestPointerLock;
-				// Ask the browser to lock the pointer
-				element.requestPointerLock();
-		});
+		var buttons = document.querySelector("emulator-buttons");
+		if(buttons) {
+			buttons.enablePointerLock(element);
+		}
 	}
 
 	getFileNameForDrive(drive, fileName) {
