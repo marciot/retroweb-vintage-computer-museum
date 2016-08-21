@@ -272,23 +272,20 @@ class Emulator {
 			alert("Please boot the computer using a boot disk first");
 			return;
 		}
-		if(this._state.isRunning && isBootable) {
-			alert("This disk will be inserted, but if you want to boot from it you will need to reload the web page to reset the computer.");
-		}
 
 		if(opts) {
 			/* Add command line switches in opts.emulator-args prior to starting emulator */
 			this.processOptionalEmuArgs(opts);
 			/* If a "boot-hd" or "boot-fd" is present, it causes a separate boot disk to be
 			   used along with this disk */
-			if("boot-hd" in opts) {
+			if("boot-hd" in opts && !this._state.isRunning) {
 				if(drive == "hd1") {
 					drive = "hd2";
 				}
 				this.mountDriveFromUrl("hd1", opts["boot-hd"], true);
 				isBootable = false;
 			}
-			if("boot-fd" in opts) {
+			if("boot-fd" in opts && !this._state.isRunning) {
 				if(drive == "fd1") {
 					drive = "fd2";
 				}
