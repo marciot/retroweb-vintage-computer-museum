@@ -2,20 +2,26 @@
    "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
-	<title>Multi-Player Online Games - RetroWeb Vintage Computer Museum</title>
+	<title>Network Games - RetroWeb Vintage Computer Museum</title>
 	<meta charset="UTF-8">
 	<script                type="text/javascript" src="/lib/bootstrap.js"></script>
 	<link rel="license"    type="text/html"       href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
 	<link rel="stylesheet" type="text/css"        href="/lib/nojs.css">
 	
-	<link rel="import" href="/components/serial-modem.html"></link>
+	<link rel="import" href="/components/apple-talk.html"></link>
 </head>
 <body>
 <div id="retroweb-markup" data-emulators="pce-macplus">
 
-= Multi-Player Online Games =
+= Multi-Player Network Games =
 
-In the days before broadband, computers used dial-up modems to communicate with one another. Some early games made use of this technology to allow people to play games together.
+This page demonstrates several games that could be played on an Apple Macintosh over a LocalTalk network. The emulated Macintosh on this page allows you to play these games here with others through the Internet.
+
+<apple-talk></apple-talk>
+
+Once you are connected, you can invite your friends to play by having them visit this web page on their own computer.
+
+If you do not have anyone to play with, you could use the "NetChat" Desk Accessory from the <span class="apple"></span> menu to look for others who might be doing the same (who knows, you might get lucky!)
 
 == Maze War ==
 
@@ -29,20 +35,32 @@ Maze War was an early multi-player game with a history dating back to 1974. This
 	"class" : ""
 }
 
-Through technology developed exclusively for the <cite>RetroWeb Vintage Computer Museum</cite>, you can play MazeWars+ with others via the Internet!
+== Pararena ==
 
-== ZTerm ==
+[[figure-float-left:/artwork/pararena.png Pararena 2 on the Macintosh]]
 
-Or, use ZTerm to interact with the modem, chat with one another, or transfer files the primitive way!
+<cite>Pararena</cite>, by John Calhoun, is a game where players compete to score goals against each other in a futuristic hoverboard arena. You can play with the computer or with another player on the network.
 
-{ "icons" : [
-		["Boot Disk", "boot-hd",      "/disks/mac-marcio's-boot-1.0.qed"],
-		["ZTerm",     "floppy",       "/disks/mac-zterm-0.9.img"]
+{
+	"icons" : [
+		["Pararena 2",          "boot-hd",     "/disks/mac-pararena-2.img", {"boot-hd" : "/disks/mac-boot-appletalk.qed"}]
 	],
-	"class": "float-center"
+	"class" : "center"
 }
 
-<serial-modem class="hide-terminal"></serial-modem>
+<cite>Pararena 2</cite> was published commercially in 1990 by <cite>Casady &amp; Greene</cite>, but today the full source code, graphics and sounds to the game are available on [[GitHub]] under a MIT license[1].
+
+== NetTrek 2.0 ==
+
+{
+	"icons" : [
+		["NetTrek 2.0",      "boot-floppy",     "/disks/mac-nettrek-2.0.dsk", {"boot-hd" : "/disks/mac-boot-appletalk.qed"}]
+	]
+}
+
+NetTrek was a multi-player game developed by Randy Carr for the Macintosh. In this game, up to six players battle for control of the galaxy[2].
+
+You can read more about NetTrek in the [[NetTrek History Page]].
 
 === See also: ===
 
@@ -51,9 +69,12 @@ Or, use ZTerm to interact with the modem, chat with one another, or transfer fil
 
 === References ===
 
-# https://en.wikipedia.org/wiki/Maze_War
+# https://en.wikipedia.org/wiki/Pararena
+# http://macintoshgarden.org/games/nettrek
 
+<a href="https://github.com/softdorothy/pararena_2">GitHub</a>
 <a href="Maze-War.html">MazeWars+</a>
+<a href="http://www.fatlion.com/nettrek/">NetTrek History Page</a>
 <a href="Apple-Macintosh.html">Apple Macintosh</a>
 <a href="Macintosh-Games.html">Macintosh Games</a>
 <a href="Historic-Software.html">Historic Software</a>
