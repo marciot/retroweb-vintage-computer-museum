@@ -75,7 +75,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	/* Helper functions */
 
 	function rcSetMessage(msg,val) {
-		var sim = _rc759_get_sim();
+		var sim = _rc_get_sim();
 		var _rcSetMessage = Module.cwrap('rc759_set_msg', 'number', ['number','string', 'string']);
 		_rcSetMessage(sim, msg, val);
 	}
