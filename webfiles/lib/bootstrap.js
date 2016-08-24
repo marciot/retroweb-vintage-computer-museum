@@ -74,6 +74,7 @@ if(!(RetroWeb.query.debug == "raw")) {
 	document.write('<link rel="import" href="/components/file-icons.html"></link>');
 	document.write('<link rel="import" href="/components/serial-modem.html"></link>');
 	document.write('<link rel="import" href="/components/apple-talk.html"></link>');
+	document.write('<link rel="import" href="/components/google-calendar.html"></link>');
 	document.write('<link rel="import" href="/emulators/emulator.html"></link>');
 	document.write('<link rel="import" href="/lib/navigator/navigator.html"></link>');
 	document.write('<link rel="import" href="/lib/retroweb-main.html"></link>');
