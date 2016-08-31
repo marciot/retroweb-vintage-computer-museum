@@ -108,6 +108,7 @@ function tables(str) {
 function formatting(str) {
 	str = str.replace( /'''([^']+)'''/gm, '<strong>$1</strong>');
 	str = str.replace( /''([^']+)''/gm, '<em>$1</em>');
+	str = str.replace( /__([^_]+)__/gm, '<u>$1</u>');
 	return str;
 }
 

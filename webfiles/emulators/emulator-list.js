@@ -55,4 +55,5 @@ function populateEmulatorList() {
 	addEmulator("pce-rc759",     "Regnecentralen RC759 Piccoline");
 	addEmulator("mame-trs80",    "Tandy/RadioShack TRS-80 Model 1");
 	addEmulator("xerox-star",    "Xerox 8010 Information System (Xerox Star)");
+	addEmulator("salto-alto",    "Xerox Alto");
 }

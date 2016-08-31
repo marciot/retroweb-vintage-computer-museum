@@ -1,0 +1,92 @@
+<!--
+RetroWeb Browser
+Copyright (C) 2014 Marcio Teixeira
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+<script type="text/javascript">
+
+	/* Interface to RetroWeb Browser */
+
+	registerEmulatorInterface(
+		new class extends EmscriptenEmulatorInterface {
+			constructor() {
+				super();
+				super.enablePointerLock();
+				this.setArgument("", "boot.dsk");
+			}
+
+			preloadResources() {
+				super.preloadMakeDir("roms");
+				super.preloadFromURL("/roms/salto-alto/2kctl.u3",   "roms/2kctl.u3");
+				super.preloadFromURL("/roms/salto-alto/2kctl.u38",  "roms/2kctl.u38");
+				super.preloadFromURL("/roms/salto-alto/2kctl.u76",  "roms/2kctl.u76");
+				super.preloadFromURL("/roms/salto-alto/3kcram.a37", "roms/3kcram.a37");
+				super.preloadFromURL("/roms/salto-alto/53x.3",      "roms/53x.3");
+				super.preloadFromURL("/roms/salto-alto/55x.3",      "roms/55x.3");
+				super.preloadFromURL("/roms/salto-alto/60x.3",      "roms/60x.3");
+				super.preloadFromURL("/roms/salto-alto/61x.3",      "roms/61x.3");
+				super.preloadFromURL("/roms/salto-alto/62x.3",      "roms/62x.3");
+				super.preloadFromURL("/roms/salto-alto/63x.3",      "roms/63x.3");
+				super.preloadFromURL("/roms/salto-alto/64x.3",      "roms/64x.3");
+				super.preloadFromURL("/roms/salto-alto/65x.3",      "roms/65x.3");
+				super.preloadFromURL("/roms/salto-alto/displ.a38",  "roms/displ.a38");
+				super.preloadFromURL("/roms/salto-alto/displ.a63",  "roms/displ.a63");
+				super.preloadFromURL("/roms/salto-alto/displ.a66",  "roms/displ.a66");
+				super.preloadFromURL("/roms/salto-alto/enet.a41",   "roms/enet.a41");
+				super.preloadFromURL("/roms/salto-alto/enet.a42",   "roms/enet.a42");
+				super.preloadFromURL("/roms/salto-alto/enet.a49",   "roms/enet.a49");
+				super.preloadFromURL("/roms/salto-alto/madr.a3",    "roms/madr.a3");
+				super.preloadFromURL("/roms/salto-alto/madr.a4",    "roms/madr.a4");
+				super.preloadFromURL("/roms/salto-alto/madr.a5",    "roms/madr.a5");
+				super.preloadFromURL("/roms/salto-alto/madr.a6",    "roms/madr.a6");
+				super.preloadFromURL("/roms/salto-alto/madr.a32",   "roms/madr.a32");
+				super.preloadFromURL("/roms/salto-alto/madr.a64",   "roms/madr.a64");
+				super.preloadFromURL("/roms/salto-alto/madr.a65",   "roms/madr.a65");
+				super.preloadFromURL("/emulators/salto-alto/keyboard.conf");
+			}
+
+			loadScripts() {
+				super.loadJavascript("/emulators/salto-alto/salto.js", 'async');
+			}
+
+			configModule(module) {
+				super.configModule(module);
+				Module.memoryInitializerPrefixURL = "/emulators/salto-alto/";
+			}
+
+			getDrives() {
+				return {
+					"hd1" : "boot.dsk"
+				}
+			}
+
+			mountDisk(diskFile) {
+				var match = diskFile.match(/fd(\d)+/);
+				if(match) {
+					var driveId = match[1];
+					rcSetMessage ("emu.disk.insert", (driveId - 1) + ":" + diskFile);
+				} else {
+					// Must be a hard disk, cannot insert hard disks after boot
+					alert("To boot from this disk, you will need to reload the page.");
+				}
+			}
+
+			get byline() {
+				return 'Machine emulation provided by <cite>SALTO</cite>';
+			}
+		}
+	);
+</script>

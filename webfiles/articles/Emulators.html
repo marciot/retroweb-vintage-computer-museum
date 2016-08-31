@@ -18,7 +18,20 @@ Emulators allow operating systems and programs from the original computer to run
 
 The <cite>RetroWeb Vintage Computer Museum</cite> makes use of several emulators to allow you to experience computers and software from the early 80s.
 
-== PCE (PC Emulator) ==
+== Can I run an emulator stand-alone? ==
+
+Absolutely! Most of these emulators are available as stand-alone applications for your PC. Although running a stand-alone emulator requires more up-front work, it may provide better performance and better versatility than the online emulators provided to you in this museum.
+
+== Emulators used in this online museum ==
+
+The following emulators are used in the <cite>RetroWeb Vintage Computer Museum</cite>:
+
+* PCE (PCE Emulator)
+* MAME
+* Scripted Amiga Emulator
+* SALTO (Simulated Alto)
+
+=== PCE (PC Emulator) ===
 
 [[PCE (PC Emulator)]] is a emulator for four different computer systems written in ANSI C by Hampa Hug.
 
@@ -31,25 +44,51 @@ Computers emulated:
 
 The Macintosh emulator from PCE was cross-compiled into Javascript by [[James Friend]] using the [[Emscripten]] toolkit; this work was the direct inspiration for the <cite>RetroWeb Vintage Computer Museum</cite>.
 
-== Scriped Amiga Emulator ==
+As part of this project, I cross-compiled the remaining emulators and made modifications to the Macintosh emulator to support LocalTalk networking (based on similar work for [[Mini vMac]] by Mike Fort). The source code for the modified version of PCE is available on the [[retroweb-pcejs-jsdf]] GitHub repository.
 
-The Amiga emulator used here is a slightly modified version of Rupert Hausberger's [[SAE (Scriped Amiga Emulator)]].
-It was written natively in JavaScript and is heavily based on [[WinUAE]]
+=== MAME ===
 
-== MAME ==
-
-The [[MAME]] project is a collection of emulators originally written by Nicola Salmoria and now maintained by several contributors. [[MAME]] is written in C++, but was cross-compiled into JavaScript by the JSMESS team. The following emulators are used specifically in this museum:
+The [[MAME]] project is a collection of emulators originally written by Nicola Salmoria and now maintained by several contributors. [[MAME]] is written in C++, but was cross-compiled into JavaScript by the JSMESS team. The following emulators are used in this museum:
 
 * [[Apple //]]
 * [[Commodore 64]]
 * [[Tandy TRS-80 Model I]]
 
+=== Scriped Amiga Emulator ===
+
+The Amiga emulator used here is a slightly modified version of Rupert Hausberger's [[SAE (Scriped Amiga Emulator)]].
+
+SAE is written natively in JavaScript and is heavily based on [[WinUAE]]. I made minor modifications to SAE to enable pointerlock and to connect to the serial interface. The modified source code for SAE is provided in the [[retroweb-vintage-computer-museum]] GitHub repository.
+
+=== SALTO (Simulated Alto) ===
+
+[[SALTO (Simulated Alto)]] is a emulator for the [[Xerox Alto]] written by Juergen Buchmueller and partially based on info found in Eric Smith's Alto simulator, <cite>Altogether</cite>.
+
+SALTO was cross-compiled into Javascript using the [[Emscripten]] toolkit by myself. The source code for the modified version of PCE is available on the [[retroweb-salto-simulator-js]] GitHub repository.
+
+== Emulators not used in this online museum ==
+
+There are several emulators available on the Internet. The following emulators have not been used in the <cite>RetroWeb Virtual Computer Museum</cite>, but are available for download and offline use:
+
+; [[ContrAlto]]
+: A new ALTO emulator by the [[Living Computer Museum]], which appears to be more capable than the SALTO emulator.
+; [[Mini vMac]]
+: A very capable Macintosh emulator.
+
 <a href="https://github.com/kripken/emscripten">Emscripten</a>
+<a href="http://bitsavers.informatik.uni-stuttgart.de/bits/Xerox/Alto/simulator/salto/">SALTO (Simulated ALTO)</a>
 <a href="http://mamedev.org">MAME</a>
 <a href="http://scriptedamigaemulator.net">SAE (Scriped Amiga Emulator)</a>
 <a href="http://winuae.net/">WinUAE</a>
 <a href="http://www.hampa.ch/pce">PCE (PC Emulator)</a>
 <a href="http://jamesfriend.com.au/pce-js">James Friend</a>
+
+<a href="http://www.livingcomputermuseum.org/Online-Systems/Press.aspx">ContrAlto</a>
+<a href="http://www.livingcomputermuseum.org">Living Computer Museum</a>
+<a href="http://www.gryphel.com/c/minivmac/">Mini vMac</a>
+<a href="https://github.com/marciot/retroweb-pcejs-jsdf">retroweb-pcejs-jsdf</a>
+<a href="https://github.com/marciot/retroweb-salto-simulator-js">retroweb-salto-simulator-js</a>
+<a href="https://github.com/marciot/retroweb-vintage-computer-museum">retroweb-vintage-computer-museum</a>
 
 <a href="Apple-Macintosh.html">Apple Macintosh</a>
 <a href="Atari-1040ST.html">Atari ST</a>
