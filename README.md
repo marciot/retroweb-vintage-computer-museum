@@ -27,6 +27,8 @@ JavaScript emulator. The currrent release comes with the following emulators:
 	* Tandy TRS-80 Model I
 * Scripted AMIGA Emulator (http://scriptedamigaemulator.net)
 	* Commodore Amiga 500
+* SALTO, Simulated Alto (http://bitsavers.informatik.uni-stuttgart.de/bits/Xerox/Alto/simulator/salto)
+	* Xerox Alto
 
 ## Highlights of this framework:
 
@@ -50,6 +52,17 @@ I didn't learn with them and now I prefer to continue without them. Benjamin Far
 ## Where are the build scripts or minimized source code?
 
 There are none. This project does not have a build step; I upload the files to my webserver as is. The only tools I have used in development are a text editor, a web server and a web browser. In the future I may look into providing minimized source code.
+
+## Does this repository include the source code for the emulators or changes you have made to them?
+
+With the exception of SAE, which is Javascript-native, this repository only contains the Emscripten-compiled versions of the emulators, which are not human readable. This is because this project is meant to be turn-key and I figured most people looking here were not interested in recompiling the emulators from scratch.
+
+For the emulators which I have modified from upstream, I have placed the source code in separate repositories:
+
+* PCE: Changes at [retroweb-pcejs-jsdf](https://github.com/marciot/retroweb-pcejs-jsdf)
+* SALTO: Changes at [retroweb-salto-simulator-js](https://github.com/marciot/retroweb-salto-simulator-js)
+* SAE: All source, including changes, in this repository
+* MAME: No changes from upstream, get source from [mame](https://github.com/mamedev/mame)
 
 ## Would it be easy to reuse some of the interface elements you have developed for this website in other projects?
  
