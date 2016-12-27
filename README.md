@@ -70,4 +70,9 @@ Yes, several interface components that make up this web app have been made into 
 incorporated in other projects. These components are available in the [RetroWeb Components](https://marciot.github.io/retroweb-components)
 project.
 
+## How can you help this project?
+
+Please visit my [Patreon page] to learn how you can support this open-source project!
+
 [logo]: https://github.com/marciot/retroweb-vintage-computer-museum/raw/master/webfiles/artwork/amiga-os.png "The screen of an emulated Amiga"
+[Patreon page]: https://www.patreon.com/marciot
